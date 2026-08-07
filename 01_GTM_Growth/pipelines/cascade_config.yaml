@@ -1,0 +1,101 @@
+# ============================================================
+# cascade_config.yaml — Registre dynamique des cascades
+# ============================================================
+#
+# Ce fichier est la SEULE source de vérité pour définir l'ordre
+# des outils dans chaque pipeline. Pour ajouter un nouvel outil :
+#   1. Créer sa brique dans toolbox/finders/ (ou verifiers/, investigators/)
+#   2. Ajouter une entrée ici sous le pipeline concerné
+#   3. C'est tout. Pas besoin de toucher au code Python.
+#
+# Format de chaque entrée :
+#   - module: chemin d'import Python de la classe
+#     class: nom de la classe
+#     enabled: true/false (permet de désactiver sans supprimer)
+#     tier: "free" | "freemium" | "premium" (pour optimiser les coûts)
+# ============================================================
+
+# 🏢 UC_B2B_Enrichment — Génération de Leads Outbound
+uc_b2b_enrichment:
+  finders:
+    - module: toolbox.finders.hunter
+      class: HunterFinder
+      enabled: true
+      tier: freemium
+
+    - module: toolbox.finders.voila_norbert
+      class: VoilaNorbertFinder
+      enabled: true
+      tier: freemium
+
+    - module: toolbox.finders.tomba
+      class: TombaFinder
+      enabled: true
+      tier: freemium
+
+    - module: toolbox.finders.snov
+      class: SnovFinder
+      enabled: true
+      tier: freemium
+
+    - module: toolbox.finders.prospeo
+      class: ProspeoFinder
+      enabled: true
+      tier: freemium
+
+    - module: toolbox.finders.dropcontact
+      class: DropcontactFinder
+      enabled: true
+      tier: premium  # Plus cher, en fin de cascade
+
+    - module: toolbox.finders.theharvester
+      class: TheHarvesterFinder
+      enabled: true
+      tier: free  # Fallback OSINT open source
+
+  verifiers:
+    - module: toolbox.verifiers.zerobounce
+      class: ZeroBounceVerifier
+      enabled: true
+      tier: freemium
+
+    - module: toolbox.verifiers.abstract_api
+      class: AbstractApiVerifier
+      enabled: true
+      tier: freemium
+
+    - module: toolbox.verifiers.email_checker
+      class: EmailCheckerVerifier
+      enabled: true
+      tier: freemium
+
+# 🕵️ UC_B2C_Investigation — Deep OSINT & Profiling
+uc_b2c_investigation:
+  investigators:
+    - module: toolbox.investigators.epieos
+      class: EpieosInvestigator
+      enabled: true
+      tier: freemium
+
+    - module: toolbox.investigators.phonebook
+      class: PhonebookInvestigator
+      enabled: true
+      tier: freemium
+
+    - module: toolbox.investigators.h8mail
+      class: H8mailInvestigator
+      enabled: true
+      tier: free
+
+    - module: toolbox.investigators.emailrep
+      class: EmailRepInvestigator
+      enabled: true
+      tier: freemium
+
+# 🧹 UC_CRM_Hygiene — Data & Scoring Hors-Ligne
+# Ce pipeline n'utilise pas de cascade externe.
+# Il s'appuie uniquement sur toolbox/core/ (normalize, dns_check, scoring).
+uc_crm_hygiene:
+  # Pas de finders/verifiers/investigators
+  # Tout est dans toolbox.core (hors-ligne, aucune API facturée)
+  offline_only: true

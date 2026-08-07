@@ -54,9 +54,10 @@ Tu as l'INTERDICTION d'installer des paquets globaux (NPM, Pip) ou d'exécuter d
 ## 🎯 RÈGLES SPÉCIFIQUES PAR PILIER
 
 ### 1. GTM & Growth
-- **Méthode Waterfall :** Les APIs d'enrichissement s'exécutent en cascade pour optimiser les quotas (Finder 1 -> Finder 2 -> Verifier).
+- **Architecture Toolbox + Pipelines :** Les outils (Finders, Verifiers, Investigators) sont des briques unitaires dans `toolbox/`. Les cas d'usage (B2B, B2C, Hygiene) les assemblent via `pipelines/`. L'ordre de la cascade est défini dans `pipelines/cascade_config.yaml` (registre dynamique).
+- **Méthode Waterfall :** Les APIs d'enrichissement s'exécutent en cascade pour optimiser les quotas. L'ordre et l'activation de chaque outil se configurent dans le YAML sans toucher au code.
 - **Framework Attio :** Traçabilité absolue de la donnée. Génération obligatoire des colonnes `Clean_FirstName`, `Email_Source` et `Confidence_Score`.
-- **Workflow GTM Standard :** **`Data_and_Scoring (Nettoyage PRE-OSINT)`** ➔ **`OSINT_et_Outils (Enrichissement brut - Dumb Pipe)`** ➔ **`Data_and_Scoring (Scoring POST-OSINT)`**.
+- **Workflow GTM Standard :** **`UC_CRM_Hygiene (mode pre)`** ➔ **`UC_B2B_Enrichment ou UC_B2C_Investigation (Dumb Pipe)`** ➔ **`UC_CRM_Hygiene (mode post)`**.
 
 ### 2. App Development
 - **Code Clean & Typé :** Utilisation stricte du typage (TypeScript, Python Type Hints). 

@@ -1,0 +1,13 @@
+# Toolbox — Dépendances Python
+# Utilisé par le Dockerfile global et les environnements de dev locaux.
+
+# Core
+pandas>=2.0
+requests>=2.31
+python-dotenv>=1.0
+
+# DNS (pour UC_CRM_Hygiene hors-ligne)
+dnspython>=2.4
+
+# YAML config (pour le registre dynamique de cascade)
+pyyaml>=6.0
