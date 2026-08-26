@@ -46,13 +46,11 @@ Transformez chaque minute d'écran en gain de vitalité. Relevez un micro-défi 
 ## 📝 4. Description Complète de l'App (App Description)
 
 ```text
-Et si votre temps d'écran devenait votre plus grand allié de longévité ?
+Il y a 100 ans, l'alcool et le tabac étaient consommés sans connaître leurs ravages. Aujourd'hui, l'hypnose des écrans et la sédentarité créent les poisons invisibles du XXIe siècle : apnée respiratoire et affaissement cervical.
 
-Aevum réinvente la gestion du temps d'écran grâce au concept révolutionnaire de la Friction Positive. Contrairement aux bloqueurs punitifs traditionnels, Aevum ne vous interdit pas l'accès à vos applications : il conditionne chaque pause à la réalisation d'un micro-défi physiologique scientifiquement validé (20 à 60 secondes).
+Aevum réinvente votre relation aux écrans grâce à la Friction Positive : un filtre de longévité qui transforme chaque impulsion numérique en 30 secondes de régénération corporelle.
 
-Respiration vagale, décompression vertébrale, soulagement optique ou hydratation cellulaire : prenez soin de votre santé avant de plonger dans vos flux numériques.
-
-POURQUOI AEVUM EST DIFFÉRENT :
+POURQUOI AEVUM EST RÉVOLUTIONNAIRE :
 • La Friction Positive : Pas de frustration, mais une récompense neurophysiologique immédiate.
 • 12 Micro-Défis Scientifiques : Conçus à partir des protocoles de Stanford Medicine, du Dr. Andrew Huberman et de la biomécanique du rachis.
 • Moteur Circadien Intelligent : Des recommandations adaptées en temps réel à votre biologie (Matin = Ancrage & Énergie ; Après-midi = Posture & Vision ; Soir = Parasympathique & Sommeil).
