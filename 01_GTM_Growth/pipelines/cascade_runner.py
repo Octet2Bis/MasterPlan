@@ -2,15 +2,14 @@
 cascade_runner.py — Moteur générique qui lit le cascade_config.yaml
 et instancie dynamiquement les outils dans l'ordre défini.
 
-Ce module est le cœur de l'orchestration. Il ne contient AUCUNE logique
-métier spécifique à un outil — il se contente de :
-1. Lire le YAML
-2. Instancier les classes dynamiquement
-3. Les exécuter dans l'ordre défini
-4. Gérer les fallbacks (QuotaExceededError → outil suivant)
+Architecture 100% Gratuite / Freemium :
+- Priorisation des tiers gratuits (Local, OSINT, Freemium).
+- Bascule automatique dès qu'un quota mensuel gratuit est atteint (HTTP 402/403/429).
+- Support du streaming et reprise sur incident (--resume) pour éviter de ré-exécuter
+  des requêtes API gratuites déjà consommées.
 
 Usage CLI :
-  python -m pipelines.cascade_runner --pipeline b2b --input data.csv --output out.csv
+  python -m pipelines.cascade_runner --pipeline b2b --input data.csv --output out.csv [--resume]
   python -m pipelines.cascade_runner --pipeline b2c --input emails.csv --output report.csv
 """
 
@@ -48,6 +47,7 @@ def instantiate_tools(tool_entries: list) -> list:
       - module: chemin d'import Python
       - class: nom de la classe
       - enabled: bool
+      - tier: free | freemium | premium
     """
     tools = []
     for entry in tool_entries:
@@ -56,17 +56,22 @@ def instantiate_tools(tool_entries: list) -> list:
         
         module_path = entry["module"]
         class_name = entry["class"]
+        tier = entry.get("tier", "freemium")
+        quota_info = entry.get("free_quota", "")
         
         try:
             mod = importlib.import_module(module_path)
             cls = getattr(mod, class_name)
             instance = cls()
             
-            # Vérifier que l'outil est disponible (clé API configurée, binaire présent)
+            # Vérifier que l'outil est disponible (clé API configurée ou outil local sans clé)
             if instance.is_available():
                 tools.append(instance)
+                tier_badge = f"[{tier.upper()}]"
+                quota_str = f" ({quota_info})" if quota_info else ""
+                print(f"  [+] Outil activé : {class_name:22} {tier_badge:10} {quota_str}")
             else:
-                print(f"  [~] {class_name}: Non configuré (clé API manquante). Ignoré.")
+                print(f"  [~] {class_name:22} : Clé API manquante dans .env (Ignoré)")
         except (ImportError, AttributeError) as e:
             print(f"  [!] Impossible de charger {module_path}.{class_name}: {e}")
     
@@ -78,20 +83,23 @@ def run_finder_cascade(
     verifiers: list[BaseVerifier],
     first_name: str,
     last_name: str,
-    domain: str
+    domain: str,
+    linkedin_url: Optional[str] = None
 ) -> tuple[str, str, str, int]:
     """
     Exécute la cascade Finder → Verifier pour un prospect.
     
     Logique :
-    1. Teste chaque Finder dans l'ordre du YAML.
-    2. En cas de QuotaExceeded ou Timeout, bascule vers le suivant.
+    1. Teste chaque Finder dans l'ordre du YAML (Free -> Freemium).
+    2. En cas de QuotaExceeded (402, 403, 429), bascule immédiatement vers le suivant.
     3. Si un email est trouvé, le passe aux Verifiers.
-    4. Dès qu'un email 'Valid' est confirmé, arrête la cascade.
-    5. Si aucun 'Valid', retourne le meilleur candidat (Catch-All > Risky).
+    4. Dès qu'un email 'Valid*' est confirmé, arrête la cascade pour économiser les quotas.
+    5. Si aucun 'Valid*', retourne le meilleur candidat (Catch-All > Risky).
     
     Retourne : (email, source, status, score)
     """
+    import inspect
+
     candidate_email = ""
     candidate_source = "None"
     candidate_status = "Not Found"
@@ -99,17 +107,22 @@ def run_finder_cascade(
 
     for finder in finders:
         try:
-            result: FinderResult = finder.find(first_name, last_name, domain)
+            sig = inspect.signature(finder.find)
+            if "linkedin_url" in sig.parameters:
+                result: FinderResult = finder.find(first_name, last_name, domain, linkedin_url=linkedin_url)
+            else:
+                result: FinderResult = finder.find(first_name, last_name, domain)
             
             if result.email:
                 # Email trouvé → le passer aux Verifiers
                 ver_status, ver_score = _verify_with_cascade(verifiers, result.email)
                 
-                if ver_status == "Valid":
-                    # Email Valid certifié → On arrête la cascade
+                if ver_status.startswith("Valid"):
+                    # Email Valid certifié → On arrête immédiatement la cascade (0 requête supplémentaire)
                     return result.email, result.source, ver_status, ver_score
-                elif ver_status in ("Catch-All", "Risky"):
-                    # Garder en candidat, continuer la cascade
+
+                elif ver_status in ("Catch-All", "Risky", "Not Verified"):
+                    # Garder en candidat, continuer la cascade pour chercher un Valid
                     if not candidate_email:
                         candidate_email = result.email
                         candidate_source = result.source
@@ -117,11 +130,12 @@ def run_finder_cascade(
                         candidate_score = ver_score
 
         except QuotaExceededError as qe:
-            print(f"  [-] {finder.name}: Quota/Rate Limit ({qe}). Bascule...")
+            print(f"  [~] {finder.name}: Quota gratuit mensuel atteint ou limitation ({qe}). Bascule...")
             continue
         except Exception as e:
             print(f"  [-] {finder.name}: Erreur ({e}). Bascule...")
             continue
+
 
     if candidate_email:
         return candidate_email, candidate_source, candidate_status, candidate_score
@@ -133,7 +147,7 @@ def _verify_with_cascade(
     email: str
 ) -> tuple[str, int]:
     """
-    Passe un email à la cascade de Verifiers.
+    Passe un email à la cascade de Verifiers freemium.
     Retourne (status, score) du premier Verifier qui donne un résultat concluant.
     """
     for verifier in verifiers:
@@ -142,7 +156,7 @@ def _verify_with_cascade(
             if result.status != "Not Verified":
                 return result.status, result.score
         except QuotaExceededError:
-            print(f"  [~] {verifier.name}: Quota dépassé. Verifier suivant...")
+            print(f"  [~] {verifier.name}: Quota gratuit atteint. Verifier suivant...")
             continue
         except Exception as e:
             print(f"  [~] {verifier.name}: Erreur ({e}). Verifier suivant...")
@@ -157,9 +171,7 @@ def run_investigator_cascade(
     email: str
 ) -> list[InvestigatorResult]:
     """
-    Exécute TOUS les Investigators sur un email (pas d'arrêt anticipé,
-    car chaque source apporte des données complémentaires).
-    
+    Exécute les Investigators gratuits sur un email.
     Retourne la liste des résultats de chaque Investigator.
     """
     results = []
@@ -172,7 +184,7 @@ def run_investigator_cascade(
             else:
                 print(f"  [~] {investigator.name}: Aucun résultat.")
         except QuotaExceededError as qe:
-            print(f"  [-] {investigator.name}: Quota ({qe}). Investigator suivant...")
+            print(f"  [~] {investigator.name}: Quota gratuit atteint ({qe}). Investigator suivant...")
         except Exception as e:
             print(f"  [-] {investigator.name}: Erreur ({e}). Investigator suivant...")
     
@@ -187,24 +199,26 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(
-        description="Moteur de cascade Antigravity — exécute un pipeline depuis le registre YAML."
+        description="Moteur de cascade Antigravity — Architecture 100% Gratuite / Freemium."
     )
     parser.add_argument("--pipeline", required=True, choices=["b2b", "b2c", "hygiene"],
                         help="Pipeline à exécuter")
     parser.add_argument("--input", required=True, help="Chemin du fichier CSV d'entrée")
     parser.add_argument("--output", required=True, help="Chemin du fichier CSV de sortie")
     parser.add_argument("--config", default=None, help="Chemin custom du cascade_config.yaml")
+    parser.add_argument("--resume", action="store_true", help="Reprend un fichier partiellement enrichi")
     args = parser.parse_args()
 
     # Router vers le bon pipeline
     if args.pipeline == "b2b":
         from pipelines.uc_b2b_enrichment.pipeline import run as run_pipeline
+        run_pipeline(args.input, args.output, config_path=args.config, resume=args.resume)
     elif args.pipeline == "b2c":
         from pipelines.uc_b2c_investigation.pipeline import run as run_pipeline
+        run_pipeline(args.input, args.output, config_path=args.config)
     elif args.pipeline == "hygiene":
         from pipelines.uc_crm_hygiene.pipeline import run as run_pipeline
-    
-    run_pipeline(args.input, args.output, config_path=args.config)
+        run_pipeline(args.input, args.output, config_path=args.config)
 
 
 if __name__ == "__main__":

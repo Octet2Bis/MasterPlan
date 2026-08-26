@@ -1,3 +1,9 @@
+# Antigravity Architecture (Layer 3 - Workspaces & Secrets)
+**/Workspace/*
+!**/Workspace/.gitkeep
+**/.secrets/*
+!**/.secrets/.gitkeep
+
 # Secrets & Env files
 .env
 .env.*
@@ -18,7 +24,18 @@ venv/
 env/
 .env/
 
-# IDEs
+# Node / JS
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+build/
+.next/
+.turbo/
+
+# IDEs & System
 .vscode/
 .idea/
 *.suo
@@ -26,7 +43,5 @@ env/
 *.njsproj
 *.sln
 *.sw?
-
-# OS files
 .DS_Store
 Thumbs.db

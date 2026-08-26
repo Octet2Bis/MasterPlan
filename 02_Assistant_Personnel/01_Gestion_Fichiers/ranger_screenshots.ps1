@@ -1,25 +1,28 @@
-$screenshots = "C:\Users\HP\Pictures\Screenshots"
+param(
+    [string]$TargetDir = "$env:USERPROFILE\Pictures\Screenshots",
+    [switch]$DryRun
+)
 
-if (!(Test-Path $screenshots)) {
-    Write-Host "Le dossier $screenshots n'existe pas." -ForegroundColor Red
+if (!(Test-Path $TargetDir)) {
+    Write-Host "[!] Le dossier $TargetDir n'existe pas." -ForegroundColor Red
     exit
 }
 
-$files = Get-ChildItem -Path $screenshots -File
+if ($DryRun) {
+    Write-Host "=== MODE SIMULATION (Safe Mode : aucune capture ne sera déplacée) ===" -ForegroundColor Yellow
+}
+
+$files = Get-ChildItem -Path $TargetDir -File
 $count = 0
 $stats = @{}
 
 foreach ($file in $files) {
-    if ($file.Name -eq "desktop.ini") { continue }
+    if ($file.Name -eq "desktop.ini" -or $file.Name.StartsWith(".")) { continue }
     
     $monthFolder = $file.LastWriteTime.ToString("yyyy-MM")
-    $destFolder = Join-Path $screenshots $monthFolder
-    
-    if (!(Test-Path $destFolder)) {
-        New-Item -ItemType Directory -Path $destFolder | Out-Null
-    }
-    
+    $destFolder = Join-Path $TargetDir $monthFolder
     $destPath = Join-Path $destFolder $file.Name
+    
     if (Test-Path $destPath) {
         $baseName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
         $ext = $file.Extension
@@ -30,13 +33,21 @@ foreach ($file in $files) {
         } while (Test-Path $destPath)
     }
     
-    Move-Item -Path $file.FullName -Destination $destPath -Force
+    if ($DryRun) {
+        Write-Host "  [DRY-RUN] $($file.Name) -> $monthFolder/$([System.IO.Path]::GetFileName($destPath))" -ForegroundColor Cyan
+    } else {
+        if (!(Test-Path $destFolder)) {
+            New-Item -ItemType Directory -Path $destFolder | Out-Null
+        }
+        Move-Item -Path $file.FullName -Destination $destPath -Force
+    }
+    
     $count++
     if (-not $stats.ContainsKey($monthFolder)) { $stats[$monthFolder] = 0 }
     $stats[$monthFolder]++
 }
 
-Write-Host "Rangement terminé : $count captures d'écran organisées par date."
+Write-Host "`n[+] Rangement terminé : $count capture(s) d'écran traitée(s)." -ForegroundColor Green
 $stats.GetEnumerator() | Sort-Object Name | ForEach-Object {
     Write-Host "  - $($_.Name) : $($_.Value) fichier(s)"
 }

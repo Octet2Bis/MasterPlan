@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Aevum Bento Design System",
+  "version": "1.0.0",
+  "theme": "Dark Luxury Longevity",
+  "colors": {
+    "background": {
+      "primary": "#070A11",
+      "secondary": "#0E1422",
+      "card": "#141C2E",
+      "cardBorder": "#1E2B45",
+      "overlay": "rgba(7, 10, 17, 0.85)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#94A3B8",
+      "muted": "#64748B",
+      "highlight": "#38BDF8"
+    },
+    "accents": {
+      "cyan": "#38BDF8",
+      "emerald": "#34D399",
+      "violet": "#A78BFA",
+      "amber": "#F59E0B",
+      "rose": "#F43F5E"
+    },
+    "gradients": {
+      "vitalityOrb": ["#38BDF8", "#34D399"],
+      "shieldGlow": ["rgba(56, 189, 248, 0.15)", "rgba(52, 211, 153, 0.05)"],
+      "cardHighlight": ["rgba(255, 255, 255, 0.08)", "rgba(255, 255, 255, 0.01)"]
+    }
+  },
+  "typography": {
+    "fontFamily": "SF Pro Rounded, system-ui, -apple-system",
+    "sizes": {
+      "heroTimer": 64,
+      "title1": 28,
+      "title2": 22,
+      "title3": 18,
+      "body": 15,
+      "caption": 12
+    },
+    "weights": {
+      "regular": "400",
+      "medium": "500",
+      "semibold": "600",
+      "bold": "700"
+    }
+  },
+  "radii": {
+    "bentoCard": 24,
+    "pill": 999,
+    "button": 16,
+    "widget": 28
+  },
+  "shadows": {
+    "card": "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
+    "neonGlowCyan": "0 0 24px 0 rgba(56, 189, 248, 0.45)",
+    "neonGlowEmerald": "0 0 24px 0 rgba(52, 211, 153, 0.45)"
+  },
+  "animations": {
+    "breathingScaleMin": 0.85,
+    "breathingScaleMax": 1.25,
+    "hapticPulseDurationMs": 150,
+    "transitionSpring": {
+      "response": 0.45,
+      "dampingFraction": 0.75
+    }
+  }
+}

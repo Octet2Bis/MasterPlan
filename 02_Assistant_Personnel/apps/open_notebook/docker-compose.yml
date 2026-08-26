@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  open-notebook:
+    image: ghcr.io/lfnovo/open-notebook:latest
+    container_name: open_notebook_app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DATA_DIR=/app/data
+    volumes:
+      - ./data:/app/data
+      - ../../Workspace/podcasts:/app/output_podcasts

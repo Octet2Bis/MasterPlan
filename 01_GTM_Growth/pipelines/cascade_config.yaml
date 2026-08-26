@@ -1,101 +1,196 @@
 # ============================================================
-# cascade_config.yaml — Registre dynamique des cascades
+# cascade_config.yaml — Registre dynamique des cascades (100% Free / Freemium)
 # ============================================================
 #
 # Ce fichier est la SEULE source de vérité pour définir l'ordre
-# des outils dans chaque pipeline. Pour ajouter un nouvel outil :
-#   1. Créer sa brique dans toolbox/finders/ (ou verifiers/, investigators/)
-#   2. Ajouter une entrée ici sous le pipeline concerné
-#   3. C'est tout. Pas besoin de toucher au code Python.
+# des outils dans chaque pipeline.
+#
+# STRATÉGIE 100% GRATUITE & FREEMIUM :
+#   - Outils locaux (Permutator) et Open Source (theHarvester) sans limite de quota.
+#   - Cascade d'APIs gratuites avec rotation automatique dès épuisement du quota.
+#   - Outils payants sans quota gratuit pérenne désactivés (enabled: false).
 #
 # Format de chaque entrée :
 #   - module: chemin d'import Python de la classe
 #     class: nom de la classe
-#     enabled: true/false (permet de désactiver sans supprimer)
-#     tier: "free" | "freemium" | "premium" (pour optimiser les coûts)
+#     enabled: true/false
+#     tier: "free" (local/open-source) | "freemium" (quota mensuel offert) | "premium"
+#     free_quota: indication du quota gratuit par mois
 # ============================================================
 
 # 🏢 UC_B2B_Enrichment — Génération de Leads Outbound
 uc_b2b_enrichment:
   finders:
+    # 1. Résolveur d'identité enrichie via profil LinkedIn (100% gratuit, 0 API)
+    - module: toolbox.finders.linkedin_resolver
+      class: LinkedinResolver
+      enabled: true
+      tier: free
+      free_quota: "Illimité (local)"
+
+    # 2. Génération locale de motifs standard (100% gratuit, 0 API)
+    - module: toolbox.finders.permutator
+      class: PermutatorFinder
+      enabled: true
+      tier: free
+      free_quota: "Illimité (local)"
+
+    # 3. Moissonnage OSINT Open Source (100% gratuit)
+    - module: toolbox.finders.theharvester
+      class: TheHarvesterFinder
+      enabled: true
+      tier: free
+      free_quota: "Illimité (OSINT)"
+
+    # 4. Standard détection de pattern (Freemium)
     - module: toolbox.finders.hunter
       class: HunterFinder
       enabled: true
       tier: freemium
+      free_quota: "25 recherches/mois"
 
-    - module: toolbox.finders.voila_norbert
-      class: VoilaNorbertFinder
-      enabled: true
-      tier: freemium
-
+    # 5. Rotation freemium
     - module: toolbox.finders.tomba
       class: TombaFinder
       enabled: true
       tier: freemium
+      free_quota: "50 recherches/mois"
 
+    # 6. Moteur de recherche d'emails précis
+    - module: toolbox.finders.voila_norbert
+      class: VoilaNorbertFinder
+      enabled: true
+      tier: freemium
+      free_quota: "50 leads offerts"
+
+    # 7. Rotation freemium
     - module: toolbox.finders.snov
       class: SnovFinder
       enabled: true
       tier: freemium
+      free_quota: "50 crédits/mois"
 
+    # 8. Rotation freemium
     - module: toolbox.finders.prospeo
       class: ProspeoFinder
       enabled: true
       tier: freemium
+      free_quota: "75 crédits/mois"
 
+    # 9. Outil payant — DÉSACTIVÉ (conforme règle 0€ API payante)
     - module: toolbox.finders.dropcontact
       class: DropcontactFinder
-      enabled: true
-      tier: premium  # Plus cher, en fin de cascade
-
-    - module: toolbox.finders.theharvester
-      class: TheHarvesterFinder
-      enabled: true
-      tier: free  # Fallback OSINT open source
+      enabled: false
+      tier: premium
+      free_quota: "0 (Désactivé)"
 
   verifiers:
+    # 1. Validation de citations documentaires publiques (100% gratuit, 0 API)
+    - module: toolbox.verifiers.web_dork_verifier
+      class: WebDorkVerifier
+      enabled: true
+      tier: free
+      free_quota: "Illimité (OSINT Web)"
+
+    # 2. Validation d'empreinte d'identité sociale (100% gratuit, 0 API)
+    - module: toolbox.verifiers.social_verifier
+      class: SocialVerifier
+      enabled: true
+      tier: free
+      free_quota: "Illimité (OSINT public)"
+
+    # 3. Validation de Tenant Cloud & Portails SSO d'entreprise (100% gratuit, 0 API)
+    - module: toolbox.verifiers.sso_realm_verifier
+      class: SsoRealmVerifier
+      enabled: true
+      tier: free
+      free_quota: "Illimité (SSO/OIDC discovery)"
+
+    # 4. Audit des Certificats TLS & CT Logs (100% gratuit, 0 API)
+    - module: toolbox.verifiers.ct_logs_verifier
+      class: CtLogsVerifier
+      enabled: true
+      tier: free
+      free_quota: "Illimité (crt.sh public)"
+
+    # 5. Validation SMTP directe avec sonde Catch-All (100% gratuit, 0 API)
+    - module: toolbox.verifiers.smtp_verifier
+      class: SmtpVerifier
+      enabled: true
+      tier: free
+      free_quota: "Illimité (local)"
+
+    # 6. Audit de conformité SPF/DMARC et filtrage Role-Based (100% gratuit, 0 API)
+    - module: toolbox.verifiers.dns_hygiene_verifier
+      class: DnsHygieneVerifier
+      enabled: true
+      tier: free
+      free_quota: "Illimité (local DNS)"
+
+    # 7. Validation et clustering de passerelle MX d'entreprise avec latence (100% gratuit, 0 API)
+    - module: toolbox.verifiers.mx_cluster_verifier
+      class: MxClusterVerifier
+      enabled: true
+      tier: free
+      free_quota: "Illimité (local MX)"
+
+    # 8. Validation technique locale DNS/MX (100% gratuit, 0 API)
+    - module: toolbox.verifiers.local_verifier
+      class: LocalVerifier
+      enabled: true
+      tier: free
+      free_quota: "Illimité (local)"
+
+    # 9. Validation technique avec tiers gratuits API
     - module: toolbox.verifiers.zerobounce
       class: ZeroBounceVerifier
       enabled: true
       tier: freemium
+      free_quota: "100 vérifications/mois"
 
     - module: toolbox.verifiers.abstract_api
       class: AbstractApiVerifier
       enabled: true
       tier: freemium
+      free_quota: "100 vérifications/mois"
 
     - module: toolbox.verifiers.email_checker
       class: EmailCheckerVerifier
       enabled: true
       tier: freemium
+      free_quota: "Vérifications gratuites"
+
+
+
 
 # 🕵️ UC_B2C_Investigation — Deep OSINT & Profiling
 uc_b2c_investigation:
   investigators:
-    - module: toolbox.investigators.epieos
-      class: EpieosInvestigator
+    - module: toolbox.investigators.emailrep
+      class: EmailRepInvestigator
       enabled: true
-      tier: freemium
-
-    - module: toolbox.investigators.phonebook
-      class: PhonebookInvestigator
-      enabled: true
-      tier: freemium
+      tier: free
+      free_quota: "API publique gratuite"
 
     - module: toolbox.investigators.h8mail
       class: H8mailInvestigator
       enabled: true
       tier: free
+      free_quota: "Illimité (Open Source)"
 
-    - module: toolbox.investigators.emailrep
-      class: EmailRepInvestigator
+    - module: toolbox.investigators.phonebook
+      class: PhonebookInvestigator
       enabled: true
       tier: freemium
+      free_quota: "Recherches publiques"
+
+    - module: toolbox.investigators.epieos
+      class: EpieosInvestigator
+      enabled: true
+      tier: freemium
+      free_quota: "Freemium public"
 
 # 🧹 UC_CRM_Hygiene — Data & Scoring Hors-Ligne
-# Ce pipeline n'utilise pas de cascade externe.
-# Il s'appuie uniquement sur toolbox/core/ (normalize, dns_check, scoring).
 uc_crm_hygiene:
-  # Pas de finders/verifiers/investigators
-  # Tout est dans toolbox.core (hors-ligne, aucune API facturée)
   offline_only: true
+  free_quota: "Illimité (100% local, aucune API)"

@@ -1,0 +1,679 @@
+[
+  {
+    "id": "RESP-01",
+    "title": "Le Soupir Physiologique",
+    "subtitle": "Baisse immédiate du rythme cardiaque & régulation vagale",
+    "category": "nervousSystem",
+    "categoryLabel": "🌬️ SYSTÈME NERVEUX",
+    "slot": [
+      "morning",
+      "afternoon",
+      "evening"
+    ],
+    "durationSeconds": 26,
+    "scientificSource": "Stanford Medicine / Dr. Huberman & Dr. Spiegel",
+    "clinicalCitation": "Cell Reports Medicine (2023) • Essai contrôlé randomisé sur la régulation autonome rapide",
+    "triggerBehavior": "Déverrouillage compulsif réflexe (< 5 min)",
+    "biologicalMechanism": "Apnée de l'écran & hyper-activation de l'amygdale",
+    "targetAnatomy": "Nerf Vague & Alvéoles pulmonaires",
+    "immediateBenefit": "Chute du rythme cardiaque et baisse du cortisol en 30s",
+    "xpReward": 15,
+    "steps": [
+      {
+        "phase": "Double Inspiration",
+        "duration": 3.5,
+        "text": "Inspirez à fond par le nez, puis reprenez une courte gorgée d'air."
+      },
+      {
+        "phase": "Longue Expiration",
+        "duration": 5,
+        "text": "Expirez lentement et complètement par la bouche."
+      },
+      {
+        "phase": "Double Inspiration",
+        "duration": 3.5,
+        "text": "Deuxième cycle : remplissez vos poumons à 100%."
+      },
+      {
+        "phase": "Longue Expiration",
+        "duration": 5,
+        "text": "Relâchez vos épaules et votre mâchoire."
+      },
+      {
+        "phase": "Double Inspiration",
+        "duration": 3.5,
+        "text": "Dernier cycle : oxygénation maximale."
+      },
+      {
+        "phase": "Longue Expiration",
+        "duration": 5.5,
+        "text": "Expirez tout l'air résiduel et appréciez le calme."
+      }
+    ]
+  },
+  {
+    "id": "RESP-02",
+    "title": "Expiration Prolongeante 1:2",
+    "subtitle": "Frein vagal & baisse de la pression artérielle",
+    "category": "nervousSystem",
+    "categoryLabel": "🌬️ SYSTÈME NERVEUX",
+    "slot": [
+      "afternoon",
+      "evening"
+    ],
+    "durationSeconds": 30,
+    "scientificSource": "Frontiers in Human Neuroscience (2018)",
+    "clinicalCitation": "Frontiers in Human Neuroscience • Vagal stimulation via prolonged exhalation ratio",
+    "triggerBehavior": "Tachycardie ou stress perçu après message d'urgence",
+    "biologicalMechanism": "Inhibition parasympathique et hausse abrupte de noradrénaline",
+    "targetAnatomy": "Barorécepteurs Aortiques & Nœud Sinusal",
+    "immediateBenefit": "Ralentissement mécanique de 8 à 12 bpm en 30 secondes",
+    "xpReward": 15,
+    "steps": [
+      {
+        "phase": "Inspiration Nasale",
+        "duration": 4,
+        "text": "Inspirez calmement par le nez en gonflant le ventre."
+      },
+      {
+        "phase": "Expiration Longue",
+        "duration": 8,
+        "text": "Expirez lentement lèvres pincées comme dans une paille."
+      },
+      {
+        "phase": "Inspiration Nasale",
+        "duration": 4,
+        "text": "Inspirez à nouveau sans forcer."
+      },
+      {
+        "phase": "Expiration Longue",
+        "duration": 8,
+        "text": "Laissez tout le poids du corps s'enfoncer dans le fauteuil."
+      },
+      {
+        "phase": "Pause Neutre",
+        "duration": 6,
+        "text": "Observez le ralentissement de votre pouls."
+      }
+    ]
+  },
+  {
+    "id": "RESP-03",
+    "title": "Box Breathing Focus (4-4-4-4)",
+    "subtitle": "Régulation du cortex préfrontal & clarté mentale",
+    "category": "nervousSystem",
+    "categoryLabel": "🌬️ SYSTÈME NERVEUX",
+    "slot": [
+      "morning",
+      "afternoon"
+    ],
+    "durationSeconds": 32,
+    "scientificSource": "Navy SEALs & Dr. Mark Divine",
+    "clinicalCitation": "Applied Psychophysiology & Biofeedback (2019) • Heart rate variability box breathing",
+    "triggerBehavior": "Confusion cognitive ou dispersion mentale multitâche",
+    "biologicalMechanism": "Sur-activation du réseau du mode par défaut (DMN)",
+    "targetAnatomy": "Cortex Préfrontal & Système Nerveux Autonome",
+    "immediateBenefit": "Restauration du focus exécutif et baisse de l'anxiété",
+    "xpReward": 20,
+    "steps": [
+      {
+        "phase": "Inspiration",
+        "duration": 4,
+        "text": "Inspirez lentement par le nez."
+      },
+      {
+        "phase": "Rétention Pleine",
+        "duration": 4,
+        "text": "Poumons pleins, bloquez sans tension."
+      },
+      {
+        "phase": "Expiration",
+        "duration": 4,
+        "text": "Expirez doucement par la bouche."
+      },
+      {
+        "phase": "Rétention Vide",
+        "duration": 4,
+        "text": "Poumons vides, restez calme."
+      },
+      {
+        "phase": "Inspiration",
+        "duration": 4,
+        "text": "Deuxième cycle : inspirez à fond."
+      },
+      {
+        "phase": "Rétention Pleine",
+        "duration": 4,
+        "text": "Maintenez la concentration."
+      },
+      {
+        "phase": "Expiration",
+        "duration": 4,
+        "text": "Expirez tout l'air résiduel."
+      },
+      {
+        "phase": "Rétention Vide",
+        "duration": 4,
+        "text": "Retrouvez une sérénité absolue."
+      }
+    ]
+  },
+  {
+    "id": "RESP-04",
+    "title": "Respiration Résonnante à 5.5s",
+    "subtitle": "Cohérence cardiaque maximale & synchronisation",
+    "category": "nervousSystem",
+    "categoryLabel": "🌬️ SYSTÈME NERVEUX",
+    "slot": [
+      "morning",
+      "afternoon"
+    ],
+    "durationSeconds": 45,
+    "scientificSource": "Int. Journal of Psychophysiology (2014)",
+    "clinicalCitation": "0.1 Hz breathing resonant frequency and autonomic balance",
+    "triggerBehavior": "Sensation de dispersion ou de précipitation",
+    "biologicalMechanism": "Arythmie respiratoire et perte de variabilité cardiaque",
+    "targetAnatomy": "Système Nerveux Sympathique & Parasympathique",
+    "immediateBenefit": "Pic de synchronisation cardio-respiratoire et calme stable",
+    "xpReward": 20,
+    "steps": [
+      {
+        "phase": "Inspiration 5.5s",
+        "duration": 5.5,
+        "text": "Inspirez avec une fluidité continue."
+      },
+      {
+        "phase": "Expiration 5.5s",
+        "duration": 5.5,
+        "text": "Expirez avec le même débit constant."
+      },
+      {
+        "phase": "Inspiration 5.5s",
+        "duration": 5.5,
+        "text": "Gonflez la cage thoracique sans à-coups."
+      },
+      {
+        "phase": "Expiration 5.5s",
+        "duration": 5.5,
+        "text": "Détendez le thorax et le visage."
+      },
+      {
+        "phase": "Inspiration 5.5s",
+        "duration": 5.5,
+        "text": "Cycle 3 : harmonie totale."
+      },
+      {
+        "phase": "Expiration 5.5s",
+        "duration": 5.5,
+        "text": "Relâchez toutes les tensions."
+      },
+      {
+        "phase": "Inspiration 5.5s",
+        "duration": 6,
+        "text": "Dernière vague d'inspiration."
+      },
+      {
+        "phase": "Expiration 5.5s",
+        "duration": 6,
+        "text": "Expirez et savourez la cohérence."
+      }
+    ]
+  },
+  {
+    "id": "RESP-05",
+    "title": "Décharge Dopaminergique",
+    "subtitle": "Restauration de la sensibilité dopaminergique",
+    "category": "nervousSystem",
+    "categoryLabel": "🌬️ SYSTÈME NERVEUX",
+    "slot": [
+      "afternoon",
+      "evening"
+    ],
+    "durationSeconds": 30,
+    "scientificSource": "Dr. Anna Lembke / Stanford Addiction Medicine",
+    "clinicalCitation": "Dopamine Nation (2021) • Restauration de l'homéostasie dopaminergique",
+    "triggerBehavior": "Zapping compulsif entre applications sociales",
+    "biologicalMechanism": "Saturation des récepteurs D2 et déficit de tolérance au calme",
+    "targetAnatomy": "Cortex Préfrontal Dorsolatéral & Circuit de la Récompense",
+    "immediateBenefit": "Restauration du contrôle inhibiteur et de la clarté exécutive",
+    "xpReward": 25,
+    "steps": [
+      {
+        "phase": "Silence & Fermeture",
+        "duration": 15,
+        "text": "Fermez les yeux, posez les mains à plat et observez vos impulsions sans réagir."
+      },
+      {
+        "phase": "Ancrage Neutre",
+        "duration": 15,
+        "text": "Laissez passer la sensation d'ennui : votre cerveau restaure sa sensibilité naturelle."
+      }
+    ]
+  },
+  {
+    "id": "MOB-01",
+    "title": "Décompression Cervicale Text-Neck",
+    "subtitle": "Annulation de 27 kg de pression sur les vertèbres C5-C7",
+    "category": "postureMobility",
+    "categoryLabel": "🧘 MOBILITÉ & RACHIS",
+    "slot": [
+      "morning",
+      "afternoon"
+    ],
+    "durationSeconds": 30,
+    "scientificSource": "Dr. Kenneth K. Hansraj, MD / Chief of Spine Surgery",
+    "clinicalCitation": "Surgical Technology International (2014) • Biomécanique de la colonne cervicale",
+    "triggerBehavior": "Posture smartphone tête fléchie à 45-60° (Text-Neck)",
+    "biologicalMechanism": "Écrasement discal C5-C7 et cisaillement des racines nerveuses",
+    "targetAnatomy": "Rachis Cervical & Trapèze Supérieur",
+    "immediateBenefit": "Décompression articulaire immédiate et ouverture posturale",
+    "xpReward": 15,
+    "steps": [
+      {
+        "phase": "Double Menton",
+        "duration": 15,
+        "text": "Rentrez doucement le menton vers l'arrière comme pour faire un double menton sans baisser la tête."
+      },
+      {
+        "phase": "Étirement Latéral",
+        "duration": 15,
+        "text": "Inclinez l'oreille droite vers l'épaule 7s, puis basculez doucement à gauche."
+      }
+    ]
+  },
+  {
+    "id": "MOB-02",
+    "title": "Décompression du Nerf Sciatique",
+    "subtitle": "Mobilisation neurale (Flossing) du nerf sciatique",
+    "category": "postureMobility",
+    "categoryLabel": "🧘 MOBILITÉ & RACHIS",
+    "slot": [
+      "afternoon"
+    ],
+    "durationSeconds": 30,
+    "scientificSource": "Journal of Orthopaedic & Sports Physical Therapy (2017)",
+    "clinicalCitation": "Neural mobilization and sciatic nerve gliding in sedentary workers",
+    "triggerBehavior": "Jambes croisées ou affaissement dans le siège > 45 min",
+    "biologicalMechanism": "Pincement du nerf sciatique sous le muscle piriforme hypertonique",
+    "targetAnatomy": "Nerf Sciatique & Muscle Piriforme",
+    "immediateBenefit": "Libération des compressions nerveuses et fin des engourdissements",
+    "xpReward": 20,
+    "steps": [
+      {
+        "phase": "Flexion Cheville D",
+        "duration": 15,
+        "text": "Jambe droite tendue assis, relevez la pointe de pied en levant le menton, puis inversez."
+      },
+      {
+        "phase": "Flexion Cheville G",
+        "duration": 15,
+        "text": "Même mouvement sur la jambe gauche pour faire glisser le nerf sciatique."
+      }
+    ]
+  },
+  {
+    "id": "MOB-03",
+    "title": "Sphinx Cervico-Thoracique",
+    "subtitle": "Inversion de la cyphose dorsale & ouverture",
+    "category": "postureMobility",
+    "categoryLabel": "🧘 MOBILITÉ & RACHIS",
+    "slot": [
+      "morning",
+      "afternoon"
+    ],
+    "durationSeconds": 25,
+    "scientificSource": "European Spine Journal (2018)",
+    "clinicalCitation": "Thoracic extension and vital lung capacity restoration in sitting postures",
+    "triggerBehavior": "Épaules enroulées vers l'avant et dos courbé sur clavier",
+    "biologicalMechanism": "Cyphose dorsale adaptative et fermeture de la cage thoracique",
+    "targetAnatomy": "Rachis Dorsal (T1-T12) & Petit Pectoral",
+    "immediateBenefit": "Gain instantané de 15% de capacité respiratoire et redressement",
+    "xpReward": 15,
+    "steps": [
+      {
+        "phase": "Ouverture Pectorale",
+        "duration": 12,
+        "text": "Mains derrière la nuque, ouvrez les coudes vers l'arrière et regardez vers le haut."
+      },
+      {
+        "phase": "Expansion Thoracique",
+        "duration": 13,
+        "text": "Prenez 2 grandes inspirations en maintenant l'extension dorsale."
+      }
+    ]
+  },
+  {
+    "id": "MOB-04",
+    "title": "Traction Mandibulaire (Anti-Bruxisme)",
+    "subtitle": "Détente de l'ATM & décharge du muscle masséter",
+    "category": "postureMobility",
+    "categoryLabel": "🧘 MOBILITÉ & RACHIS",
+    "slot": [
+      "morning",
+      "afternoon",
+      "evening"
+    ],
+    "durationSeconds": 20,
+    "scientificSource": "Journal of Oral Rehabilitation (2019)",
+    "clinicalCitation": "Screen stress and involuntary masseter clenching reduction",
+    "triggerBehavior": "Mâchoires serrées inconsciemment lors de la lecture d'emails",
+    "biologicalMechanism": "Hyper-contraction du muscle masséter liée au réflexe de combat",
+    "targetAnatomy": "Articulation Temporo-Mandibulaire (ATM) & Masséter",
+    "immediateBenefit": "Décharge de la pression crânienne et prévention des céphalées",
+    "xpReward": 10,
+    "steps": [
+      {
+        "phase": "Ouverture Bouche",
+        "duration": 10,
+        "text": "Laissez tomber la mâchoire inférieure, lèvres entrouvertes sans forcer."
+      },
+      {
+        "phase": "Massage Masséter",
+        "duration": 10,
+        "text": "Massez en petits cercles les tempes et les joues avec le bout des doigts."
+      }
+    ]
+  },
+  {
+    "id": "MOB-05",
+    "title": "Auto-Massage Sub-Occipital",
+    "subtitle": "Levée de la compression du nerf d'Arnold",
+    "category": "postureMobility",
+    "categoryLabel": "🧘 MOBILITÉ & RACHIS",
+    "slot": [
+      "afternoon",
+      "evening"
+    ],
+    "durationSeconds": 30,
+    "scientificSource": "Cephalalgia / Int. Headache Society (2019)",
+    "clinicalCitation": "Suboccipital trigger points and cervicogenic headache relief",
+    "triggerBehavior": "Douleur partant de la nuque irradiant vers le front",
+    "biologicalMechanism": "Compression du nerf d'Arnold par les muscles sous-occipitaux contractés",
+    "targetAnatomy": "Nerf d'Arnold (C2) & Muscles Sous-Occipitaux",
+    "immediateBenefit": "Levée immédiate de la névralgie et décompression de la base crânienne",
+    "xpReward": 20,
+    "steps": [
+      {
+        "phase": "Pression Pouces",
+        "duration": 15,
+        "text": "Placez vos pouces sous la base du crâne de chaque côté et pressez doucement."
+      },
+      {
+        "phase": "Micro-Flexions",
+        "duration": 15,
+        "text": "Faites de légers mouvements de tête 'oui-non' sous la pression des pouces."
+      }
+    ]
+  },
+  {
+    "id": "MOB-06",
+    "title": "Déverrouillage Myofascial Matinal",
+    "subtitle": "Réhydratation tissulaire après la stase nocturne",
+    "category": "postureMobility",
+    "categoryLabel": "🧘 MOBILITÉ & RACHIS",
+    "slot": [
+      "morning"
+    ],
+    "durationSeconds": 35,
+    "scientificSource": "Dr. Robert Schleip / Ulm University Fascia Project",
+    "clinicalCitation": "Journal of Bodywork & Movement Therapies (2012) • Dynamique des fascias",
+    "triggerBehavior": "Prise en main du smartphone au lit dès le réveil",
+    "biologicalMechanism": "Stase liquidienne nocturne et court-circuit du cortisol d'éveil",
+    "targetAnatomy": "Fascia Thoraco-Lombaire & Propriocepteurs",
+    "immediateBenefit": "Activation proprioceptive globale et réveil corporel dynamique",
+    "xpReward": 20,
+    "steps": [
+      {
+        "phase": "Grandissement Debout",
+        "duration": 15,
+        "text": "Debout, étirez les bras vers le haut et inclinez doucement à gauche puis à droite."
+      },
+      {
+        "phase": "Flexion Douce",
+        "duration": 20,
+        "text": "Fléchissez les genoux et laissez pendre le buste et la tête vers le sol en respirant."
+      }
+    ]
+  },
+  {
+    "id": "VIS-01",
+    "title": "Règle 20-20-20 & Regard Panoramique",
+    "subtitle": "Relâchement de l'accommodation oculaire & fatigue d'écran",
+    "category": "visionBrain",
+    "categoryLabel": "👁️ VISION & MENTAL",
+    "slot": [
+      "morning",
+      "afternoon"
+    ],
+    "durationSeconds": 20,
+    "scientificSource": "American Academy of Ophthalmology (AAO)",
+    "clinicalCitation": "Optometry & Vision Science (2018) • Prévention du Computer Vision Syndrome",
+    "triggerBehavior": "Scroll continu prolongé (> 45 min sans cligner)",
+    "biologicalMechanism": "Spasme d'accommodation du muscle ciliaire & tension occipitale",
+    "targetAnatomy": "Muscles Ciliaires Oculaires & Cortex Visuel",
+    "immediateBenefit": "Relaxation de l'accommodation oculaire et apaisement cérébral",
+    "xpReward": 10,
+    "steps": [
+      {
+        "phase": "Fixation Lointaine",
+        "duration": 20,
+        "text": "Fixez un point à plus de 6 mètres ou l'horizon par la fenêtre en ouvrant votre champ de vision périphérique."
+      }
+    ]
+  },
+  {
+    "id": "VIS-02",
+    "title": "Palming Nocturne Rétinien",
+    "subtitle": "Détente thermique & relance de la mélatonine",
+    "category": "visionBrain",
+    "categoryLabel": "👁️ VISION & MENTAL",
+    "slot": [
+      "evening"
+    ],
+    "durationSeconds": 35,
+    "scientificSource": "Dr. Steven Lockley / Harvard Medical School",
+    "clinicalCitation": "J. Clin. Endocrinol. Metab. (2003) • Désensibilisation mélanopsine",
+    "triggerBehavior": "Utilisation nocturne d'écran (> 22h30)",
+    "biologicalMechanism": "Suppression de la sécrétion de mélatonine par la lumière bleue",
+    "targetAnatomy": "Cellules Ganglionnaires Rétiniennes & Épiphyse",
+    "immediateBenefit": "Transition vers les ondes Alpha/Thêta et préparation au sommeil",
+    "xpReward": 20,
+    "steps": [
+      {
+        "phase": "Frottement des Paumes",
+        "duration": 10,
+        "text": "Frottez vigoureusement vos mains l'une contre l'autre pour créer une douce chaleur."
+      },
+      {
+        "phase": "Obscurité Totale",
+        "duration": 25,
+        "text": "Posez vos paumes en coupe sur vos yeux fermés sans appuyer, dans le noir complet."
+      }
+    ]
+  },
+  {
+    "id": "VIS-03",
+    "title": "Clignement Conscient Forcé",
+    "subtitle": "Réhydratation cornéenne par larmes lipidiques",
+    "category": "visionBrain",
+    "categoryLabel": "👁️ VISION & MENTAL",
+    "slot": [
+      "morning",
+      "afternoon"
+    ],
+    "durationSeconds": 20,
+    "scientificSource": "Investigative Ophthalmology & Visual Science (2018)",
+    "clinicalCitation": "Blink rate reduction during digital display use and dry eye prevention",
+    "triggerBehavior": "Yeux secs ou picotements après lecture prolongée",
+    "biologicalMechanism": "Chute de 66% du taux de clignement spontané face à un écran",
+    "targetAnatomy": "Glandes de Meibomius & Film Lacrymal",
+    "immediateBenefit": "Réhydratation immédiate de la cornée et netteté visuelle restaurée",
+    "xpReward": 10,
+    "steps": [
+      {
+        "phase": "Clignements Rapides",
+        "duration": 10,
+        "text": "Clignez des yeux fermement 10 fois de suite pour exprimer les lipides des paupières."
+      },
+      {
+        "phase": "Pause Yeux Clos",
+        "duration": 10,
+        "text": "Gardez les yeux fermés 10 secondes pour étaler le film lacrymal."
+      }
+    ]
+  },
+  {
+    "id": "VIS-04",
+    "title": "Poursuite Oculaire en Huit",
+    "subtitle": "Restauration de la motricité oculaire lisse",
+    "category": "visionBrain",
+    "categoryLabel": "👁️ VISION & MENTAL",
+    "slot": [
+      "morning",
+      "afternoon"
+    ],
+    "durationSeconds": 25,
+    "scientificSource": "British Journal of Ophthalmology (2019)",
+    "clinicalCitation": "Smooth pursuit vs saccadic fatigue in digital device interaction",
+    "triggerBehavior": "Micro-saccades frénétiques lors du balayage de flux sociaux",
+    "biologicalMechanism": "Fatigue des muscles droits et obliques oculaires par micro-saccades",
+    "targetAnatomy": "Muscles Oculomoteurs Extrinsèques",
+    "immediateBenefit": "Rétablissement de la coordination motrice visuelle et détente des tempes",
+    "xpReward": 15,
+    "steps": [
+      {
+        "phase": "Tracé Infini Droit",
+        "duration": 12,
+        "text": "Sans bouger la tête, suivez du regard un signe infini (∞) imaginaire devant vous."
+      },
+      {
+        "phase": "Tracé Infini Inverse",
+        "duration": 13,
+        "text": "Inversez le sens de rotation pour détendre les muscles obliques."
+      }
+    ]
+  },
+  {
+    "id": "HYD-01",
+    "title": "Pompes Soléaires Métaboliques",
+    "subtitle": "Captation du glucose sanguin sans insuline & boost d'énergie",
+    "category": "hydrationMetabolism",
+    "categoryLabel": "💧 MÉTABOLISME & ÉNERGIE",
+    "slot": [
+      "morning",
+      "afternoon"
+    ],
+    "durationSeconds": 30,
+    "scientificSource": "Dr. Marc Hamilton / University of Houston",
+    "clinicalCitation": "iScience (Cell Press, 2022) • Un métabolisme oxydatif puissant via le soléaire",
+    "triggerBehavior": "Position assise statique prolongée (> 60 min)",
+    "biologicalMechanism": "Effondrement de la clairance du glucose et de la LPL par immobilité",
+    "targetAnatomy": "Muscle Soléaire (Mollet profond)",
+    "immediateBenefit": "Augmentation de la dépense énergétique oxydative sans fatigue",
+    "xpReward": 15,
+    "steps": [
+      {
+        "phase": "Élévation des Talons",
+        "duration": 15,
+        "text": "Assis, pieds à plat, levez les talons au maximum en gardant l'avant du pied ancré."
+      },
+      {
+        "phase": "Descente Contrôlée",
+        "duration": 15,
+        "text": "Reposez les talons et répétez à un rythme régulier (1 montée par seconde)."
+      }
+    ]
+  },
+  {
+    "id": "HYD-02",
+    "title": "Torsion Gastrique Assise",
+    "subtitle": "Relance mécanique du péristaltisme digestif",
+    "category": "hydrationMetabolism",
+    "categoryLabel": "💧 MÉTABOLISME & ÉNERGIE",
+    "slot": [
+      "afternoon"
+    ],
+    "durationSeconds": 25,
+    "scientificSource": "World Journal of Gastroenterology (2019)",
+    "clinicalCitation": "Axial rotation and visceral motility in postprandial sedentary workers",
+    "triggerBehavior": "Somnolence post-déjeuner ou lourdeur abdominale",
+    "biologicalMechanism": "Ralentissement du péristaltisme induit par la compression viscérale",
+    "targetAnatomy": "Côlon & Nerf Vague Digestif",
+    "immediateBenefit": "Stimulation mécanique du transit et dissipation de la somnolence",
+    "xpReward": 15,
+    "steps": [
+      {
+        "phase": "Torsion Droite",
+        "duration": 12,
+        "text": "Assis droit, pivotez le buste vers la droite en posant la main gauche sur le genou opposé."
+      },
+      {
+        "phase": "Torsion Gauche",
+        "duration": 13,
+        "text": "Pivotez doucement vers la gauche en maintenant le dos droit."
+      }
+    ]
+  },
+  {
+    "id": "HYD-03",
+    "title": "Élévation Lymphatique des Membres",
+    "subtitle": "Relance du retour veineux & anti-stase",
+    "category": "hydrationMetabolism",
+    "categoryLabel": "💧 MÉTABOLISME & ÉNERGIE",
+    "slot": [
+      "afternoon",
+      "evening"
+    ],
+    "durationSeconds": 30,
+    "scientificSource": "The Lancet / Vascular Health (2017)",
+    "clinicalCitation": "Sedentary venous stasis mitigation via active ankle dorsiflexion",
+    "triggerBehavior": "Sensation de jambes lourdes après 3h de bureau",
+    "biologicalMechanism": "Stase veineuse et accumulation de liquide interstitiel par gravité",
+    "targetAnatomy": "Valvules Veineuses Fémorales & Ganglions Inguinaux",
+    "immediateBenefit": "Relance du retour lymphatique et décongestion vasculaire",
+    "xpReward": 15,
+    "steps": [
+      {
+        "phase": "Extensions Pointes",
+        "duration": 15,
+        "text": "Jambes allongées ou surélevées, pointez les pieds vers l'avant puis tirez vers vous."
+      },
+      {
+        "phase": "Rotations Chevilles",
+        "duration": 15,
+        "text": "Faites de grands cercles avec les deux chevilles simultanément."
+      }
+    ]
+  },
+  {
+    "id": "HYD-04",
+    "title": "Grand Bâillement Délibéré",
+    "subtitle": "Évacuation du CO2 résiduel & refroidissement cérébral",
+    "category": "hydrationMetabolism",
+    "categoryLabel": "💧 MÉTABOLISME & ÉNERGIE",
+    "slot": [
+      "morning",
+      "afternoon"
+    ],
+    "durationSeconds": 20,
+    "scientificSource": "Neuroscience & Biobehavioral Reviews (2014)",
+    "clinicalCitation": "Brain cooling hypothesis of yawning and respiratory resets",
+    "triggerBehavior": "Sensation d'oppression thoracique ou micro-apnées de travail",
+    "biologicalMechanism": "Accumulation de dioxyde de carbone dans les bases pulmonaires",
+    "targetAnatomy": "Trompes d'Eustache, Diaphragme & Tronc Cérébral",
+    "immediateBenefit": "Égalisation des pressions, oxygénation brutale et réveil cérébral",
+    "xpReward": 10,
+    "steps": [
+      {
+        "phase": "Bâillement Forcé",
+        "duration": 10,
+        "text": "Ouvrez grand la bouche, inspirez une énorme gorgée d'air en étirant les bras."
+      },
+      {
+        "phase": "Expir Sonore",
+        "duration": 10,
+        "text": "Laissez sortir l'air avec un grand soupir sonore libérateur."
+      }
+    ]
+  }
+]

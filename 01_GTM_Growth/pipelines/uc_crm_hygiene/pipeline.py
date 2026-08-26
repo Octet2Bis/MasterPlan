@@ -46,12 +46,16 @@ def run_pre_osint(df: pd.DataFrame) -> pd.DataFrame:
 
     if not fn_col or not ln_col or not dom_col:
         print("[!] Colonnes requises (prénom, nom, domaine) introuvables.")
-        sys.exit(1)
+    company_col = next((c for c in ["companyName", "company_name", "entreprise", "societe", "company"] if c in df.columns), None)
 
     print("[*] Phase PRE-OSINT : Normalisation des données...")
     df["Clean_FirstName"] = df[fn_col].apply(normalize_text)
     df["Clean_LastName"] = df[ln_col].apply(normalize_text)
-    df["Clean_Domain"] = df[dom_col].apply(normalize_domain)
+    if company_col:
+        df["Clean_Domain"] = df.apply(lambda r: normalize_domain(r[dom_col], r.get(company_col)), axis=1)
+    else:
+        df["Clean_Domain"] = df[dom_col].apply(normalize_domain)
+
 
     # Vérification MX (hors-ligne, pas de coût API)
     print("[*] Vérification des enregistrements MX des domaines...")
