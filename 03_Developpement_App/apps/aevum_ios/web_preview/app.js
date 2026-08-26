@@ -46,6 +46,9 @@ async function loadDatasets() {
     window.LONGEVITY_CATALOG = await pRes.json();
     window.HAPPENINGS_CATALOG = await hRes.json();
     window.DAILY_SHOTS = await dRes.json();
+    if (window.graphEngine && typeof window.graphEngine.init === 'function') {
+      await window.graphEngine.init('./data/protocol_graph.json');
+    }
   } catch (e) {
     console.error('Erreur chargement datasets JSON:', e);
   }

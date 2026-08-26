@@ -1,0 +1,46 @@
+{
+  "known_entities": [
+    {
+      "id": "ent_aevum",
+      "label": "Aevum (Positive Friction & Longevity App)",
+      "type": "PROJECT",
+      "pillar": "03_Developpement_App",
+      "keywords": ["aevum", "screen time", "familycontrols", "shield", "bouclier", "soupir", "crevette"]
+    },
+    {
+      "id": "ent_transit_da",
+      "label": "Design Transit Signalétique / Swiss Craft",
+      "type": "DESIGN_SYSTEM",
+      "pillar": "03_Developpement_App",
+      "keywords": ["signalétique", "métro", "train", "transit", "station", "flipper", "pinball", "swiss craft"]
+    },
+    {
+      "id": "ent_jarvis_assistant",
+      "label": "Assistant IA Multicanal & Second Cerveau",
+      "type": "AI_SYSTEM",
+      "pillar": "02_Assistant_Personnel",
+      "keywords": ["jarvis", "hermes", "second cerveau", "telegram", "bot", "audio"]
+    },
+    {
+      "id": "ent_antoine",
+      "label": "Antoine (Lead Architect & Fondateur)",
+      "type": "PERSON",
+      "pillar": "00_Orchestration",
+      "keywords": ["antoine", "créateur", "fondateur"]
+    },
+    {
+      "id": "ent_longevity_protocols",
+      "label": "Protocoles Physiologiques de Longévité",
+      "type": "RESEARCH_DOMAIN",
+      "pillar": "03_Developpement_App",
+      "keywords": ["santé", "sommeil", "posture", "respiration", "vagal", "cervicales", "mélatonine", "huberman"]
+    },
+    {
+      "id": "ent_gtm_growth",
+      "label": "Growth & Acquisition B2B/B2C",
+      "type": "MARKETING_SYSTEM",
+      "pillar": "01_GTM_Growth",
+      "keywords": ["gtm", "lead", "client", "vente", "ads", "outbound", "crm", "campagne"]
+    }
+  ]
+}

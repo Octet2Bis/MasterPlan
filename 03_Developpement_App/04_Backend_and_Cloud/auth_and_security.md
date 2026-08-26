@@ -54,7 +54,7 @@ Ce document définit les règles de sécurité incompressibles pour la conceptio
 
 1. **CORS Restreint :**
    * Bannir formellement `Access-Control-Allow-Origin: *` sur les endpoints acceptant des credentials.
-   * Définir une liste blanche stricte des domaines autorisés (`https://app.aevum.com`, `https://1001gouts.fr`).
+   * Définir une liste blanche stricte des domaines autorisés (`https://app.aevum.com`, `https://api.aevum.com`).
 
 2. **En-têtes de Sécurité Obligatoires (Helmet / Middleware) :**
    ```http

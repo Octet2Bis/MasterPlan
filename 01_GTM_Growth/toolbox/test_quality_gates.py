@@ -4,9 +4,16 @@ test_quality_gates.py — Test unitaire des Linters et Validateurs.
 
 import sys
 import io
+from pathlib import Path
+
+# Garantir que 01_GTM_Growth est dans sys.path pour les imports de toolbox
+TOOLBOX_PARENT = Path(__file__).resolve().parent.parent
+if str(TOOLBOX_PARENT) not in sys.path:
+    sys.path.insert(0, str(TOOLBOX_PARENT))
 
 # Forcer l'encodage UTF-8 pour la console Windows
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+if hasattr(sys.stdout, 'buffer'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 from toolbox.core.email_linter import EmailLinter
 from toolbox.core.schema_validator import SchemaValidator

@@ -1,0 +1,126 @@
+{
+  "version": "1.0.0",
+  "name": "Master Plan Central DAG",
+  "description": "Graphe Orienté Acyclique des dépendances des livrables et conditions de blocage du Master Plan",
+  "nodes": [
+    {
+      "id": "aevum_specs",
+      "label": "Aevum Architecture & Screen Time API Specs",
+      "pillar": "03_Developpement_App",
+      "type": "spec",
+      "file": "03_Developpement_App/Ressources/Knowledge/apple_screentime_api_spec.md",
+      "status": "DONE",
+      "quality_gate": "node 03_Developpement_App/toolbox/test_code_integrity.js"
+    },
+    {
+      "id": "aevum_simulator",
+      "label": "Aevum Web Simulator (Dual Theme & Protocols)",
+      "pillar": "03_Developpement_App",
+      "type": "simulator",
+      "file": "03_Developpement_App/apps/aevum_ios/web_preview/index.html",
+      "status": "ACTIVE",
+      "quality_gate": "node 03_Developpement_App/toolbox/test_code_integrity.js"
+    },
+    {
+      "id": "aevum_ios_native",
+      "label": "Aevum iOS Native Swift v2.0",
+      "pillar": "03_Developpement_App",
+      "type": "app",
+      "file": "03_Developpement_App/apps/aevum_ios/AevumApp/App/AevumApp.swift",
+      "status": "DONE",
+      "quality_gate": "node 03_Developpement_App/toolbox/test_code_integrity.js"
+    },
+    {
+      "id": "aevum_aso",
+      "label": "Aevum App Store Connect Metadata & Keywords",
+      "pillar": "03_Developpement_App",
+      "type": "marketing",
+      "file": "03_Developpement_App/apps/aevum_ios/APP_STORE_METADATA.md",
+      "status": "READY",
+      "quality_gate": "node 03_Developpement_App/toolbox/harness_graph_router.js 'aso'"
+    },
+    {
+      "id": "aevum_deployment",
+      "label": "Aevum Mac/Xcode Packaging & TestFlight Guide",
+      "pillar": "03_Developpement_App",
+      "type": "deployment",
+      "file": "03_Developpement_App/apps/aevum_ios/README_XCODE_MAC.md",
+      "status": "READY",
+      "quality_gate": "node 03_Developpement_App/toolbox/test_code_integrity.js"
+    },
+    {
+      "id": "career_matcher",
+      "label": "Assistant Carrière & Scoring d'Opportunités ATS",
+      "pillar": "02_Assistant_Personnel",
+      "type": "tool",
+      "file": "02_Assistant_Personnel/04_Productivite_Admin/career_ops/job_matcher.py",
+      "status": "ACTIVE",
+      "quality_gate": "node 03_Developpement_App/toolbox/harness_graph_router.js 'career'"
+    },
+    {
+      "id": "intent_router",
+      "label": "Agentic Intent Graph Router",
+      "pillar": "00_Orchestration",
+      "type": "router",
+      "file": "03_Developpement_App/toolbox/harness_graph_router.js",
+      "status": "ACTIVE",
+      "quality_gate": "node 03_Developpement_App/toolbox/harness_graph_router.js --list-nodes"
+    }
+  ],
+  "edges": [
+    {
+      "from": "aevum_specs",
+      "to": "aevum_simulator",
+      "relation": "governs",
+      "required_status": "DONE"
+    },
+    {
+      "from": "aevum_specs",
+      "to": "aevum_ios_native",
+      "relation": "specifies",
+      "required_status": "DONE"
+    },
+    {
+      "from": "aevum_simulator",
+      "to": "aevum_ios_native",
+      "relation": "validates_ux",
+      "required_status": "ACTIVE"
+    },
+    {
+      "from": "aevum_ios_native",
+      "to": "aevum_aso",
+      "relation": "defines_features",
+      "required_status": "DONE"
+    },
+    {
+      "from": "aevum_ios_native",
+      "to": "aevum_deployment",
+      "relation": "packages",
+      "required_status": "DONE"
+    },
+    {
+      "from": "aevum_aso",
+      "to": "aevum_deployment",
+      "relation": "provides_metadata",
+      "required_status": "READY"
+    },
+    {
+      "from": "aevum_ios_native",
+      "to": "career_matcher",
+      "relation": "supplies_proof_of_work",
+      "required_status": "DONE"
+    },
+    {
+      "from": "intent_router",
+      "to": "aevum_ios_native",
+      "relation": "orchestrates_execution",
+      "required_status": "ACTIVE"
+    },
+    {
+      "from": "intent_router",
+      "to": "career_matcher",
+      "relation": "orchestrates_execution",
+      "required_status": "ACTIVE"
+    }
+  ]
+}

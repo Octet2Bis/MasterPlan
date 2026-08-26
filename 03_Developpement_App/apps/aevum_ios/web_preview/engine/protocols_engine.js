@@ -17,13 +17,27 @@ function calculateBioAge() {
 }
 
 function updateCircadianRecommendation() {
-  let pool = window.LONGEVITY_CATALOG || [];
-  if (!window.state.profile.selectedTargets.includes('all') && window.state.profile.selectedTargets.length > 0) {
-    pool = pool.filter(p => window.state.profile.selectedTargets.includes(p.category));
+  let recProto = null;
+  if (window.graphEngine && typeof window.graphEngine.resolveIntervention === 'function') {
+    const intervention = window.graphEngine.resolveIntervention({
+      hour: new Date().getHours(),
+      sessionMinutes: 25,
+      category: window.state.profile.selectedTargets[0] || 'all'
+    });
+    if (intervention && window.LONGEVITY_CATALOG) {
+      recProto = window.LONGEVITY_CATALOG.find(p => p.id === intervention.protocolId);
+    }
   }
-  if (pool.length === 0) pool = window.LONGEVITY_CATALOG || [];
-  const slot = window.state.currentCircadianSlot;
-  let recProto = pool.find(p => p.slot && p.slot.includes(slot)) || pool[0];
+
+  if (!recProto) {
+    let pool = window.LONGEVITY_CATALOG || [];
+    if (!window.state.profile.selectedTargets.includes('all') && window.state.profile.selectedTargets.length > 0) {
+      pool = pool.filter(p => window.state.profile.selectedTargets.includes(p.category));
+    }
+    if (pool.length === 0) pool = window.LONGEVITY_CATALOG || [];
+    const slot = window.state.currentCircadianSlot;
+    recProto = pool.find(p => p.slot && p.slot.includes(slot)) || pool[0];
+  }
   if (!recProto) return;
 
   const btn = document.getElementById('btn-launch-recommended');

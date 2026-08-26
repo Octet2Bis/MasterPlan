@@ -23,6 +23,8 @@ jobs:
       - name: Run App Dev Quality Gate (< 250 lines & Zero Inlining)
         run: |
           node 03_Developpement_App/toolbox/test_code_integrity.js
+          node 03_Developpement_App/toolbox/dag_validator.js
+          node 01_GTM_Growth/toolbox/aeo_graph_auditor.js
 
       - name: Set up Python (v3.11)
         uses: actions/setup-python@v5
@@ -30,5 +32,8 @@ jobs:
           python-version: '3.11'
 
       - name: Run GTM & Architecture Health Checks
+        env:
+          PYTHONPATH: 01_GTM_Growth
         run: |
           python 01_GTM_Growth/toolbox/test_quality_gates.py
+          python 01_GTM_Growth/toolbox/test_analytics_suite.py

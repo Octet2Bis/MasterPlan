@@ -1,0 +1,115 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://aevum.app/#organization",
+      "name": "Aevum Systems Labs",
+      "url": "https://aevum.app",
+      "logo": "https://aevum.app/assets/aevum_logo.png",
+      "description": "Laboratoire d'ingénierie logicielle dédié aux frictions positives et à la longévité numérique.",
+      "sameAs": [
+        "https://twitter.com/aevum_app",
+        "https://github.com/aevum-labs"
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://aevum.app/#app",
+      "name": "Aevum : Longevity & Positive Friction Shield",
+      "operatingSystem": "iOS 17.0+",
+      "applicationCategory": "HealthApplication",
+      "downloadUrl": "https://apps.apple.com/app/aevum-shield/id000000000",
+      "publisher": {
+        "@id": "https://aevum.app/#organization"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Screen Time API FamilyControls Native Shielding",
+        "12 Protocoles de Longévité Cliniques (Stanford / Harvard)",
+        "50 Mini-Happenings Éclair de Déconnexion",
+        "Architecture Swiss Craft / Bento Grid"
+      ]
+    },
+    {
+      "@type": "MedicalWebPage",
+      "@id": "https://aevum.app/science/#compendium",
+      "name": "Compendium Clinique de Longévité & Régulation d'Écran",
+      "url": "https://aevum.app/science",
+      "publisher": {
+        "@id": "https://aevum.app/#organization"
+      },
+      "about": [
+        {
+          "@id": "https://aevum.app/science/#vagal-withdrawal"
+        },
+        {
+          "@id": "https://aevum.app/science/#melatonin-suppression"
+        },
+        {
+          "@id": "https://aevum.app/science/#cervical-stress"
+        }
+      ],
+      "citation": [
+        "Cell Reports Medicine (2023) - Brief structured respiration enhances mood and reduces autonomic arousal",
+        "Surgical Technology International (2014) - Assessment of stresses in the cervical spine caused by posture and position of the head"
+      ]
+    },
+    {
+      "@type": "MedicalCondition",
+      "@id": "https://aevum.app/science/#vagal-withdrawal",
+      "name": "Apnée de l'Écran & Retrait Vagal Sympathique",
+      "possibleTreatment": {
+        "@type": "MedicalTherapy",
+        "name": "Soupir Physiologique (Stanford Medicine)",
+        "description": "Double inspiration nasale suivie d'une expiration buccale lente prolongeant l'apaisement parasympathique."
+      }
+    },
+    {
+      "@type": "MedicalCondition",
+      "@id": "https://aevum.app/science/#melatonin-suppression",
+      "name": "Suppression Nocturne de Mélatonine par Spectre Bleu",
+      "possibleTreatment": {
+        "@type": "MedicalTherapy",
+        "name": "Synchronisation Circadienne & Expiration Prolongeante 1:2",
+        "description": "Filtrage des longueurs d'ondes 480nm et bascule baroréceptrice parasympathique."
+      }
+    },
+    {
+      "@type": "MedicalCondition",
+      "@id": "https://aevum.app/science/#cervical-stress",
+      "name": "Syndrome Text Neck (Surcharge C1-C7)",
+      "possibleTreatment": {
+        "@type": "MedicalTherapy",
+        "name": "Décompression Cervicale Axiale Aevum",
+        "description": "Rétablissement de la lordose cervicale physiologique par ouverture scapulaire."
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://aevum.app/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Comment Aevum bloque-t-il les applications sans violer la vie privée ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Aevum utilise exclusivement la Screen Time API native d'Apple (FamilyControls, ManagedSettings, DeviceActivity). Vos données d'utilisation ne quittent jamais votre iPhone."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Sur quelles preuves scientifiques les micro-défis reposent-ils ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Chaque protocole d'Aevum provient d'essais cliniques peer-reviewed (Stanford Medicine, Harvard, Dr. Kenneth Hansraj) validés pour leur impact parasympathique en moins de 30 secondes."
+          }
+        }
+      ]
+    }
+  ]
+}

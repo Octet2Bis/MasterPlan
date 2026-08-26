@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "name": "Aevum Physiological Causal Graph",
+  "description": "Graphe relationnel déterministe reliant Déclencheurs Screen Time, Biomarqueurs altérés, Protocoles cliniques et Micro-Happenings",
+  "nodes": [
+    { "id": "trig_compulsive_unlock", "type": "trigger", "label": "Déverrouillage Compulsif (< 5min)", "category": "nervousSystem" },
+    { "id": "trig_late_night_scroll", "type": "trigger", "label": "Scroll Nocturne (> 22h00)", "category": "circadian" },
+    { "id": "trig_prolonged_immobility", "type": "trigger", "label": "Session Continue (> 45min)", "category": "postureMobility" },
+    { "id": "trig_dopamine_binge", "type": "trigger", "label": "Flux Infini / Vidéo Courte", "category": "nervousSystem" },
+    { "id": "trig_screen_fatigue", "type": "trigger", "label": "Fixation Visuelle Ininterrompue", "category": "vision" },
+    
+    { "id": "bio_vagal_withdrawal", "type": "biomarker", "label": "Chute du Tonus Vagal (Tachycardie & Stress)", "impact": "Système Parasympathique" },
+    { "id": "bio_melatonin_suppression", "type": "biomarker", "label": "Suppression de Mélatonine (Lumière Bleue)", "impact": "Architecture du Sommeil Profond" },
+    { "id": "bio_cervical_load", "type": "biomarker", "label": "Surcharge Mécanique C1-C7 (Text Neck ~27kg)", "impact": "Rachis Cervical & Trapèzes" },
+    { "id": "bio_ciliary_spasm", "type": "biomarker", "label": "Spasme d'Accommodation Ciliaire", "impact": "Muscle Ciliaire & Rétine" },
+    { "id": "bio_dopamine_depletion", "type": "biomarker", "label": "Saturation Récepteurs D2 & Hypnose Passive", "impact": "Cortex Préfrontal & Volition" },
+    
+    { "id": "RESP-01", "type": "protocol", "label": "Le Soupir Physiologique", "durationSeconds": 26, "targetAnatomy": "Nerf Vague & Alvéoles" },
+    { "id": "RESP-02", "type": "protocol", "label": "Expiration Prolongeante 1:2", "durationSeconds": 30, "targetAnatomy": "Frein Vagal & Barorécepteurs" },
+    { "id": "POST-01", "type": "protocol", "label": "Décompression Cervicale C1-C7", "durationSeconds": 45, "targetAnatomy": "Rachis Cervical & Scalènes" },
+    { "id": "VIS-01", "type": "protocol", "label": "Règle 20-20-20 & Focalisation Lointaine", "durationSeconds": 20, "targetAnatomy": "Muscle Ciliaire & Cristallin" },
+    { "id": "CIRC-01", "type": "protocol", "label": "Synchronisation Circadienne & Filtre Rouge", "durationSeconds": 60, "targetAnatomy": "Cellules Ganglionnaires à Mélanopsine" },
+
+    { "id": "HAP-01", "type": "happening", "label": "Le Tableau Noir de Bart Simpson", "category": "mantras" },
+    { "id": "HAP-02", "type": "happening", "label": "Le Mea Culpa du Doomscroller", "category": "mantras" },
+    { "id": "HAP-03", "type": "happening", "label": "Le Serment d'Allégeance au Rachis", "category": "posture" },
+    { "id": "HAP-08", "type": "happening", "label": "Le Détecteur de Souffle Vagal", "category": "breathing" }
+  ],
+  "edges": [
+    { "from": "trig_compulsive_unlock", "to": "bio_vagal_withdrawal", "relation": "degrades", "weight": 0.9 },
+    { "from": "trig_late_night_scroll", "to": "bio_melatonin_suppression", "relation": "degrades", "weight": 0.95 },
+    { "from": "trig_prolonged_immobility", "to": "bio_cervical_load", "relation": "degrades", "weight": 0.9 },
+    { "from": "trig_screen_fatigue", "to": "bio_ciliary_spasm", "relation": "degrades", "weight": 0.85 },
+    { "from": "trig_dopamine_binge", "to": "bio_dopamine_depletion", "relation": "degrades", "weight": 0.95 },
+
+    { "from": "RESP-01", "to": "bio_vagal_withdrawal", "relation": "restores", "weight": 0.95, "mechanism": "Hyper-oxygénation alvéolaire & décharge vagale" },
+    { "from": "RESP-01", "to": "bio_dopamine_depletion", "relation": "restores", "weight": 0.8, "mechanism": "Réinitialisation de la vigilance frontale" },
+    { "from": "RESP-02", "to": "bio_melatonin_suppression", "relation": "restores", "weight": 0.9, "mechanism": "Ralentissement vagal facilitateur de sommeil" },
+    { "from": "POST-01", "to": "bio_cervical_load", "relation": "restores", "weight": 0.95, "mechanism": "Traction axiale & décompression des disques" },
+    { "from": "VIS-01", "to": "bio_ciliary_spasm", "relation": "restores", "weight": 0.95, "mechanism": "Relâchement du spasme myopique d'écran" },
+    { "from": "CIRC-01", "to": "bio_melatonin_suppression", "relation": "restores", "weight": 0.9, "mechanism": "Blocage des longueurs d'ondes 480nm" },
+
+    { "from": "RESP-01", "to": "HAP-08", "relation": "actioned_by", "weight": 1.0 },
+    { "from": "RESP-02", "to": "HAP-02", "relation": "actioned_by", "weight": 1.0 },
+    { "from": "POST-01", "to": "HAP-03", "relation": "actioned_by", "weight": 1.0 },
+    { "from": "CIRC-01", "to": "HAP-01", "relation": "actioned_by", "weight": 1.0 }
+  ]
+}

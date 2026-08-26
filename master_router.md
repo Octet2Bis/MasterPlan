@@ -67,9 +67,26 @@ Ce tableau recense l'ensemble des résultats, codes sources et stratégies opér
 | **🌌 Aevum (Simulateur)** | App Dev | Simulateur Web Interactif (Mode Lumineux & Nuit) | [web_preview/](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/apps/aevum_ios/web_preview/) (`http://localhost:3000`) | 🟢 Actif |
 | **🌌 Aevum (Marketing ASO)** | GTM / ASO | Fiche Métadonnées App Store Connect (Titres, Keywords) | [APP_STORE_METADATA.md](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/apps/aevum_ios/APP_STORE_METADATA.md) | 🟢 Prêt |
 | **🌌 Aevum (Déploiement)** | App Dev | Guide de Packaging & Compilation Mac/Xcode TestFlight | [README_XCODE_MAC.md](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/apps/aevum_ios/README_XCODE_MAC.md) | 🟢 Prêt |
-| **🥩 1001 Goûts (Landing Page)** | GTM / Web | Code React + Tracking GTM (`GTM-N8PN8GB2`) + GA4 (`G-QCX3G9KSPC`) | [bold-tesla/](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/03_Experimentation/landing_pages/bold-tesla/) | 🟢 Tagué & Sync |
-| **🥩 1001 Goûts (Paid Ads)** | GTM / Ads | Stratégie Paid Media & 3 Concepts Créatifs Meta Ads | [meta_and_google_ads_strategy.md](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/03_Experimentation/campaigns/1001gouts_bouchers/meta_and_google_ads_strategy.md) | 🟢 Rédigé |
 | **💼 Assistant & Carrière** | Assistant | Moteur de Scoring & Job Matcher ATS | [job_matcher.py](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/04_Productivite_Admin/career_ops/job_matcher.py) | 🟢 Opérationnel |
+| **🧭 Intent Graph Router** | Orchestration | Routeur d'Exécution & Knowledge Graph d'Intentions | [harness_graph_router.js](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/toolbox/harness_graph_router.js) | 🟢 Opérationnel |
+| **🗺️ Master Plan DAG Validator** | Orchestration | Auditeur Déterministe de Topologie & Dépendances | [dag_validator.js](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/toolbox/dag_validator.js) | 🟢 Opérationnel |
+| **📡 Hermes Graph Ingestion** | Assistant | Moteur d'Ingestion & Graphe d'Observations/Entités | [hermes_adapter.js](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/02_Automatisation/hermes_adapter.js) | 🟢 Opérationnel |
+| **💼 Career Proof Engine** | Assistant | Moteur de Scoring ATS & Preuves de Code Bipartites | [career_proof_engine.js](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/04_Productivite_Admin/career_ops/career_proof_engine.js) | 🟢 Opérationnel |
+| **🔍 AEO Entity Graph** | GTM / AEO | Graphe Sémantique Schema.org JSON-LD Citations IA | [aeo_graph_auditor.js](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/toolbox/aeo_graph_auditor.js) | 🟢 Opérationnel |
+| **🤝 B2B Buying Committee Engine** | GTM / Outbound | Moteur Décisionnel de Prospection & Comités d'Achat | [buying_committee_engine.js](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/toolbox/buying_committee_engine.js) | 🟢 Opérationnel |
+
+```mermaid
+graph TD
+    Specs["📐 Aevum Specs"] -->|governs| Sim["📱 Web Simulator"]
+    Specs -->|specifies| Swift["⚡ iOS Native Swift"]
+    Sim -->|validates_ux| Swift
+    Swift -->|defines_features| ASO["🏷️ App Store ASO"]
+    Swift -->|packages| Deploy["🚀 Xcode TestFlight"]
+    ASO -->|provides_metadata| Deploy
+    Swift -->|supplies_proof| Career["💼 Job Matcher ATS"]
+    Router["🧭 Intent Graph Router"] -->|orchestrates| Swift
+    Router -->|orchestrates| Career
+```
 
 ---
 

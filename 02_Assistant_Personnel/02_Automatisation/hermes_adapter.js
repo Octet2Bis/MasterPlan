@@ -10,7 +10,7 @@ const path = require('node:path');
 const BASE_DIR = path.resolve(__dirname, '..');
 const WORKSPACE_DIR = path.join(BASE_DIR, 'Workspace');
 const SECRETS_DIR = path.join(BASE_DIR, '.secrets');
-const ENV_FILE = path.join(SECRETS_DIR, '.env');
+const RULES_FILE = path.join(BASE_DIR, 'Ressources', 'Knowledge', 'hermes_entity_rules.json');
 
 const DB_PRO = path.join(WORKSPACE_DIR, 'pro_market_graph.json');
 const DB_PERSO = path.join(WORKSPACE_DIR, 'perso_journal_graph.json');
@@ -21,9 +21,42 @@ function ensureDirectories() {
   }
 }
 
+function loadEntityRules() {
+  try {
+    if (fs.existsSync(RULES_FILE)) {
+      return JSON.parse(fs.readFileSync(RULES_FILE, 'utf-8')).known_entities || [];
+    }
+  } catch (err) {
+    console.warn(`[HERMES] Avertissement chargement règles entités: ${err.message}`);
+  }
+  return [];
+}
+
+function extractEntitiesAndRelations(obs, knownEntities) {
+  const text = `${obs.rawContent || obs.content || ''} ${(obs.tags || []).join(' ')}`.toLowerCase();
+  const detectedEntities = [];
+  const generatedRelations = [];
+
+  for (const ent of knownEntities) {
+    const isMatched = ent.keywords.some(kw => text.includes(kw.toLowerCase()));
+    if (isMatched) {
+      detectedEntities.push({ id: ent.id, label: ent.label, type: ent.type, pillar: ent.pillar });
+      generatedRelations.push({ from: obs.id, to: ent.id, relation: 'mentions', timestamp: obs.createdAt });
+    }
+  }
+
+  if (obs.sender && obs.sender.toLowerCase().includes('antoine')) {
+    generatedRelations.push({ from: obs.id, to: 'ent_antoine', relation: 'authored_by', timestamp: obs.createdAt });
+  }
+
+  return { detectedEntities, generatedRelations };
+}
+
 function appendToGraph(filePath, entry) {
   ensureDirectories();
+  const knownEntities = loadEntityRules();
   let data = { entities: [], relations: [], observations: [] };
+
   if (fs.existsSync(filePath)) {
     try {
       const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
@@ -33,13 +66,23 @@ function appendToGraph(filePath, entry) {
       data = { entities: [], relations: [], observations: [] };
     }
   }
+
   const newObs = {
     id: (data.observations.length || 0) + 1,
     createdAt: new Date().toISOString(),
     ...entry
   };
   data.observations.push(newObs);
+
+  // Extraction d'entités et relations
+  const { detectedEntities, generatedRelations } = extractEntitiesAndRelations(newObs, knownEntities);
+  detectedEntities.forEach(ent => {
+    if (!data.entities.some(e => e.id === ent.id)) data.entities.push(ent);
+  });
+  data.relations.push(...generatedRelations);
+
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  return newObs;
 }
 
 class HermesIngestionAdapter {
@@ -47,38 +90,42 @@ class HermesIngestionAdapter {
     ensureDirectories();
   }
 
-  async processTextMessage(text, channel = 'pro') {
-    console.log(`[HERMES] Traitement message texte (${channel.toUpperCase()}) : "${text.slice(0, 40)}..."`);
+  async processTextMessage(text, channel = 'pro', sender = 'Antoine') {
     const isPro = channel === 'pro';
     const targetDb = isPro ? DB_PRO : DB_PERSO;
 
     const entry = {
       type: 'TEXT_NOTE',
       channel,
+      sender,
       rawContent: text,
       tags: this.extractTags(text),
       status: 'INDEXED'
     };
 
-    appendToGraph(targetDb, entry);
-    return { success: true, entryId: entry.id, targetDb };
+    const created = appendToGraph(targetDb, entry);
+    return { success: true, entryId: created.id, targetDb };
   }
 
-  async processMediaAttachment(filename, channel = 'pro') {
-    console.log(`[HERMES] Ingestion média (${channel.toUpperCase()}) : ${filename}`);
-    const isAudio = /\.(ogg|mp3|wav|m4a)$/i.test(filename);
-    const isImage = /\.(jpg|jpeg|png|webp)$/i.test(filename);
+  reindexGraph(channel = 'pro') {
+    const targetDb = channel === 'pro' ? DB_PRO : DB_PERSO;
+    if (!fs.existsSync(targetDb)) return { success: false, reason: 'DB missing' };
+    const knownEntities = loadEntityRules();
+    const data = JSON.parse(fs.readFileSync(targetDb, 'utf-8'));
 
-    const entry = {
-      type: isAudio ? 'VOICE_TRANSCRIPTION' : isImage ? 'VISUAL_DOCUMENT' : 'BINARY_ATTACHMENT',
-      channel,
-      filename,
-      extractedSummary: isAudio ? "Synthèse audio automatique" : "Analyse visuelle de schéma/document",
-      status: 'INDEXED'
-    };
+    data.entities = [];
+    data.relations = [];
 
-    appendToGraph(channel === 'pro' ? DB_PRO : DB_PERSO, entry);
-    return { success: true, entryId: entry.id };
+    data.observations.forEach(obs => {
+      const { detectedEntities, generatedRelations } = extractEntitiesAndRelations(obs, knownEntities);
+      detectedEntities.forEach(ent => {
+        if (!data.entities.some(e => e.id === ent.id)) data.entities.push(ent);
+      });
+      data.relations.push(...generatedRelations);
+    });
+
+    fs.writeFileSync(targetDb, JSON.stringify(data, null, 2));
+    return { success: true, entityCount: data.entities.length, relationCount: data.relations.length };
   }
 
   extractTags(text) {
@@ -93,9 +140,12 @@ class HermesIngestionAdapter {
 
 module.exports = { HermesIngestionAdapter };
 
-// CLI test mode
+// CLI test & reindex mode
 if (require.main === module) {
   const adapter = new HermesIngestionAdapter();
-  adapter.processTextMessage("Schéma d'architecture Aevum reçu pour audit K3", 'pro')
-    .then(res => console.log('✅ Test Hermes complété avec succès :', res));
+  console.log('[HERMES] Rétro-indexation du graphe pro...');
+  const reindexRes = adapter.reindexGraph('pro');
+  console.log('✅ Rétro-indexation complétée :', reindexRes);
+  adapter.processTextMessage("Intégration Aevum et Screen Time API pour la régulation vagale", 'pro', 'Antoine')
+    .then(res => console.log('✅ Nouveau message indexé avec succès :', res));
 }

@@ -3,6 +3,12 @@ test_analytics_suite.py — Suite de Tests Unitaires des Nouveaux Outils Analyti
 """
 
 import sys
+from pathlib import Path
+
+# Garantir que 01_GTM_Growth est dans sys.path pour les imports de toolbox
+TOOLBOX_PARENT = Path(__file__).resolve().parent.parent
+if str(TOOLBOX_PARENT) not in sys.path:
+    sys.path.insert(0, str(TOOLBOX_PARENT))
 
 # Reconfiguration UTF-8 propre
 if sys.platform == "win32":
