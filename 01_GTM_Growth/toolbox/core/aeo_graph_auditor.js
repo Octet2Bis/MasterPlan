@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * MASTER PLAN — AEO / GEO SCHEMA.ORG GRAPH AUDITOR
- * Pilier 01 : GTM & Growth / Acquisition
+ * Pilier 01 : GTM & Growth / Core Linters & Auditors
  * Plafond strict : < 120 lignes
  */
 

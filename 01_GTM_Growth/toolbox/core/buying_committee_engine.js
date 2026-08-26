@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * MASTER PLAN — B2B BUYING COMMITTEE DECISION ENGINE
- * Pilier 01 : GTM & Growth / Outbound & Partnerships
+ * Pilier 01 : GTM & Growth / Core Engines
  * Plafond strict : < 120 lignes
  */
 

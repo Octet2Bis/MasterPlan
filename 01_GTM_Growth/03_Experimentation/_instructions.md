@@ -32,5 +32,6 @@ Ce pôle est responsable de la conversion du trafic en opportunités et utilisat
 ---
 
 ## 🛡️ Règles Locales du Pôle & Quality Gates
-* Toute Landing Page produite doit être un fichier HTML autonome (`index.html`) enregistré dans `Workspace/campaigns/<nom_campagne>/landing_pages/`.
-* Vérifier impérativement la validité de la page et la présence du conteneur DataLayer.
+* **Gabarits de Référence :** Un modèle Swiss Craft pré-configuré avec DataLayer est disponible dans [templates/landing_page_template.html](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/03_Experimentation/templates/landing_page_template.html).
+* **Isolation des Campagnes :** Toute Landing Page opérationnelle doit être un fichier HTML autonome (`index.html`) enregistré dans `01_GTM_Growth/Workspace/campaigns/<nom_campagne>/landing_pages/` (Couche 3).
+* **Conformité Analytics :** Vérifier impérativement la présence du conteneur DataLayer et des événements `click_cta`.

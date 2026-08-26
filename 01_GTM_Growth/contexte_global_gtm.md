@@ -20,6 +20,15 @@ L'agent ne déroule pas un script rigide : il mène une consultation active et a
 
 ## 🧭 Table de Sous-Routage par Pôle Métier (Dual-Engine B2B & B2C)
 
+> [!NOTE]
+> **Convention de Numérotation des Pôles GTM :**
+> - **Échelon 01 (Stratégie & Cadrage) :** Géré directement au niveau racine du Pilier (`contexte_global_gtm.md` et skill `gtm-strategist`).
+> - **Échelons 02 à 05 (Exécution par Étape du Funnel) :**
+>   - `02_Acquisition_and_AEO/` : Top-of-Funnel (Référencement, AEO, Inbound)
+>   - `03_Experimentation/` : Mid-Funnel (CRO, Landing Pages, A/B Testing)
+>   - `04_Outbound_and_CRM/` : Bottom-of-Funnel & Partenariats B2B
+>   - `05_Activation_and_CSM/` : Post-Conversion, Rétention & Boucles d'Habitudes
+
 | Intention / Pôle | Sous-dossier Cible | Déclinaison B2B (Enterprise / SaaS) | Déclinaison B2C (Mobile App / Consumer) |
 | :--- | :--- | :--- | :--- |
 | **🧠 Base de Vérité & Contexte** | `Ressources/Knowledge/` | `product-marketing-b2b.md` (ICP, ROI, Buying Committee)<br>`product_context_binding_rules.md` | `product-marketing-b2c.md` (User Persona, Déclencheurs, Usage)<br>`product_context_binding_rules.md` |

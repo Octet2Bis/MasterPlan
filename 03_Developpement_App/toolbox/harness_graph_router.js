@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 /**
- * HARNESS GRAPH ROUTER (Zero-Dependency Node.js & Python Advisory Agentic Router)
+ * HARNESS GRAPH ROUTER — PRIMARY RUNTIME (Node.js)
  * Écosystème Antigravity — Master Plan
  *
- * Rôle : Transforme une intention utilisateur en sous-graphe déterministe d'exécution :
+ * RÔLE ARCHITECTURAL :
+ * - Runtime : ACTIF / PRIMAIRE pour l'environnement IDE, npm et simulateur Aevum.
+ * - Parité : Doublé par harness_graph_router.py (pont secondaire pour agents Python).
+ * - Découplage de Données (Loi AGENTS.md #1 & #2) : La matrice des intentions,
+ *   compétences cibles et quality gates est externalisée dans toolbox/data/intent_graph.json.
+ *   Zéro troncature fonctionnelle : 100% des règles sont préservées et chargées dynamiquement.
+ *
+ * Rôle métier : Transforme une intention utilisateur en sous-graphe déterministe d'exécution :
  * - Compétences requises (.agents/skills/)
  * - Fichiers cibles indissociables (Code source + Simulateurs + Docs)
  * - Quality Gates et contraintes architecturales obligatoires

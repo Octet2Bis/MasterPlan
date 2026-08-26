@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 """
-HARNESS GRAPH ROUTER (Zero-Dependency Advisory Agentic Router)
-Ecosystème Antigravity — Master Plan
+HARNESS GRAPH ROUTER — SECONDARY PARITY BRIDGE (Python)
+Écosystème Antigravity — Master Plan
 
-Rôle : Transforme une intention utilisateur en sous-graphe déterministe d'exécution :
+RÔLE ARCHITECTURAL :
+- Runtime : PONT SECONDAIRE pour environnements d'exécution Python (SWE-agent, Daytona).
+- Parité : Strictement aligné sur le runtime primaire harness_graph_router.js.
+- Découplage de Données (Loi AGENTS.md #1 & #2) : La matrice des intentions,
+  compétences cibles et quality gates est externalisée dans toolbox/data/intent_graph.json.
+  Zéro troncature fonctionnelle : 100% des règles sont préservées et chargées dynamiquement.
+
+Rôle métier : Transforme une intention utilisateur en sous-graphe déterministe d'exécution :
 - Compétences requises (.agents/skills/)
 - Fichiers cibles indissociables (Code source + Simulateurs + Docs)
 - Quality Gates et contraintes architecturales obligatoires

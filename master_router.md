@@ -72,8 +72,8 @@ Ce tableau recense l'ensemble des résultats, codes sources et stratégies opér
 | **🗺️ Master Plan DAG Validator** | Orchestration | Auditeur Déterministe de Topologie & Dépendances | [dag_validator.js](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/toolbox/dag_validator.js) | 🟢 Opérationnel |
 | **📡 Hermes Graph Ingestion** | Assistant | Moteur d'Ingestion & Graphe d'Observations/Entités | [hermes_adapter.js](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/02_Automatisation/hermes_adapter.js) | 🟢 Opérationnel |
 | **💼 Career Proof Engine** | Assistant | Moteur de Scoring ATS & Preuves de Code Bipartites | [career_proof_engine.js](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/04_Productivite_Admin/career_ops/career_proof_engine.js) | 🟢 Opérationnel |
-| **🔍 AEO Entity Graph** | GTM / AEO | Graphe Sémantique Schema.org JSON-LD Citations IA | [aeo_graph_auditor.js](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/toolbox/aeo_graph_auditor.js) | 🟢 Opérationnel |
-| **🤝 B2B Buying Committee Engine** | GTM / Outbound | Moteur Décisionnel de Prospection & Comités d'Achat | [buying_committee_engine.js](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/toolbox/buying_committee_engine.js) | 🟢 Opérationnel |
+| **🔍 AEO Entity Graph** | GTM / AEO | Graphe Sémantique Schema.org JSON-LD Citations IA | [aeo_graph_auditor.js](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/toolbox/core/aeo_graph_auditor.js) | 🟢 Opérationnel |
+| **🤝 B2B Buying Committee Engine** | GTM / Outbound | Moteur Décisionnel de Prospection & Comités d'Achat | [buying_committee_engine.js](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/toolbox/core/buying_committee_engine.js) | 🟢 Opérationnel |
 
 ```mermaid
 graph TD

@@ -24,7 +24,7 @@ jobs:
         run: |
           node 03_Developpement_App/toolbox/test_code_integrity.js
           node 03_Developpement_App/toolbox/dag_validator.js
-          node 01_GTM_Growth/toolbox/aeo_graph_auditor.js
+          node 01_GTM_Growth/toolbox/core/aeo_graph_auditor.js
 
       - name: Set up Python (v3.11)
         uses: actions/setup-python@v5
