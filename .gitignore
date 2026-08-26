@@ -46,3 +46,13 @@ build/
 *.dmg
 *.pkg
 
+# Multi-Agent Orchestration & Ephemeral Stores (Couche 3)
+.squad/
+.hive/
+*.db
+*.sqlite
+*.sqlite3
+**/hermes_runtime/
+.quarantine/
+
+
