@@ -35,5 +35,5 @@ jobs:
         env:
           PYTHONPATH: 01_GTM_Growth
         run: |
-          python 01_GTM_Growth/toolbox/test_quality_gates.py
-          python 01_GTM_Growth/toolbox/test_analytics_suite.py
+          python 01_GTM_Growth/toolbox/tests/test_quality_gates.py
+          python 01_GTM_Growth/toolbox/tests/test_analytics_suite.py

@@ -99,6 +99,30 @@ for (const appName of apps) {
   }
 
   scanDir(appPath);
+
+  // 2. Audit de Parité Déterministe SHA-256 des Datasets Partagés (Anti-Dérive Native <-> Web Preview)
+  const nativeDataDir = path.join(appPath, 'AevumApp', 'Resources', 'Data');
+  const webDataDir = path.join(appPath, 'web_preview', 'data');
+  if (fs.existsSync(nativeDataDir) && fs.existsSync(webDataDir)) {
+    const crypto = require('crypto');
+    const nativeFiles = fs.readdirSync(nativeDataDir).filter(f => f.endsWith('.json'));
+    nativeFiles.forEach(f => {
+      const nativeFile = path.join(nativeDataDir, f);
+      const webFile = path.join(webDataDir, f);
+      if (!fs.existsSync(webFile)) {
+        totalErrors.push(`[${appName}] Fichier web_preview manquant : web_preview/data/${f}`);
+      } else {
+        const hashNative = crypto.createHash('sha256').update(fs.readFileSync(nativeFile)).digest('hex');
+        const hashWeb = crypto.createHash('sha256').update(fs.readFileSync(webFile)).digest('hex');
+        if (hashNative !== hashWeb) {
+          totalErrors.push(`[${appName}] Divergence critique SHA-256 entre Native et Web Preview : ${f}`);
+        } else {
+          console.log(`  ✅ [Parité SHA-256 OK] AevumApp <-> web_preview (${f})`);
+          totalPassed++;
+        }
+      }
+    });
+  }
   console.log('');
 }
 

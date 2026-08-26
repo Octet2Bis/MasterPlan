@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gtm-growth-toolbox"
+version = "1.0.0"
+description = "GTM Growth AI Operating System Toolbox & Deterministic Quality Gates"
+readme = "contexte_global_gtm.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+full = [
+    "requests>=2.28.0",
+    "pandas>=2.0.0",
+    "dnspython>=2.3.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["toolbox*"]
