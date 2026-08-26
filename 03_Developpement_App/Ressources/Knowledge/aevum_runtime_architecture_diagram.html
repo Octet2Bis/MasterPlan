@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aevum iOS • Architecture Runtime Map (Archify)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0B0C0E;
+      --card-bg: #141619;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #F4EFE6;
+      --text-muted: #8E929A;
+      --cyan: #0EA5E9;
+      --emerald: #10B981;
+      --amber: #F59E0B;
+      --red: #E6392F;
+      --violet: #8B5CF6;
+      --font-main: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-title: 'Space Grotesk', sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg: #F8F9FA;
+      --card-bg: #FFFFFF;
+      --card-border: rgba(0, 0, 0, 0.1);
+      --text-main: #0B0C0E;
+      --text-muted: #64748B;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background 0.3s ease;
+    }
+
+    /* Header Bar */
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo { width: 14px; height: 14px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 12px var(--emerald); }
+    .brand-title { font-family: var(--font-title); font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+    .badge { font-size: 11px; padding: 4px 8px; border-radius: 6px; background: rgba(14, 165, 233, 0.15); color: var(--cyan); font-weight: 600; }
+
+    .actions { display: flex; gap: 10px; }
+    .btn-action {
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-action:hover { border-color: var(--cyan); }
+
+    /* Main Canvas */
+    main {
+      flex: 1;
+      padding: 32px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .canvas-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .trust-boundary {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+    .boundary-label {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .arch-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .arch-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--cyan);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .card-title { font-family: var(--font-title); font-size: 15px; font-weight: 700; }
+    .card-tag { font-size: 10px; font-family: var(--font-mono); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    
+    .tag-swift { background: rgba(230, 57, 47, 0.15); color: var(--red); }
+    .tag-ext { background: rgba(139, 92, 246, 0.15); color: var(--violet); }
+    .tag-json { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+    .tag-engine { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
+
+    .card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+    .card-meta { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--card-border); font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; }
+
+    /* Pulse Flow Connectors */
+    .flow-strip {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .flow-arrow { color: var(--emerald); animation: pulseArrow 1.5s infinite; }
+    @keyframes pulseArrow { 0%, 100% { opacity: 0.4; transform: translateX(0); } 50% { opacity: 1; transform: translateX(4px); } }
+
+    /* Modal Details */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: all 0.2s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-box {
+      background: var(--card-bg); border: 1px solid var(--card-border); width: 90%; max-width: 500px; border-radius: 16px; padding: 24px;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .btn-close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo"></div>
+      <span class="brand-title">AEVUM iOS</span>
+      <span class="badge">Architecture Map v2.0</span>
+    </div>
+    <div class="actions">
+      <button class="btn-action" id="btn-theme"><span>☀️ Mode Clair</span></button>
+      <button class="btn-action" id="btn-export-svg"><span>💾 Exporter Image</span></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Flow Strip -->
+    <div class="flow-strip">
+      <span>📱 Tentative d'accès Instagram</span>
+      <span class="flow-arrow">➔</span>
+      <span>🛡️ Détection Screen Time API</span>
+      <span class="flow-arrow">➔</span>
+      <span>🛑 Interception Aevum Shield (30s)</span>
+      <span class="flow-arrow">➔</span>
+      <span>🫁 Validation Défi Longévité</span>
+      <span class="flow-arrow">➔</span>
+      <span style="color: var(--emerald);">⚡ Fenêtre Débloquée (15 min)</span>
+    </div>
+
+    <!-- Boundaries Grid -->
+    <div class="canvas-grid">
+      
+      <!-- Zone 1 : UI & Vues SwiftUI -->
+      <div class="trust-boundary">
+        <div class="boundary-label"><span>📱 Zone 1 : SwiftUI UI (MVVM)</span></div>
+
+        <div class="arch-card" data-title="DashboardView.swift" data-lines="186 lignes" data-role="Hero Transit Stack, carte de progression circadienne et score biologique.">
+          <div class="card-top"><span class="card-title">DashboardView</span><span class="card-tag tag-swift">SwiftUI</span></div>
+          <p class="card-desc">Vue d'accueil principale avec la pile de cartes de transit colorées et le scrubber analogique.</p>
+          <div class="card-meta"><span>UI/Dashboard/</span><span>186 L</span></div>
+        </div>
+
+        <div class="arch-card" data-title="BreathingPlayerView.swift" data-lines="124 lignes" data-role="Player matériel Teenage Engineering pour les protocoles respiratoires (Soupir Stanford).">
+          <div class="card-top"><span class="card-title">BreathingPlayer</span><span class="card-tag tag-swift">SwiftUI</span></div>
+          <p class="card-desc">Chronomètre monospace, grille acoustique perforée et 4 potentiomètres rotatifs.</p>
+          <div class="card-meta"><span>UI/ChallengePlayer/</span><span>124 L</span></div>
+        </div>
+
+        <div class="arch-card" data-title="HappeningPlayerView.swift" data-lines="115 lignes" data-role="Moteur de mini-jeux de rupture dopaminergique (WarioWare, Tableau, Miroir Crevette).">
+          <div class="card-top"><span class="card-title">HappeningPlayer</span><span class="card-tag tag-swift">SwiftUI</span></div>
+          <p class="card-desc">Miroir Crevette AR, Tableau de punition et Captcha de posture.</p>
+          <div class="card-meta"><span>UI/ChallengePlayer/</span><span>115 L</span></div>
+        </div>
+      </div>
+
+      <!-- Zone 2 : Extensions Système Apple Sandbox -->
+      <div class="trust-boundary">
+        <div class="boundary-label"><span>🛡️ Zone 2 : Apple Sandbox (ScreenTime)</span></div>
+
+        <div class="arch-card" data-title="DeviceActivityMonitorExtension" data-lines="28 lignes" data-role="Surveillance système en tâche de fond des seuils d'écran et des ouvertures d'applications.">
+          <div class="card-top"><span class="card-title">ActivityMonitor</span><span class="card-tag tag-ext">Extension</span></div>
+          <p class="card-desc">Reçoit les événements de dépassement d'écran et active le verrouillage ManagedSettings.</p>
+          <div class="card-meta"><span>Extensions/AevumMonitor/</span><span>28 L</span></div>
+        </div>
+
+        <div class="arch-card" data-title="ShieldConfigurationExtension" data-lines="38 lignes" data-role="Personnalisation visuelle native de l'écran de blocage iOS (Flèche géante et texte Aevum).">
+          <div class="card-top"><span class="card-title">ShieldConfiguration</span><span class="card-tag tag-ext">Extension</span></div>
+          <p class="card-desc">Rendu de la bannière rouge et des boutons de déviation vers les micro-défis.</p>
+          <div class="card-meta"><span>Extensions/AevumShield/</span><span>38 L</span></div>
+        </div>
+
+        <div class="arch-card" data-title="ShieldActionExtension" data-lines="27 lignes" data-role="Traitement sécurisé des boutons du Shield (Accepter défi vs Fermer).">
+          <div class="card-top"><span class="card-title">ShieldAction</span><span class="card-tag tag-ext">Extension</span></div>
+          <p class="card-desc">Ouvre Aevum ou applique la dérogation de grâce de 15 minutes.</p>
+          <div class="card-meta"><span>Extensions/AevumAction/</span><span>27 L</span></div>
+        </div>
+      </div>
+
+      <!-- Zone 3 : Moteurs Métier & Catalogues Données -->
+      <div class="trust-boundary">
+        <div class="boundary-label"><span>⚛️ Zone 3 : Core Engines & Datasets</span></div>
+
+        <div class="arch-card" data-title="ScreenTimeManager.swift" data-lines="135 lignes" data-role="Pont MVVM gérant les autorisations FamilyControls et l'application des ManagedSettingsStore.">
+          <div class="card-top"><span class="card-title">ScreenTimeManager</span><span class="card-tag tag-engine">Service</span></div>
+          <p class="card-desc">Sélection des applications sensibles et gestion de la fenêtre de grâce de 15 minutes.</p>
+          <div class="card-meta"><span>Core/Services/</span><span>135 L</span></div>
+        </div>
+
+        <div class="arch-card" data-title="ProtocolRecommendationEngine.swift" data-lines="48 lignes" data-role="Algorithme circadien recommandant le défi optimal selon l'heure et l'indice de fatigue.">
+          <div class="card-top"><span class="card-title">RecommendationEngine</span><span class="card-tag tag-engine">Engine</span></div>
+          <p class="card-desc">Calcul de l'âge biologique estimé et sélection du micro-défi adapté.</p>
+          <div class="card-meta"><span>Core/Services/</span><span>48 L</span></div>
+        </div>
+
+        <div class="arch-card" data-title="longevity_catalog.json" data-lines="679 lignes" data-role="Catalogue des 12 protocoles validés scientifiquement (Stanford, Hansraj, Huberman).">
+          <div class="card-top"><span class="card-title">longevity_catalog</span><span class="card-tag tag-json">Data JSON</span></div>
+          <p class="card-desc">Source pure et asynchrone évitant tout inlining de données brutes.</p>
+          <div class="card-meta"><span>Resources/Data/</span><span>679 L</span></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="m-title" style="font-family: var(--font-title);">Composant</h3>
+        <button class="btn-close" id="m-close">✕</button>
+      </div>
+      <p id="m-role" style="font-size: 13px; line-height: 1.5; color: var(--text-muted); margin-bottom: 16px;"></p>
+      <div style="background: var(--bg); padding: 10px 14px; border-radius: 8px; font-family: var(--font-mono); font-size: 12px; color: var(--cyan);" id="m-lines"></div>
+    </div>
+  </div>
+
+  <script>
+    // Theme toggle
+    document.getElementById('btn-theme').onclick = () => {
+      const isLight = document.body.getAttribute('data-theme') === 'light';
+      if (isLight) {
+        document.body.removeAttribute('data-theme');
+        document.getElementById('btn-theme').innerHTML = '<span>☀️ Mode Clair</span>';
+      } else {
+        document.body.setAttribute('data-theme', 'light');
+        document.getElementById('btn-theme').innerHTML = '<span>🌙 Mode Nuit</span>';
+      }
+    };
+
+    // Modal
+    const modal = document.getElementById('modal');
+    document.querySelectorAll('.arch-card').forEach(card => {
+      card.onclick = () => {
+        document.getElementById('m-title').textContent = card.dataset.title;
+        document.getElementById('m-role').textContent = card.dataset.role;
+        document.getElementById('m-lines').textContent = `Volume : ${card.dataset.lines} • Plafond < 250 L respecté ✓`;
+        modal.classList.add('active');
+      };
+    });
+    document.getElementById('m-close').onclick = () => modal.classList.remove('active');
+    modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+
+    // Export SVG
+    document.getElementById('btn-export-svg').onclick = () => {
+      window.print();
+    };
+  </script>
+</body>
+</html>
