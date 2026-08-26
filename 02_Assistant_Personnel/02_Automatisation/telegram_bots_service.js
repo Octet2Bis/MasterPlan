@@ -438,7 +438,7 @@ class HardenedTelegramBot {
       });
 
       await this.sendMessage(chatId, `🔗 *Lien sécurisé indexé dans le graphe ${this.botType} !*\nType : ${isInsta ? '🎬 Reel Instagram' : '📰 Article de Veille'}\nContenu : \`${text.slice(0, 55)}...\``);
-      console.log(`[${this.botType}] 🔗 Lien indexé : ${text}`);
+      console.log(`[${this.botType}] 🔗 Lien sécurisé indexé : [${isInsta ? 'Reel Instagram' : 'Article Web'}] (Contenu masqué)`);
     }
 
     // CAS 4 : Note Textuelle Simple
@@ -449,8 +449,8 @@ class HardenedTelegramBot {
         sender: user.username || user.first_name
       });
 
-      await this.sendMessage(chatId, `📝 *Note enregistrée dans le graphe ${this.botType} :*\n« _${text}_ »`);
-      console.log(`[${this.botType}] 📝 Note enregistrée : ${text}`);
+      await this.sendMessage(chatId, `📝 *Note enregistrée dans le graphe ${this.botType} !*`);
+      console.log(`[${this.botType}] 📝 Note confidentielle enregistrée : [${text.length} caractères] (Contenu masqué)`);
     }
   }
 

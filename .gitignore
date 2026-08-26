@@ -1,10 +1,30 @@
-# Antigravity Architecture (Layer 3 - Workspaces & Secrets)
-**/Workspace/*
-!**/Workspace/.gitkeep
-**/.secrets/*
-!**/.secrets/.gitkeep
+# ==============================================================================
+# MASTER PLAN — REGLES D'EXCLUSION GIT (DEPOT PUBLIC DURCI)
+# Confidentialité stricte des données personnelles, tokens, leads et flux Telegram
+# ==============================================================================
 
-# Secrets & Env files
+# 1. Antigravity Architecture (Couche 3 - Workspaces & Secrets Étanches)
+**/Workspace/**
+!**/Workspace/**/.gitkeep
+**/.secrets/**
+!**/.secrets/**/.gitkeep
+!**/.env.example
+
+# 2. Sécurité des Bots Telegram & Ingestion Second Cerveau (Masquage Absolu)
+*pro_market_graph*.json
+*perso_journal_graph*.json
+*market_graph*.sqlite*
+*journal_graph*.sqlite*
+**/inbox_pro/**
+**/inbox_perso/**
+**/.quarantine/**
+**/hermes_runtime/**
+**/podcasts/**
+*.ogg
+*.m4a
+*.wav
+
+# 3. Secrets d'Authentification & Clés d'API
 .env
 .env.*
 *.env
@@ -14,7 +34,31 @@ credentials*
 *.pem
 *.key
 
-# Python
+# 4. Données Personnelles de Carrière (CV, Profil Maître & Candidatures)
+*master_profile*.md
+!*master_profile_template*.md
+!*master_profile*.example*
+*scored_jobs*.csv
+*scraped_jobs*.csv
+
+# 5. Conformité RGPD & Données de Prospection GTM (Leads & Contacts)
+*raw_leads*.csv
+*scored_crm*.csv
+*emails_valides*.csv
+*output_test*.csv
+
+# 6. Packaging Apple, Xcode & Certificats App Store
+*.mobileprovision
+*.p12
+*.cer
+*.p8
+AuthKey_*.p8
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# 7. Environnements d'Exécution (Python / Node / JS)
 __pycache__/
 *.py[cod]
 *$py.class
@@ -23,8 +67,6 @@ venv/
 .venv/
 env/
 .env/
-
-# Node / JS
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -35,7 +77,7 @@ build/
 .next/
 .turbo/
 
-# Heavy Media & Video Binaries (Couche 3 - Hygiène Git)
+# 8. Médias Lourds & Archives Binaires
 *.mp4
 *.mov
 *.avi
@@ -46,13 +88,20 @@ build/
 *.dmg
 *.pkg
 
-# Multi-Agent Orchestration & Ephemeral Stores (Couche 3)
-.squad/
-.hive/
+# 9. Bases de Données Locales & Fichiers Journaux
 *.db
 *.sqlite
 *.sqlite3
-**/hermes_runtime/
-.quarantine/
+*.log
+.squad/
+.hive/
 
-
+# 10. Artefacts Système d'Exploitation (Windows & macOS)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
