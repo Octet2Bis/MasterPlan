@@ -1,6 +1,6 @@
 ---
 name: ios-screentime-architect
-description: Guide d'architecture et d'implémentation pour applications iOS natives en SwiftUI intégrant la Screen Time API (FamilyControls, ManagedSettings, DeviceActivity), HealthKit, WidgetKit et Live Activities. À utiliser dans 03_Developpement_App/.
+description: Guide d'architecture et d'implémentation pour applications iOS natives en SwiftUI intégrant la Screen Time API (FamilyControls, ManagedSettings, DeviceActivity), HealthKit, WidgetKit et Live Activities. À utiliser dans 03_Developpement_App_and_Design/.
 ---
 
 # 🍏 iOS Screen Time & SwiftUI Architect

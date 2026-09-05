@@ -1,0 +1,30 @@
+{
+  "entities": [],
+  "relations": [],
+  "observations": [
+    {
+      "id": 1,
+      "createdAt": "2026-08-30T08:27:46.567Z",
+      "type": "test",
+      "content": "Message simultané 1"
+    },
+    {
+      "id": 2,
+      "createdAt": "2026-08-30T08:27:46.585Z",
+      "type": "test",
+      "content": "Message simultané 2"
+    },
+    {
+      "id": 3,
+      "createdAt": "2026-08-30T08:27:46.592Z",
+      "type": "test",
+      "content": "Message simultané 3"
+    },
+    {
+      "id": 4,
+      "createdAt": "2026-08-30T08:27:46.595Z",
+      "type": "test",
+      "content": "Message simultané 4"
+    }
+  ]
+}

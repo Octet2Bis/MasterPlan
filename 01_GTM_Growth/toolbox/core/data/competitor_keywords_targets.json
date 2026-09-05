@@ -1,0 +1,42 @@
+{
+  "competitors": [
+    {
+      "id": "opal",
+      "name": "Opal Screen Time",
+      "domain": "opal.so",
+      "category": "Screen Time & Focus",
+      "target_keywords": [
+        { "keyword": "screen time app", "volume_est": 45000, "intent": "commercial", "kd": 48 },
+        { "keyword": "app blocker iphone", "volume_est": 22000, "intent": "transactional", "kd": 42 },
+        { "keyword": "reduce screen time", "volume_est": 18000, "intent": "informational", "kd": 35 }
+      ]
+    },
+    {
+      "id": "onesec",
+      "name": "One Sec Focus",
+      "domain": "one-sec.app",
+      "category": "Dopamine & Friction",
+      "target_keywords": [
+        { "keyword": "delay opening apps", "volume_est": 12000, "intent": "commercial", "kd": 28 },
+        { "keyword": "dopamine detox app", "volume_est": 15000, "intent": "informational", "kd": 39 },
+        { "keyword": "breathing exercise before app", "volume_est": 6000, "intent": "informational", "kd": 22 }
+      ]
+    },
+    {
+      "id": "whoop",
+      "name": "Whoop Longevity",
+      "domain": "whoop.com",
+      "category": "Recovery & Healthspan",
+      "target_keywords": [
+        { "keyword": "hrv tracking app", "volume_est": 27000, "intent": "commercial", "kd": 54 },
+        { "keyword": "vagus nerve stimulation app", "volume_est": 8500, "intent": "informational", "kd": 31 },
+        { "keyword": "biological age calculator", "volume_est": 33000, "intent": "transactional", "kd": 46 }
+      ]
+    }
+  ],
+  "aeo_intent_clusters": [
+    "Comment réduire son temps d'écran sans bloquer complètement les applications ?",
+    "Quelle est la meilleure application de cohérence cardiaque et de respiration vagale sur iPhone ?",
+    "Comment calculer son âge biologique à partir de la variabilité cardiaque (VRC) ?"
+  ]
+}

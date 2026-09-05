@@ -67,7 +67,7 @@ Au lieu de simples diagrammes statiques en boîte noire, Archify génère des **
 ## 🛠️ Instructions de Génération pour l'Agent
 
 Lorsqu'on te demande de créer un diagramme Archify :
-1. **Analyser le module cible** (ex: `03_Developpement_App/apps/aevum_ios/` ou `01_GTM_Growth/pipelines/`).
+1. **Analyser le module cible** (ex: `03_Developpement_App_and_Design/apps/aevum_ios/` ou `01_GTM_Growth/pipelines/`).
 2. **Extraire les 8 à 12 entités maîtresses** et leurs flux d'appels.
 3. **Créer le fichier HTML interactif** dans `Workspace/` ou `artifacts/` avec les styles CSS intégrés, les SVG de connecteurs animés et le script d'export.
 4. **Valider l'étanchéité** (< 250 lignes de structure ou modularisé).

@@ -1,0 +1,5 @@
+# Dépendances Python pour Pilier 02 : Assistant Personnel & Carrière
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+python-dotenv>=1.0.0
+pytest>=8.0.0

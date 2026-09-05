@@ -1,0 +1,61 @@
+{
+  "version": "1.0.0",
+  "name": "Aevum Agave Biometrics",
+  "agave_leaves": [
+    {
+      "id": "screen_time",
+      "label": "Temps d'écran",
+      "percentage": 72,
+      "current": "3h 45m",
+      "target": "6h 00m",
+      "leafPosition": "top",
+      "color": "#FF4400"
+    },
+    {
+      "id": "sleep",
+      "label": "Sommeil",
+      "percentage": 65,
+      "current": "7h 12m",
+      "target": "8h 00m",
+      "leafPosition": "top-right",
+      "color": "#008080"
+    },
+    {
+      "id": "activity",
+      "label": "Activité physique",
+      "percentage": 40,
+      "current": "4 200 pas",
+      "target": "8 000 pas",
+      "leafPosition": "bottom-right",
+      "color": "#00C853"
+    },
+    {
+      "id": "breathing",
+      "label": "Respiration",
+      "percentage": 80,
+      "current": "6,2 min",
+      "target": "10 min",
+      "leafPosition": "bottom-left",
+      "color": "#00C853"
+    },
+    {
+      "id": "posture",
+      "label": "Posture",
+      "percentage": 58,
+      "current": "72 / 100",
+      "target": "100",
+      "leafPosition": "top-left",
+      "color": "#FF8C00"
+    }
+  ],
+  "detailed_statistics": [
+    { "id": "stat_screen", "label": "Temps d'écran total", "value": "3h 45m", "subtext": "Total aujourd'hui", "icon": "clock" },
+    { "id": "stat_unlocks", "label": "Déverrouillages", "value": "47", "subtext": "Nombre d'ouvertures", "icon": "bars" },
+    { "id": "stat_posture", "label": "Posture moyenne", "value": "72 / 100", "subtext": "Score sur 100", "icon": "spine" },
+    { "id": "stat_breath", "label": "Respiration moyenne", "value": "6,2 / 10 min", "subtext": "Minutes de respiration", "icon": "wind" },
+    { "id": "stat_steps", "label": "Activité physique", "value": "4 200", "subtext": "Pas aujourd'hui", "icon": "shoe" },
+    { "id": "stat_calories", "label": "Calories brûlées", "value": "310 kcal", "subtext": "Estimation métabolique", "icon": "flame" },
+    { "id": "stat_sleep", "label": "Qualité du sommeil", "value": "78 / 100", "subtext": "Score de la nuit dernière", "icon": "moon" },
+    { "id": "stat_hrv", "label": "Variabilité cardiaque", "value": "48 ms", "subtext": "ms (moyenne quotidienne)", "icon": "heart" }
+  ]
+}

@@ -1,0 +1,13 @@
+<!-- Circular Progress Ring Component — Web Preview (Essential 7) -->
+<div class="progress-ring-container" style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;">
+  <svg width="120" height="120" viewBox="0 0 120 120" style="transform: rotate(-90deg);">
+    <!-- Piste de fond -->
+    <circle cx="60" cy="60" r="50" fill="transparent" stroke="rgba(16, 185, 129, 0.15)" stroke-width="10" />
+    <!-- Anneau actif (stroke-dasharray = 2 * PI * r = ~314) -->
+    <circle id="progress-circle" cx="60" cy="60" r="50" fill="transparent" stroke="#10B981" stroke-width="10" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="78.54" style="transition: stroke-dashoffset 0.6s ease;" />
+  </svg>
+  <div style="position: absolute; text-align: center;">
+    <span style="font-size: 22px; font-weight: 800; color: #F8FAFC;" id="progress-val">75%</span>
+    <div style="font-size: 9px; font-weight: 700; color: #94A3B8; text-transform: uppercase;">Vitalité</div>
+  </div>
+</div>

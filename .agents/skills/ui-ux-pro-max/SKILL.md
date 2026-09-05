@@ -1,6 +1,6 @@
 ---
 name: ui-ux-pro-max
-description: Guide d'exécution UI/UX de haute facture (Swiss Craft, Dark Charcoal, Surfaces Étagées, Typographie à Gravité, Grille 8px). Bras exécutif de la règle ui_visual_anti_slop.md. À utiliser dans 03_Developpement_App/ et 01_GTM_Growth/03_Experimentation/.
+description: Guide d'exécution UI/UX de haute facture (Swiss Craft, Dark Charcoal, Surfaces Étagées, Typographie à Gravité, Grille 8px). Bras exécutif de la règle ui_visual_anti_slop.md. À utiliser dans 03_Developpement_App_and_Design/ et 01_GTM_Growth/03_Experimentation/.
 ---
 
 # 🎨 UI/UX Pro Max — Standard d'Exécution Visuelle & Frontend

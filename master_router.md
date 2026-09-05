@@ -7,6 +7,20 @@
 
 ---
 
+## 📌 TOUR DE CONTRÔLE — LES 4 CHANTIERS STRATÉGIQUES ÉPINGLÉS
+
+Ce registre scelle les 4 chantiers opérationnels en cours dans le Master Plan. 
+L'agent et l'utilisateur peuvent basculer instantanément de l'un à l'autre sans aucune dérive ni confusion contextuelle :
+
+| ID Chantier | Nom du Chantier | Pilier | Périmètre & Prochaines Actions Clés | Dossier Source Dédié | Statut |
+| :--- | :--- | :---: | :--- | :--- | :---: |
+| **`[CHANTIER-01-SNIPER]`** | **Outbound Sniper** | 01_GTM / 03_Dev | • Configuration Google OAuth (Google Cloud Console)<br>• Balayage graphique & polissage UI<br>• Packaging Standalone 1-clic (portabilité PC externe) | [`03_Developpement_App_and_Design/02_Applications_Web/outbound_sniper/`](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/02_Applications_Web/outbound_sniper/) | 🟡 En cours |
+| **`[CHANTIER-02-SITE-LAB]`** | **Laboratoire Auto-Promotionnel (`antoinelecerf.fit`)** | 01_GTM / 03_Dev | • Refonte graphique 3D / Three.js & Dark Charcoal<br>• Intégration des cas d'usage réels (Be Mate, 1001 Goûts, Way2Tech)<br>• **Showcase & Vulgarisation du Harness Master Plan** (Fonctionnement multi-agents, Poka-Yoke & applications nées du système)<br>• Rigueur SEO & UX Rocket School + Panneau "Sous le Capot" | [`03_Developpement_App_and_Design/03_Web_and_Fullstack/antoinelecerf_fit/`](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/03_Web_and_Fullstack/antoinelecerf_fit/) | 🟢 Live (Port 8080) |
+| **`[CHANTIER-03-AEVUM]`** | **Aevum iOS & Mobile Testing** | 03_Dev | • Déploiement iPhone réel (Xcode / TestFlight)<br>• Test terrain des notifications haptiques/sonores et rituels somatiques<br>• Validation de la DA éditoriale Mosaic & Happenings | [`03_Developpement_App_and_Design/01_Applications_iOS/Aevum/`](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/01_Applications_iOS/Aevum/) | 🟢 Simu Live (Port 3000) |
+| **`[CHANTIER-04-MASTERPLAN]`** | **Master Plan, Jury & VM Oracle** | Transversal / 02_Assistant | • Méta-gouvernance & synchronisation VM Oracle Always Free (`88.96.57.168`)<br>• Fiabilisation 24/7 du Job Hunter via le Jury de 4 Inspecteurs<br>• El Interpretor (Veille & Second Cerveau) | [`02_Assistant_Personnel/`](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/) & [`master_router.md`](file:///c:/Users/HP/Desktop/Master%20Plan/master_router.md) | 🟢 24/7 Actif (PM2) |
+
+---
+
 ## 🛑 DROIT DE VETO ARCHITECTURAL (RÈGLE ABSOLUE)
 Tu es le gardien intransigeant de l'architecture "3 Layers" (3 Couches) qui régit TOUT l'écosystème Antigravity. AVANT d'exécuter la moindre demande de l'utilisateur (créer un script, coder une app, automatiser une tâche), tu dois vérifier si la demande viole ces lois. Si c'est le cas, tu as l'INTERDICTION de générer le code. Tu dois interrompre la génération et répondre EXACTEMENT avec ce format :
 > ⚠️ **ALERTE DE CONFORMITÉ ARCHITECTURALE** ⚠️
@@ -37,7 +51,7 @@ Pour garantir une rigueur absolue et éliminer toute déviation méthodologique 
 
 ### COUCHE 1 : L'Orchestration Globale & Infrastructure Racine
 - **Chef d'Orchestre Unique :** Ce document (`master_router.md`) est le point d'entrée universel pour l'humain et pour les agents.
-- **Règle Zéro Fichier Orphelin :** Aucun script ou fichier de logique métier ne doit flotter à la racine. Tout appartient strictement à l'un des 3 piliers (`01_GTM_Growth/`, `02_Assistant_Personnel/`, `03_Developpement_App/`).
+- **Règle Zéro Fichier Orphelin :** Aucun script ou fichier de logique métier ne doit flotter à la racine. Tout appartient strictement à l'un des 3 piliers (`01_GTM_Growth/`, `02_Assistant_Personnel/`, `03_Developpement_App_and_Design/`).
 - **Éléments Système Autorisés à la Racine :**
   1. `master_router.md` (Routage et Registre Central).
   2. `.agents/` (Moteur de Skills système Antigravity partagé par les agents - non métier).
@@ -63,17 +77,21 @@ Ce tableau recense l'ensemble des résultats, codes sources et stratégies opér
 
 | Projet / Initiative | Domaine | Type de Livrable | Fichier Cible Direct | Statut |
 | :--- | :--- | :--- | :--- | :---: |
-| **🌌 Aevum (iOS Native)** | App Dev | Code Swift v2.0 (12 Protocoles + Screen Time + HealthKit) | [AevumApp/](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/apps/aevum_ios/AevumApp/) | 🟢 Finalisé |
-| **🌌 Aevum (Simulateur)** | App Dev | Simulateur Web Interactif (Mode Lumineux & Nuit) | [web_preview/](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/apps/aevum_ios/web_preview/) (`http://localhost:3000`) | 🟢 Actif |
-| **🌌 Aevum (Marketing ASO)** | GTM / ASO | Fiche Métadonnées App Store Connect (Titres, Keywords) | [APP_STORE_METADATA.md](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/apps/aevum_ios/APP_STORE_METADATA.md) | 🟢 Prêt |
-| **🌌 Aevum (Déploiement)** | App Dev | Guide de Packaging & Compilation Mac/Xcode TestFlight | [README_XCODE_MAC.md](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/apps/aevum_ios/README_XCODE_MAC.md) | 🟢 Prêt |
+| **🌌 Aevum (iOS Native)** | App Dev | Code Swift v2.0 (12 Protocoles + Screen Time + HealthKit) | [AevumApp/](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/apps/aevum_ios/AevumApp/) | 🟢 Finalisé |
+| **🌌 Aevum (Simulateur)** | App Dev | Simulateur Web Interactif (Mode Lumineux & Nuit) | [web_preview/](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/apps/aevum_ios/web_preview/) (`http://localhost:3000`) | 🟢 Actif |
+| **🌌 Aevum (Marketing ASO)** | GTM / ASO | Fiche Métadonnées App Store Connect (Titres, Keywords) | [APP_STORE_METADATA.md](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/apps/aevum_ios/APP_STORE_METADATA.md) | 🟢 Prêt |
+| **🌌 Aevum (Déploiement)** | App Dev | Guide de Packaging & Compilation Mac/Xcode TestFlight | [README_XCODE_MAC.md](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/apps/aevum_ios/README_XCODE_MAC.md) | 🟢 Prêt |
 | **💼 Assistant & Carrière** | Assistant | Moteur de Scoring & Job Matcher ATS | [job_matcher.py](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/04_Productivite_Admin/career_ops/job_matcher.py) | 🟢 Opérationnel |
-| **🧭 Intent Graph Router** | Orchestration | Routeur d'Exécution & Knowledge Graph d'Intentions | [harness_graph_router.js](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/toolbox/harness_graph_router.js) | 🟢 Opérationnel |
-| **🗺️ Master Plan DAG Validator** | Orchestration | Auditeur Déterministe de Topologie & Dépendances | [dag_validator.js](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App/toolbox/dag_validator.js) | 🟢 Opérationnel |
+| **🧭 Intent Graph Router** | Orchestration | Routeur d'Exécution & Knowledge Graph d'Intentions | [harness_graph_router.js](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/toolbox/harness_graph_router.js) | 🟢 Opérationnel |
+| **🗺️ Master Plan DAG Validator** | Orchestration | Auditeur Déterministe de Topologie & Dépendances | [dag_validator.js](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/toolbox/dag_validator.js) | 🟢 Opérationnel |
 | **📡 Hermes Graph Ingestion** | Assistant | Moteur d'Ingestion & Graphe d'Observations/Entités | [hermes_adapter.js](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/02_Automatisation/hermes_adapter.js) | 🟢 Opérationnel |
 | **💼 Career Proof Engine** | Assistant | Moteur de Scoring ATS & Preuves de Code Bipartites | [career_proof_engine.js](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/04_Productivite_Admin/career_ops/career_proof_engine.js) | 🟢 Opérationnel |
 | **🔍 AEO Entity Graph** | GTM / AEO | Graphe Sémantique Schema.org JSON-LD Citations IA | [aeo_graph_auditor.js](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/toolbox/core/aeo_graph_auditor.js) | 🟢 Opérationnel |
 | **🤝 B2B Buying Committee Engine** | GTM / Outbound | Moteur Décisionnel de Prospection & Comités d'Achat | [buying_committee_engine.js](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/toolbox/core/buying_committee_engine.js) | 🟢 Opérationnel |
+| **🔥 Firecrawl Developer Index** | Transversal | Recherche Documentaire Primaire dans 70M+ Sources Techniques | [firecrawl_dev_search.js](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/02_Automatisation/core/firecrawl_dev_search.js) | 🟢 Opérationnel |
+| **🚪 Protocole des 4 Portes** | App Dev | Standard de Cadrage & Gatekeeping Dev avec Open Design MCP | [protocol_4_portes_gatekeeping.md](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/01_Core_Standards/protocol_4_portes_gatekeeping.md) | 🟢 Opérationnel |
+| **🛡️ Gatekeeper CLI** | App Dev / Toolbox | Auditeur Déterministe de Conformité des 4 Portes | [gatekeeper.js](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/toolbox/gatekeeper.js) | 🟢 Opérationnel |
+| **🌌 Master Plan Cockpit** | Dashboard / IHM | Cockpit Visuel 4 Onglets avec Live Render & Previews | [cockpit/](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/toolbox/cockpit/) (`http://localhost:4000`) | 🟢 Opérationnel |
 
 ```mermaid
 graph TD
@@ -104,7 +122,7 @@ Ce Master Plan est conçu pour s'adapter avec la même rigueur à tous les cas d
 | :--- | :--- | :--- |
 | Growth, Marketing, Ventes, Tracking & Attribution | `01_GTM_Growth/` | `01_GTM_Growth/contexte_global_gtm.md` |
 | Assistant Personnel, Veille & Productivité | `02_Assistant_Personnel/` | `02_Assistant_Personnel/regles_assistant.md` |
-| Développement d'App, Design & Sécurité Strix | `03_Developpement_App/` | `03_Developpement_App/guidelines_dev.md` |
+| Développement d'App, Design & Sécurité Strix | `03_Developpement_App_and_Design/` | `03_Developpement_App_and_Design/guidelines_dev.md` |
 
 ---
 
@@ -128,15 +146,18 @@ Tu as l'INTERDICTION d'installer des paquets globaux polluants directement sur l
 - **Architecture Toolbox + Pipelines :** Les outils (Finders, Verifiers, Investigators, Analytics) sont des briques unitaires dans `toolbox/`. Les cas d'usage (B2B, B2C, Hygiene) les assemblent via `pipelines/`.
 - **Méthode Waterfall :** Les APIs d'enrichissement s'exécutent en cascade pour optimiser les quotas (0€ de coût).
 - **Quality Gates :** Tout livrable passe par les linters (`email_linter.py`, `ai_slop_linter.py`, `schema_validator.py`, `tracking_validator.py`).
+- **Firecrawl Developer Index :** Vérification documentaire via [`firecrawl_gtm_adapter.js`](file:///c:/Users/HP/Desktop/Master%20Plan/01_GTM_Growth/toolbox/core/firecrawl_gtm_adapter.js) pour les specs Schema.org, tracking GA4/GTM et docs API d'enrichissement.
 
 ### 2. App Development
 - **Code Clean & Typé :** Utilisation stricte du typage (TypeScript, Python Type Hints). 
 - **Sécurité Strix :** Audit OWASP Top 10 obligatoire avant tout déploiement.
 - **🛡️ Anti-AI-Slop Visuel (OBLIGATOIRE) :** Toute production UI (HTML, CSS, JS) est soumise à la [règle anti-slop visuel](file:///c:/Users/HP/Desktop/Master%20Plan/.agents/rules/ui_visual_anti_slop.md) : tokens CSS obligatoires, zéro blur décoratif, palette 60-30-10, tracking typographique négatif, grille 8px. Checklist pré-livraison en 10 points obligatoire.
+- **Firecrawl Developer Index :** Vérification documentaire via [`firecrawl_dev_adapter.js`](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/toolbox/firecrawl_dev_adapter.js) pour les specs SwiftUI/HealthKit, résolution d'erreurs et recherche de packages.
 
 ### 3. Personal Assistant
 - **Safe Mode :** Tout script de communication génère un draft dans `Workspace/` avant exécution.
 - **Veille Active :** Rapports périodiques de santé des outils via `gtm_ai_watchtower.py`.
+- **Firecrawl Developer Index :** Module noyau [`firecrawl_dev_search.js`](file:///c:/Users/HP/Desktop/Master%20Plan/02_Assistant_Personnel/02_Automatisation/core/firecrawl_dev_search.js) + commande `/dev` sur El interpretor (Telegram).
 
 ---
 **Initialisation :** Je (l'agent IA) confirme avoir assimilé cette architecture universelle et sa vocation polyvalente multi-casquettes.

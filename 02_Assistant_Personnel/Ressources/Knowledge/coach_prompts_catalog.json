@@ -1,0 +1,146 @@
+{
+  "version": "1.0.0",
+  "name": "Coach Personnel 3x3 — Catalogue des Exercices et Protocoles",
+  "morning_prompts": [
+    {
+      "id": "matin_01",
+      "theme": "Priorité Unique & Intentional Blindness",
+      "mindset": "La clarté précède la vitesse. Ce que tu choisis d'ignorer détermine ta productivité.",
+      "questions": [
+        "Quelle est la SEULE action qui, si elle est accomplie aujourd'hui, rendra tout le reste secondaire ?",
+        "Quel piège de distraction habituel risques-tu de rencontrer, et quelle phrase te diras-tu pour l'esquiver ?"
+      ]
+    },
+    {
+      "id": "matin_02",
+      "theme": "La Dichotomie du Contrôle (Épictète)",
+      "mindset": "Ne gaspille pas une goutte d'énergie sur ce qui échappe à ton pouvoir direct.",
+      "questions": [
+        "Quel événement ou préoccupation t'occupe l'esprit ce matin ?",
+        "Dans cette situation, que peux-tu contrôler à 100 %, et que dois-tu accepter de lâcher immédiatement ?"
+      ]
+    },
+    {
+      "id": "matin_03",
+      "theme": "Premeditatio Malorum (Anticipation de l'Obstacle)",
+      "mindset": "L'inattendu n'est destructeur que pour celui qui ne l'a pas imaginé.",
+      "questions": [
+        "Quelle est la friction la plus probable qui pourrait faire dérailler ta journée ?",
+        "Si cette friction survient à 15h, quel est ton plan de riposte calme en une étape ?"
+      ]
+    },
+    {
+      "id": "matin_04",
+      "theme": "Vaincre la Procrastination (Règle des 2 Minutes)",
+      "mindset": "L'inertie mentale est 10 fois plus lourde que l'action elle-même.",
+      "questions": [
+        "Quelle tâche importante repousses-tu depuis plus de 48 heures ?",
+        "Quelle est la micro-version de 2 minutes de cette tâche que tu peux amorcer avant 10h ?"
+      ]
+    },
+    {
+      "id": "matin_05",
+      "theme": "Le Biais du Coût Irrécupérable",
+      "mindset": "Le passé est payé. Décide toujours en regardant le futur, jamais le temps déjà englouti.",
+      "questions": [
+        "Y a-t-il un projet, un échange ou une tâche que tu poursuis uniquement par habitude ou culpabilité ?",
+        "Si tu recommençais à zéro aujourd'hui, choisirais-tu de lancer cette action ? Si non, comment l'élagues-tu ?"
+      ]
+    }
+  ],
+  "midday_protocols": [
+    {
+      "id": "RESP-01",
+      "name": "Le Soupir Physiologique (Huberman)",
+      "durationSeconds": 26,
+      "target": "Nerf Vague & Réinitialisation de la vigilance",
+      "instructions": [
+        "1. Prends une première grande inspiration par le nez.",
+        "2. Au sommet, ajoute une seconde petite inspiration brève pour ouvrir les alvéoles au maximum.",
+        "3. Expire lentement et complètement par la bouche pendant 6 à 8 secondes.",
+        "4. Répète 3 cycles consécutifs en relâchant complètement les épaules."
+      ]
+    },
+    {
+      "id": "RESP-02",
+      "name": "Expiration Prolongeante 1:2",
+      "durationSeconds": 30,
+      "target": "Frein Vagal & Abaissement de la pression artérielle",
+      "instructions": [
+        "1. Inspire par le nez en comptant 4 secondes mentalement.",
+        "2. Expire par la bouche pincée en comptant 8 secondes (double de l'inspiration).",
+        "3. Effectue 3 répétitions calmes pour signaler au système nerveux que tu es en sécurité."
+      ]
+    },
+    {
+      "id": "VIS-01",
+      "name": "Règle 20-20-20 & Focalisation Lointaine",
+      "durationSeconds": 20,
+      "target": "Décompression Ciliaire & Fatigue Oculaire",
+      "instructions": [
+        "1. Détache tes yeux de l'écran immédiatement.",
+        "2. Fixe un point situé à au moins 6 mètres (ou par la fenêtre à l'horizon).",
+        "3. Maintiens le regard relâché pendant 20 secondes en clignant des paupières 5 fois."
+      ]
+    },
+    {
+      "id": "POST-01",
+      "name": "Décompression Cervicale C1-C7",
+      "durationSeconds": 45,
+      "target": "Rachis Cervical & Relâchement des Trapèzes",
+      "instructions": [
+        "1. Redresse ta colonne, recule doucement le menton vers l'arrière (double menton léger).",
+        "2. Imagine un fil qui tire le sommet de ton crâne vers le ciel.",
+        "3. Baisse les épaules au maximum et maintiens 3 respirations complètes."
+      ]
+    },
+    {
+      "id": "RESP-03",
+      "name": "Respiration Carrée (Box Breathing 4-4-4-4)",
+      "durationSeconds": 32,
+      "target": "Calme Émotionnel & Recentrage Cognitif",
+      "instructions": [
+        "1. Inspire 4 secondes.",
+        "2. Bloque poumons pleins 4 secondes.",
+        "3. Expire 4 secondes.",
+        "4. Bloque poumons vides 4 secondes.",
+        "5. Répète 2 cycles complets."
+      ]
+    }
+  ],
+  "evening_prompts": [
+    {
+      "id": "soir_01",
+      "theme": "Fermeture des Boucles & Décharge Cognitive",
+      "questions": [
+        "Quelle pensée ou friction tourne encore en boucle dans ta tête ce soir ?",
+        "Dépose-la ici en une phrase pour la sortir de ta mémoire vive avant de dormir."
+      ]
+    },
+    {
+      "id": "soir_02",
+      "theme": "Victoire Silencieuse & Rétrospective Stoïcienne",
+      "questions": [
+        "Où as-tu fait preuve de retenue ou de discipline aujourd'hui sans que personne ne le remarque ?",
+        "Quelle leçon concrète gardes-tu de cette journée pour ajuster demain ?"
+      ]
+    },
+    {
+      "id": "soir_03",
+      "theme": "Gratitude Neutre & Bilan d'Énergie",
+      "questions": [
+        "Quel moment calme de ta journée as-tu apprécié aujourd'hui ?",
+        "À quelle heure coupes-tu définitivement tes écrans pour protéger ta mélatonine ?"
+      ]
+    }
+  ],
+  "weekly_prompts": {
+    "theme": "Dérivation des 3 Ajustements Comportementaux",
+    "intro": "Bilan de fin de semaine basé sur tes écrits quotidiens et tes complétions somatiques.",
+    "questions": [
+      "Quel a été ton plus grand levier d'énergie cette semaine ?",
+      "Quel comportement récurrent t'a ralenti ou dispersé ?",
+      "Quels sont les 3 micro-ajustements non-négociables que nous verrouillons pour la semaine prochaine ?"
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "name": "Aevum Decompression Articles",
+  "video": {
+    "title": "La boucle de dopamine et la fatigue attentionnelle",
+    "durationSeconds": 45,
+    "source": "Stanford Neuroscience Lab",
+    "prompt": "Cette vidéo touche à sa fin. Découvre l'article pour aller plus loin."
+  },
+  "article": {
+    "title": "Pourquoi le scroll continu épuise votre cortex préfrontal",
+    "readingTime": "5 min de lecture",
+    "sections": [
+      {
+        "heading": "Le piège de la récompense intermittente",
+        "body": "Le défilement continu sur les plateformes vidéo exploite le mécanisme de récompense variable. Chaque balayage est un tirage de machine à sous neurologique qui sature vos récepteurs de dopamine sans jamais apporter de satiété cognitive."
+      },
+      {
+        "heading": "Rupture de transe et lecture lente",
+        "body": "Pour désamorcer cette hypnose, l'interruption mécanique de la vidéo et la transition vers un texte statique forcent le cerveau à ralentir. En passant de 120 images par minute à une lecture linéaire, le tonus vagal remonte et l'agitation mentale s'estompe."
+      },
+      {
+        "heading": "Le protocole de reconquête",
+        "body": "Conservez cette lecture pendant au moins 3 minutes avant de poser votre écran. Ce sas neutre protège votre architecture circadienne et rétablit votre capacité de concentration pour le reste de la journée."
+      }
+    ]
+  }
+}

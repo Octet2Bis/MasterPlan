@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "name": "GTM ICP & Strategic Positioning Matrix",
+  "segments": [
+    {
+      "id": "b2c_health_conscious",
+      "target": "Biohackers, Sportifs & Professionnels sur-connectés",
+      "pain_point": "Fatigue décisionnelle, temps d'écran excessif (3h+), baisse de variabilité cardiaque (VRC)",
+      "value_proposition": "Aevum transforme chaque déverrouillage d'écran en micro-défi de santé régénératif de 30 secondes",
+      "pricing_tier": "Freemium + 4.99€/mois Premium"
+    },
+    {
+      "id": "b2b_corporate_wellness",
+      "target": "Directeurs RH, Responsables QVT & Bien-être en entreprise",
+      "pain_point": "Burnout numérique, baisse de productivité liée aux interruptions constantes",
+      "value_proposition": "Programme d'hygiène numérique d'équipe avec baromètre anonymisé d'énergie et de vitalité",
+      "pricing_tier": "Licence Entreprise par collaborateur"
+    }
+  ]
+}

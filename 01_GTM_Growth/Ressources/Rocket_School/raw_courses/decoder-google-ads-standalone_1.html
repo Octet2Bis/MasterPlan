@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Décoder Google Ads</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* ============================================================
+   DÉCODER GOOGLE ADS — Rocket School, promo S99
+   Palette « Encre & Signal » : encre marine, bleu signal,
+   rampe séquentielle pour les étages du tunnel, surligneur.
+   ============================================================ */
+
+:root{
+  /* ---------- palette claire (défaut) ---------- */
+  --paper:#EBEFF5;
+  --surface:#FFFFFF;
+  --surface-2:#F4F7FB;
+  --surface-3:#E7ECF4;
+  --ink:#0E1726;
+  --ink-2:#3E5069;
+  --ink-3:#566880;
+  --line:#D5DEEA;
+  --line-2:#B7C4D6;
+  --accent:#1F3FBF;
+  --accent-2:#16309A;
+  --accent-soft:#E3E9FB;
+  --ok:#136B47;
+  --ok-soft:#DCEFE5;
+  --warn:#8E5D09;
+  --warn-soft:#FAEDD1;
+  --bad:#A9302A;
+  --bad-soft:#FAE2DF;
+  --mark:#FFE49B;
+  --on-accent:#FFFFFF;
+  --ground:#0E1726;
+  --tofu:#93A6E4;
+  --mofu:#4A63C9;
+  --bofu:#182B7E;
+  --tofu-fg:#0E1726; --mofu-fg:#FFFFFF; --bofu-fg:#FFFFFF;
+  --shadow-1:0 1px 1px rgba(14,23,38,.05), 0 6px 18px -10px rgba(14,23,38,.22);
+  --shadow-2:0 2px 4px rgba(14,23,38,.06), 0 18px 40px -22px rgba(14,23,38,.35);
+
+  /* ---------- réserve sombre ---------- */
+  --d-paper:#080D15;
+  --d-surface:#111A27;
+  --d-surface-2:#17222F;
+  --d-surface-3:#1E2A39;
+  --d-ink:#E6EDF6;
+  --d-ink-2:#AEBED2;
+  --d-ink-3:#7E90A7;
+  --d-line:#263446;
+  --d-line-2:#3A4A61;
+  --d-accent:#8CA2FF;
+  --d-accent-2:#B7C6FF;
+  --d-accent-soft:#1A2547;
+  --d-ok:#5FD2A0;
+  --d-ok-soft:#0F2A20;
+  --d-warn:#E3B25E;
+  --d-warn-soft:#2E2410;
+  --d-bad:#F0897E;
+  --d-bad-soft:#331A19;
+  --d-mark:#4A3A10;
+  --d-on-accent:#080D15;
+  --d-ground:#1A2450;
+  --d-tofu:#4E5F94;
+  --d-mofu:#8496E8;
+  --d-bofu:#C6D2FF;
+  --d-tofu-fg:#FFFFFF; --d-mofu-fg:#0B1220; --d-bofu-fg:#0B1220;
+  --d-shadow-1:0 1px 1px rgba(0,0,0,.4), 0 6px 18px -10px rgba(0,0,0,.6);
+  --d-shadow-2:0 2px 4px rgba(0,0,0,.45), 0 18px 40px -22px rgba(0,0,0,.8);
+
+  /* ---------- typographie ---------- */
+  --display:"Bricolage Grotesque","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --measure:68ch;
+  --rail:250px;
+  --r-s:6px; --r-m:10px; --r-l:16px;
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:var(--d-paper); --surface:var(--d-surface); --surface-2:var(--d-surface-2);
+    --surface-3:var(--d-surface-3); --ink:var(--d-ink); --ink-2:var(--d-ink-2);
+    --ink-3:var(--d-ink-3); --line:var(--d-line); --line-2:var(--d-line-2);
+    --accent:var(--d-accent); --accent-2:var(--d-accent-2); --accent-soft:var(--d-accent-soft);
+    --ok:var(--d-ok); --ok-soft:var(--d-ok-soft); --warn:var(--d-warn); --warn-soft:var(--d-warn-soft);
+    --bad:var(--d-bad); --bad-soft:var(--d-bad-soft); --mark:var(--d-mark); --on-accent:var(--d-on-accent); --ground:var(--d-ground); --on-accent:var(--d-on-accent);
+    --tofu:var(--d-tofu); --mofu:var(--d-mofu); --bofu:var(--d-bofu);
+    --tofu-fg:var(--d-tofu-fg); --mofu-fg:var(--d-mofu-fg); --bofu-fg:var(--d-bofu-fg);
+    --shadow-1:var(--d-shadow-1); --shadow-2:var(--d-shadow-2);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:var(--d-paper); --surface:var(--d-surface); --surface-2:var(--d-surface-2);
+  --surface-3:var(--d-surface-3); --ink:var(--d-ink); --ink-2:var(--d-ink-2);
+  --ink-3:var(--d-ink-3); --line:var(--d-line); --line-2:var(--d-line-2);
+  --accent:var(--d-accent); --accent-2:var(--d-accent-2); --accent-soft:var(--d-accent-soft);
+  --ok:var(--d-ok); --ok-soft:var(--d-ok-soft); --warn:var(--d-warn); --warn-soft:var(--d-warn-soft);
+  --bad:var(--d-bad); --bad-soft:var(--d-bad-soft); --mark:var(--d-mark);
+  --tofu:var(--d-tofu); --mofu:var(--d-mofu); --bofu:var(--d-bofu);
+  --tofu-fg:var(--d-tofu-fg); --mofu-fg:var(--d-mofu-fg); --bofu-fg:var(--d-bofu-fg);
+  --shadow-1:var(--d-shadow-1); --shadow-2:var(--d-shadow-2);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+@media (max-width:640px){ body{font-size:16px;} }
+
+:where(a){color:var(--accent-2);text-underline-offset:3px;text-decoration-thickness:1px;}
+:where(a):hover{color:var(--accent);}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:3px;}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+html{scroll-behavior:smooth;}
+
+/* ===================== MASTHEAD ===================== */
+.masthead{
+  background:var(--ground);
+  color:#EAF0F8;
+  padding:34px 24px 30px;
+  border-bottom:3px solid var(--accent);
+}
+.masthead-in{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:26px;align-items:flex-end;justify-content:space-between;}
+.eyebrow{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:#8CA2FF;margin:0 0 10px;display:flex;flex-wrap:wrap;gap:6px 14px;
+}
+.masthead h1{
+  font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,5.4vw,3.6rem);
+  line-height:1.02;letter-spacing:-.028em;margin:0;text-wrap:balance;color:#FFF;
+}
+.masthead h1 em{font-style:normal;color:#8CA2FF;}
+.masthead .kicker{margin:14px 0 0;max-width:56ch;color:#AEBED2;font-size:1.02rem;}
+.masthead-meta{display:flex;flex-direction:column;gap:10px;align-items:flex-start;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;
+  border:1px solid rgba(140,162,255,.42);color:#C8D4F5;border-radius:999px;padding:5px 12px;white-space:nowrap;
+}
+
+/* ===================== SHELL ===================== */
+.shell{max-width:1180px;margin:0 auto;padding:0 24px 96px;display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:48px;align-items:start;}
+@media (max-width:960px){ .shell{grid-template-columns:1fr;gap:0;padding-bottom:64px;} }
+
+/* ---- rail ---- */
+.rail{position:sticky;top:20px;padding:28px 0 0;max-height:calc(100vh - 40px);overflow-y:auto;}
+@media (max-width:960px){ .rail{position:static;max-height:none;padding:22px 0 0;} }
+.rail h2{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin:0 0 12px;font-weight:600;}
+.rail ol{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:1px;counter-reset:mod;}
+.rail li a{
+  display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:baseline;
+  padding:7px 10px;border-radius:var(--r-s);text-decoration:none;color:var(--ink-2);font-size:14.5px;line-height:1.3;
+  border-left:2px solid transparent;
+}
+.rail li a:hover{background:var(--surface);color:var(--ink);}
+.rail li a.on{background:var(--accent-soft);color:var(--accent-2);border-left-color:var(--accent);font-weight:600;}
+.rail .num{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);}
+.rail li a.on .num{color:var(--accent);}
+.rail .dur{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);display:block;margin-top:2px;}
+
+.railbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:14px;margin-bottom:16px;box-shadow:var(--shadow-1);}
+.railbox p{margin:0 0 10px;font-size:13px;color:var(--ink-2);line-height:1.45;}
+.railbox p:last-child{margin-bottom:0;}
+
+.toggle{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13.5px;color:var(--ink);user-select:none;}
+.toggle input{position:absolute;opacity:0;width:0;height:0;}
+.track{width:40px;height:22px;border-radius:999px;background:var(--line-2);position:relative;transition:background .18s ease;flex:none;}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--surface);transition:transform .18s ease;box-shadow:0 1px 2px rgba(0,0,0,.3);}
+.toggle input:checked + .track{background:var(--accent);}
+.toggle input:checked + .track::after{transform:translateX(18px);}
+.toggle input:focus-visible + .track{outline:3px solid var(--accent);outline-offset:2px;}
+
+/* ===================== DOC ===================== */
+.doc{padding-top:40px;min-width:0;}
+.doc > section{scroll-margin-top:20px;margin-bottom:74px;}
+
+.modhead{border-top:2px solid var(--ink);padding-top:16px;margin-bottom:26px;}
+.modhead .line{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin-bottom:8px;}
+.modhead .idx{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--accent);}
+.modhead .time{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);border:1px solid var(--line-2);border-radius:999px;padding:3px 10px;}
+.modhead h2{
+  font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,3.5vw,2.35rem);
+  letter-spacing:-.022em;line-height:1.08;margin:0;text-wrap:balance;
+}
+.modhead .sub{margin:10px 0 0;color:var(--ink-2);max-width:var(--measure);font-size:1.02rem;}
+
+.doc h3{
+  font-family:var(--display);font-weight:700;font-size:1.32rem;letter-spacing:-.012em;
+  margin:38px 0 12px;line-height:1.2;text-wrap:balance;
+}
+.doc h4{
+  font-family:var(--body);font-weight:700;font-size:1.02rem;margin:26px 0 8px;letter-spacing:-.005em;
+}
+.doc p{margin:0 0 14px;max-width:var(--measure);}
+.doc ul,.doc ol{max-width:var(--measure);margin:0 0 16px;padding-left:1.25em;}
+.doc li{margin-bottom:7px;}
+.doc li::marker{color:var(--ink-3);}
+.doc strong{font-weight:600;color:var(--ink);}
+mark{background:var(--mark);color:var(--ink);padding:.06em .22em;border-radius:3px;}
+.lead{font-size:1.08rem;color:var(--ink-2);}
+
+.say{
+  border-left:3px solid var(--accent);padding:2px 0 2px 18px;margin:0 0 18px;
+  max-width:var(--measure);font-size:1.06rem;color:var(--ink);font-weight:500;
+}
+
+/* ---- callouts ---- */
+.box{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-m);padding:18px 20px;margin:22px 0;max-width:var(--measure);box-shadow:var(--shadow-1);}
+.box > :first-child{margin-top:0;}
+.box > :last-child{margin-bottom:0;}
+.box .tag{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  display:inline-block;margin-bottom:8px;font-weight:600;
+}
+.box.key{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 30%,transparent);}
+.box.key .tag{color:var(--accent-2);}
+.box.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 32%,transparent);}
+.box.warn .tag{color:var(--warn);}
+.box.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 32%,transparent);}
+.box.bad .tag{color:var(--bad);}
+.box.ok{background:var(--ok-soft);border-color:color-mix(in srgb,var(--ok) 32%,transparent);}
+.box.ok .tag{color:var(--ok);}
+
+/* ---- notes formateur ---- */
+.note{display:none;}
+.page.coach .note{
+  display:block;border:1px dashed var(--line-2);border-left:3px solid var(--ink-3);
+  background:var(--surface-2);border-radius:0 var(--r-s) var(--r-s) 0;
+  padding:14px 16px;margin:18px 0;max-width:var(--measure);
+}
+.page.coach .note::before{
+  content:"Note formateur";display:block;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px;font-weight:600;
+}
+.page.coach .note p:last-child{margin-bottom:0;}
+.page.coach .note ul:last-child{margin-bottom:0;}
+
+/* ---- formules ---- */
+.formula{
+  font-family:var(--mono);font-size:15px;background:var(--surface);border:1px solid var(--line);
+  border-left:3px solid var(--accent);border-radius:0 var(--r-s) var(--r-s) 0;
+  padding:14px 18px;margin:16px 0;max-width:var(--measure);overflow-x:auto;
+  font-variant-numeric:tabular-nums;
+}
+.formula .q{display:block;font-family:var(--body);font-size:14px;color:var(--ink-3);margin-top:8px;font-style:italic;}
+
+/* ---- tableaux ---- */
+.tablewrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:var(--r-m);background:var(--surface);box-shadow:var(--shadow-1);}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px;}
+caption{
+  text-align:left;padding:13px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--line);font-weight:600;
+}
+th,td{padding:10px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;}
+thead th{
+  font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-2);font-weight:600;background:var(--surface-2);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none;}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;}
+tbody tr:hover{background:var(--surface-2);}
+.hint{font-size:13px;color:var(--ink-3);margin:-8px 0 20px;max-width:var(--measure);}
+
+.v-ok{color:var(--ok);font-weight:600;}
+.v-warn{color:var(--warn);font-weight:600;}
+.v-bad{color:var(--bad);font-weight:600;}
+.blank{color:var(--ink-3);font-style:italic;}
+
+/* ---- cartes métriques ---- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:14px;margin:22px 0;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:16px 18px;box-shadow:var(--shadow-1);}
+.card .abbr{font-family:var(--display);font-weight:700;font-size:1.18rem;letter-spacing:-.01em;margin:0 0 2px;}
+.card .full{font-size:12.5px;color:var(--ink-3);margin:0 0 10px;}
+.card .calc{font-family:var(--mono);font-size:12.5px;color:var(--accent-2);background:var(--accent-soft);padding:5px 9px;border-radius:var(--r-s);display:inline-block;margin-bottom:10px;}
+.card p{font-size:14px;margin:0;color:var(--ink-2);max-width:none;}
+.card .ask{font-weight:600;color:var(--ink);display:block;margin-bottom:5px;}
+
+/* ---- calculateur ---- */
+.calcbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l);padding:22px;margin:26px 0;box-shadow:var(--shadow-2);}
+.calcbox h4{margin-top:0;}
+.inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0 20px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600;}
+.field input{
+  font-family:var(--mono);font-size:15px;padding:9px 11px;border:1px solid var(--line-2);
+  border-radius:var(--r-s);background:var(--surface-2);color:var(--ink);width:100%;
+  font-variant-numeric:tabular-nums;
+}
+.field input:focus{border-color:var(--accent);background:var(--surface);}
+.outs{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;}
+.out{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 13px;}
+.out .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600;}
+.out .v{font-family:var(--display);font-weight:700;font-size:1.42rem;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:2px;line-height:1.1;}
+.out .n{font-size:11.5px;color:var(--ink-3);margin-top:3px;line-height:1.35;}
+.read{margin-top:18px;padding:15px 17px;border-radius:var(--r-m);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 26%,transparent);font-size:14.5px;}
+.read strong{color:var(--accent-2);}
+.read ul{margin:8px 0 0;padding-left:1.15em;}
+.read li{margin-bottom:5px;font-size:14px;}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+.btn{
+  font-family:var(--body);font-size:13px;font-weight:500;padding:6px 13px;border-radius:999px;
+  border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink-2);cursor:pointer;transition:all .15s ease;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent-2);background:var(--accent-soft);}
+.btn.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
+
+/* ---- grille de diagnostic ---- */
+.diaghead{display:grid;grid-template-columns:1fr;gap:10px;margin:22px 0 12px;}
+.diag{display:flex;flex-direction:column;gap:9px;margin:20px 0 26px;}
+details.dx{border:1px solid var(--line);border-radius:var(--r-m);background:var(--surface);overflow:hidden;box-shadow:var(--shadow-1);}
+details.dx[open]{border-color:var(--line-2);}
+details.dx summary{
+  cursor:pointer;padding:14px 18px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
+  list-style:none;font-weight:600;font-size:15px;
+}
+details.dx summary::-webkit-details-marker{display:none;}
+details.dx summary:hover{background:var(--surface-2);}
+.dx .sig{font-family:var(--mono);font-size:11px;color:var(--ink-3);font-weight:600;letter-spacing:.06em;}
+.dx .sym{font-weight:600;line-height:1.35;}
+.dx .arrow{color:var(--ink-3);font-size:13px;transition:transform .18s ease;}
+details.dx[open] .arrow{transform:rotate(90deg);}
+.dx-body{padding:2px 18px 18px;border-top:1px solid var(--line);}
+.dx-body dl{margin:0;display:grid;gap:2px;}
+.dx-body dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-top:14px;}
+.dx-body dd{margin:4px 0 0;font-size:14.6px;line-height:1.55;max-width:var(--measure);}
+.dx-body dd.case{color:var(--ink-2);border-left:2px solid var(--mark);padding-left:12px;}
+
+/* ---- tunnel ---- */
+.funnel{display:flex;flex-direction:column;align-items:center;gap:8px;margin:26px 0;max-width:660px;margin-inline:auto;}
+.stage{border-radius:var(--r-m);padding:16px 22px;display:grid;grid-template-columns:1fr;gap:4px;}
+.stage.t{background:var(--tofu);color:var(--tofu-fg);width:100%;}
+.stage.m{background:var(--mofu);color:var(--mofu-fg);width:80%;}
+.stage.b{background:var(--bofu);color:var(--bofu-fg);width:58%;}
+.stage .st{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;opacity:.92;}
+.stage .sn{font-family:var(--display);font-weight:700;font-size:1.14rem;letter-spacing:-.01em;}
+.stage .sd{font-size:13.5px;opacity:.92;line-height:1.4;}
+@media (max-width:640px){ .stage.m,.stage.b{width:100%;} }
+
+/* ---- quiz ---- */
+.quiz{display:flex;flex-direction:column;gap:14px;margin:22px 0;}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:18px 20px;box-shadow:var(--shadow-1);}
+.q .qn{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--accent);font-weight:600;margin-bottom:6px;}
+.q .qt{font-weight:600;margin-bottom:12px;line-height:1.45;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{
+  text-align:left;padding:10px 14px;border:1px solid var(--line-2);border-radius:var(--r-s);
+  background:var(--surface-2);color:var(--ink);cursor:pointer;font-family:var(--body);font-size:14.5px;
+  line-height:1.4;transition:all .14s ease;
+}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-soft);}
+.opt:disabled{cursor:default;}
+.opt.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:600;}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);}
+.exp{margin-top:12px;padding:12px 14px;border-radius:var(--r-s);background:var(--surface-2);border-left:3px solid var(--accent);font-size:14px;display:none;}
+.exp.show{display:block;}
+.score{font-family:var(--mono);font-size:13px;color:var(--ink-2);padding:12px 16px;border:1px dashed var(--line-2);border-radius:var(--r-m);text-align:center;}
+
+/* ---- divers ---- */
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:22px 0;}
+.split .box{margin:0;max-width:none;}
+.steps{counter-reset:s;list-style:none;padding:0;max-width:var(--measure);margin:20px 0;display:flex;flex-direction:column;gap:12px;}
+.steps > li{
+  counter-increment:s;position:relative;padding:14px 18px 14px 54px;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-m);margin:0;box-shadow:var(--shadow-1);
+}
+.steps > li::before{
+  content:counter(s);position:absolute;left:16px;top:14px;font-family:var(--mono);font-size:12px;font-weight:600;
+  width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;
+}
+.steps > li strong{display:block;margin-bottom:3px;}
+.steps > li p{margin:0;font-size:14.5px;color:var(--ink-2);}
+.steps > li ul{margin:8px 0 0;font-size:14px;}
+
+.code{
+  font-family:var(--mono);font-size:13px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r-m);padding:14px 16px;overflow-x:auto;margin:14px 0;white-space:pre;color:var(--ink);
+}
+code{font-family:var(--mono);font-size:.9em;background:var(--surface-3);padding:.1em .35em;border-radius:4px;}
+.glossary{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 24px;margin:20px 0;}
+.glossary div{border-bottom:1px solid var(--line);padding:10px 0;}
+.glossary dt{font-weight:600;font-size:14.5px;}
+.glossary dd{margin:2px 0 0;font-size:13.5px;color:var(--ink-2);line-height:1.45;}
+.glossary dd em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--ink-3);}
+
+.footnote{border-top:1px solid var(--line);margin-top:60px;padding-top:22px;font-size:13.5px;color:var(--ink-3);}
+.footnote a{color:var(--ink-2);}
+.footnote ul{columns:2;column-gap:32px;max-width:none;}
+@media (max-width:640px){ .footnote ul{columns:1;} }
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="page" id="page">
+
+<header class="masthead">
+  <div class="masthead-in">
+    <div>
+      <p class="eyebrow"><span>Rocket School</span><span>·</span><span>Promo S99</span><span>·</span><span>Growth</span></p>
+      <h1>Décoder<br><em>Google&nbsp;Ads</em></h1>
+      <p class="kicker">Une matinée pour ne plus jamais regarder un tableau de campagne sans savoir quoi en dire. On lit les chiffres, on les croise, on comprend où la pub s'insère dans le tunnel. Sans dépenser un euro.</p>
+    </div>
+    <div class="masthead-meta">
+      <div class="pill-row">
+        <span class="pill">Vendredi 21 août 2026</span>
+        <span class="pill">9h00 → 12h30</span>
+      </div>
+      <div class="pill-row">
+        <span class="pill">Théorie · 0 € dépensé</span>
+        <span class="pill">+ 35 min emailing</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <nav class="rail" aria-label="Plan du cours">
+    <div class="railbox">
+      <label class="toggle">
+        <input type="checkbox" id="coach">
+        <span class="track" aria-hidden="true"></span>
+        <span>Mode formateur</span>
+      </label>
+      <p style="margin-top:10px;font-size:12.5px;">Affiche les notes d'animation, les minutages détaillés et les corrigés d'exercices.</p>
+    </div>
+
+    <h2>Plan de la matinée</h2>
+    <ol id="nav">
+      <li><a href="#m0"><span class="num">00</span><span>Pourquoi on est là<span class="dur">10 min</span></span></a></li>
+      <li><a href="#m1"><span class="num">01</span><span>Comment marche la machine<span class="dur">20 min</span></span></a></li>
+      <li><a href="#m2"><span class="num">02</span><span>Les 4 chiffres bruts<span class="dur">20 min</span></span></a></li>
+      <li><a href="#m3"><span class="num">03</span><span>Un taux, c'est une phrase<span class="dur">45 min</span></span></a></li>
+      <li><a href="#m4"><span class="num">04</span><span>Quelle part du gâteau ?<span class="dur">25 min</span></span></a></li>
+      <li><a href="#m5"><span class="num">05</span><span>Croiser les chiffres<span class="dur">50 min</span></span></a></li>
+      <li><a href="#m6"><span class="num">06</span><span>Configurer un compte<span class="dur">30 min</span></span></a></li>
+      <li><a href="#m7"><span class="num">07</span><span>Le tunnel de conversion<span class="dur">40 min</span></span></a></li>
+      <li><a href="#m8"><span class="num">08</span><span>Intro emailing<span class="dur">35 min</span></span></a></li>
+      <li><a href="#quiz"><span class="num">QZ</span><span>Quiz de fin<span class="dur">10 min</span></span></a></li>
+      <li><a href="#annexes"><span class="num">AN</span><span>Aide-mémoire &amp; glossaire</span></a></li>
+    </ol>
+  </nav>
+
+  <main class="doc">
+
+<!-- ============ MODULE 0 ============ -->
+<section id="m0">
+  <div class="modhead">
+    <div class="line"><span class="idx">MODULE 00</span><span class="time">10 min · 9h00</span></div>
+    <h2>Pourquoi on est là ce matin</h2>
+    <p class="sub">Poser le cadre avant de poser les chiffres. Ce cours n'est pas là pour vous faire lancer des campagnes.</p>
+  </div>
+
+  <h3>Ce que ce cours n'est <em>pas</em></h3>
+  <p>Vos landing pages sont faites et validées. <strong>L'objectif du challenge n'est pas de lancer des campagnes Google Ads.</strong> Personne ne va créer une campagne payante aujourd'hui, personne ne touchera au compte de Bruno, et vous n'aurez pas de budget publicitaire à dépenser.</p>
+
+  <div class="box key">
+    <span class="tag">Le cadre</span>
+    <p>Aujourd'hui, c'est une <strong>journée théorique</strong>. Matin : comprendre la publicité payante et savoir lire ses chiffres. Après-midi : préparer votre campagne mail. Google Ads est un <em>objet d'étude</em>, pas un livrable.</p>
+  </div>
+
+  <h3>Ce que ce cours <em>est</em></h3>
+  <p>Une compétence transférable. Les ratios que vous allez apprendre ce matin ne servent pas qu'à Google Ads : ce sont exactement les mêmes sur Meta Ads, LinkedIn Ads, TikTok Ads, dans un emailing, dans un tunnel e-commerce, et même dans votre reporting SEO. <mark>Apprendre à lire un taux une fois, c'est savoir lire tous les canaux.</mark></p>
+
+  <div class="say">À la fin de la matinée, devant n'importe quel tableau de campagne, vous saurez dire trois choses : ce qui va, ce qui ne va pas, et quoi faire ensuite.</div>
+
+  <h3>Les trois règles de la matinée</h3>
+  <ol>
+    <li><strong>Il n'y a pas de question bête.</strong> Un CTR, un CPA, un ROAS — ce sont des divisions. Rien de plus. Si un mot bloque, on s'arrête.</li>
+    <li><strong>On calcule à la main avant d'utiliser un outil.</strong> Une fois que vous avez posé la division vous-même, vous ne l'oubliez plus.</li>
+    <li><strong>Un chiffre seul ne veut rien dire.</strong> C'est la règle qui structure toute la matinée, et le module 05 y est entièrement consacré.</li>
+  </ol>
+
+  <div class="note">
+    <p><strong>Animation :</strong> commencer par un tour rapide — « qui a déjà cliqué sur une pub Google cette semaine ? » Presque tout le monde lève la main sans en être sûr : c'est le meilleur point d'entrée pour expliquer que la pub search est invisible parce qu'elle ressemble au résultat naturel.</p>
+    <p>Insister lourdement sur le cadrage : plusieurs vont vouloir « faire une vraie campagne ». Redire que Bruno ne veut pas qu'on aille sur son compte Google Ads, et que ce n'est pas un caprice — un compte publicitaire mal manipulé peut brûler un budget en quelques heures.</p>
+  </div>
+</section>
+
+<!-- ============ MODULE 1 ============ -->
+<section id="m1">
+  <div class="modhead">
+    <div class="line"><span class="idx">MODULE 01</span><span class="time">20 min · 9h10</span></div>
+    <h2>Comment marche la machine</h2>
+    <p class="sub">Avant de lire des chiffres, il faut savoir ce qu'ils mesurent. Trois minutes de mécanique, et tout le reste devient logique.</p>
+  </div>
+
+  <h3>L'enchère, en trente secondes</h3>
+  <p>Quelqu'un tape une requête dans Google. En moins d'un quart de seconde, Google organise une <strong>enchère</strong> entre tous les annonceurs qui veulent apparaître sur cette requête. Les gagnants s'affichent en haut ou en bas de la page de résultats. <strong>Vous ne payez que si la personne clique.</strong></p>
+
+  <div class="box">
+    <span class="tag">Analogie</span>
+    <p>Imaginez une place de marché où une nouvelle place se libère toutes les millisecondes. À chaque fois, un commissaire-priseur choisit qui a le droit de mettre son affiche. Sauf qu'il ne choisit pas seulement le plus offrant : il choisit celui dont l'affiche va le plus intéresser la personne qui passe.</p>
+  </div>
+
+  <h3>La règle contre-intuitive : le plus offrant ne gagne pas forcément</h3>
+  <p>Google classe les annonces avec le <strong>classement de l'annonce</strong> (<em>Ad Rank</em>). Officiellement, il combine votre enchère, la qualité de votre annonce et de votre page de destination, un seuil minimal d'éligibilité, la concurrence du moment, le contexte de la recherche (lieu, appareil, intention), et l'impact attendu de vos extensions.</p>
+
+  <div class="formula">Classement = Enchère × Qualité × Contexte
+<span class="q">Google le recalcule à chaque recherche. Vous ne « payez » pas une position : vous la gagnez à chaque fois.</span></div>
+
+  <div class="box ok">
+    <span class="tag">Pourquoi c'est une bonne nouvelle</span>
+    <p>Google le dit lui-même : même si un concurrent enchérit plus haut que vous, votre annonce peut être mieux placée <strong>et vous coûter moins cher</strong> si elle est plus pertinente. C'est ce qui permet à une petite structure de battre un gros budget. C'est aussi pour ça que la qualité de votre landing page compte autant que votre budget.</p>
+  </div>
+
+  <h3>La chaîne de valeur : ce que vous allez mesurer</h3>
+  <p>Toute la publicité tient dans cette chaîne. Chaque flèche est une déperdition, et chaque flèche a un taux qui la mesure.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>La chaîne — et le taux qui mesure chaque étape</caption>
+      <thead><tr><th>Étape</th><th>Ce qui se passe</th><th>Le taux qui la mesure</th><th>L'argent</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Requête</strong></td><td>Quelqu'un cherche quelque chose</td><td class="blank">—</td><td class="blank">—</td></tr>
+        <tr><td><strong>Impression</strong></td><td>Votre annonce s'affiche</td><td>Taux d'impressions</td><td class="blank">rien</td></tr>
+        <tr><td><strong>Clic</strong></td><td>La personne clique</td><td><strong>CTR</strong></td><td class="v-bad">l'argent sort</td></tr>
+        <tr><td><strong>Visite</strong></td><td>La page se charge vraiment</td><td>Taux de rebond / vitesse</td><td class="blank">rien</td></tr>
+        <tr><td><strong>Conversion</strong></td><td>Elle fait l'action voulue</td><td><strong>Taux de conversion</strong></td><td class="v-ok">l'argent rentre</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="say">L'argent sort au clic. L'argent rentre à la conversion. Tout le métier tient entre ces deux points.</div>
+
+  <div class="note">
+    <p><strong>Animation :</strong> dessiner la chaîne au tableau plutôt que de la projeter. Faire remarquer que le seul endroit où Google est payé, c'est le clic — d'où l'intérêt structurel de Google à ce que les annonces soient cliquables, et donc pertinentes.</p>
+    <p>Question à poser : « où est-ce que vous, vous perdez le plus de monde ? » Réponse attendue après le module 03 : presque toujours entre le clic et la conversion.</p>
+  </div>
+</section>
+
+<!-- ============ MODULE 2 ============ -->
+<section id="m2">
+  <div class="modhead">
+    <div class="line"><span class="idx">MODULE 02</span><span class="time">20 min · 9h30</span></div>
+    <h2>Les quatre chiffres bruts</h2>
+    <p class="sub">Avant tout ratio, il y a quatre nombres qu'on compte. Ce sont les seuls chiffres « vrais » : tout le reste en est dérivé.</p>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <p class="abbr">Impressions</p>
+      <p class="full">Nombre d'affichages</p>
+      <p><span class="ask">Combien de fois mon annonce est apparue ?</span>Attention : ce n'est <strong>pas</strong> un nombre de personnes. La même personne qui fait cinq recherches génère cinq impressions.</p>
+    </div>
+    <div class="card">
+      <p class="abbr">Clics</p>
+      <p class="full">Nombre de clics sur l'annonce</p>
+      <p><span class="ask">Combien de fois on a cliqué ?</span>C'est le moment où vous payez. Un clic n'est pas une visite : certains partent avant que la page charge.</p>
+    </div>
+    <div class="card">
+      <p class="abbr">Coût</p>
+      <p class="full">Dépense réelle sur la période</p>
+      <p><span class="ask">Combien j'ai dépensé ?</span>Vous payez rarement le montant que vous avez enchéri : le système ne facture que ce qu'il fallait pour battre le suivant.</p>
+    </div>
+    <div class="card">
+      <p class="abbr">Conversions</p>
+      <p class="full">Actions réalisées que vous avez déclarées</p>
+      <p><span class="ask">Combien de fois l'action voulue a eu lieu ?</span>C'est <strong>vous</strong> qui décidez ce qu'est une conversion : achat, formulaire, appel, inscription, sondage rempli.</p>
+    </div>
+  </div>
+
+  <div class="box bad">
+    <span class="tag">Le piège numéro un des débutants</span>
+    <p>Une conversion qui n'a pas été <strong>configurée</strong> vaut zéro dans le tableau, même si elle a eu lieu dans la vraie vie. Si le suivi n'est pas posé, votre campagne peut avoir généré 40 inscriptions et afficher « 0 conversion ». Vous conclurez que la campagne est nulle, vous la couperez, et vous aurez tort. <strong>Avant de juger une campagne, on vérifie toujours que le tracking existe.</strong></p>
+  </div>
+
+  <h3>Exercice de mise en bouche : que peut-on dire de ce tableau ?</h3>
+  <p class="hint">Trois campagnes d'une boutique e-commerce de thés artisanaux, sur 30 jours. Uniquement les chiffres bruts.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Données brutes — aucun taux calculé</caption>
+      <thead><tr><th>Campagne</th><th class="num">Impressions</th><th class="num">Clics</th><th class="num">Coût</th><th class="num">Conversions</th></tr></thead>
+      <tbody>
+        <tr><td>Marque — « thé Ochanoma »</td><td class="num">4 200</td><td class="num">840</td><td class="num">210 €</td><td class="num">63</td></tr>
+        <tr><td>Générique — « acheter thé vert »</td><td class="num">96 000</td><td class="num">1 920</td><td class="num">2 880 €</td><td class="num">38</td></tr>
+        <tr><td>Display — bannières</td><td class="num">1 450 000</td><td class="num">1 015</td><td class="num">610 €</td><td class="num">4</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>Réponse honnête : presque rien.</strong> On sait que la campagne Display a été vue énormément et que la campagne Générique a coûté le plus cher. Mais on ne sait pas laquelle <em>travaille</em> le mieux. Pour ça, il faut diviser. C'est tout l'objet du module suivant.</p>
+
+  <div class="note">
+    <p><strong>Animation :</strong> laisser 3 minutes de silence sur ce tableau et récolter les réactions. Beaucoup vont dire « le Display est le meilleur, il a 1,45 million d'impressions ». C'est le moment pédagogique clé : les grands nombres impressionnent, les ratios informent. Ne pas donner les réponses ici — on reprend exactement ce tableau au module 03 une fois les taux calculés.</p>
+    <p>Garder ce tableau visible au tableau blanc toute la matinée si possible.</p>
+  </div>
+</section>
+
+<!-- ============ MODULE 3 ============ -->
+<section id="m3">
+  <div class="modhead">
+    <div class="line"><span class="idx">MODULE 03</span><span class="time">45 min · 9h50</span></div>
+    <h2>Un taux, c'est une phrase</h2>
+    <p class="sub">Le cœur de la matinée. Chaque taux répond à une question en français. Si vous savez dire la phrase, vous savez lire le chiffre.</p>
+  </div>
+
+  <h3>La méthode universelle</h3>
+  <p>Un taux, c'est toujours la même chose : on prend <strong>ce qui est arrivé</strong>, on divise par <strong>ce qui aurait pu arriver</strong>, et on multiplie par 100 pour l'exprimer en pourcentage.</p>
+
+  <div class="formula">Taux = ( ce qui est arrivé ÷ ce qui aurait pu arriver ) × 100
+<span class="q">Ça répond toujours à la même question : « sur 100 X, combien de Y ? »</span></div>
+
+  <div class="box key">
+    <span class="tag">Le réflexe à garder</span>
+    <p>Quand un taux vous perturbe, cherchez d'abord son <strong>dénominateur</strong> — le chiffre du dessous. C'est lui qui définit la population dont on parle. Deux taux avec des dénominateurs différents ne se comparent pas.</p>
+  </div>
+
+  <h3>Les six taux à connaître</h3>
+
+  <div class="cards">
+    <div class="card">
+      <p class="abbr">CTR</p>
+      <p class="full">Taux de clic — <em>Click-Through Rate</em></p>
+      <p class="calc">clics ÷ impressions × 100</p>
+      <p><span class="ask">Sur 100 personnes qui ont vu mon annonce, combien ont cliqué ?</span>Mesure l'<strong>attractivité du message</strong> pour ce public-là. Un CTR bas veut dire : « on m'a vu et on n'a pas eu envie ».</p>
+    </div>
+    <div class="card">
+      <p class="abbr">CPC</p>
+      <p class="full">Coût par clic</p>
+      <p class="calc">coût ÷ clics</p>
+      <p><span class="ask">Combien m'a coûté chaque visiteur ?</span>C'est le prix d'entrée d'une personne sur votre site. Il dépend de la concurrence et de votre qualité.</p>
+    </div>
+    <div class="card">
+      <p class="abbr">CPM</p>
+      <p class="full">Coût pour mille impressions</p>
+      <p class="calc">coût ÷ (impressions ÷ 1000)</p>
+      <p><span class="ask">Combien pour être vu 1 000 fois ?</span>La métrique de la notoriété. C'est celle qu'on regarde quand l'objectif n'est pas le clic mais la visibilité.</p>
+    </div>
+    <div class="card">
+      <p class="abbr">Taux de conversion</p>
+      <p class="full">CVR — <em>Conversion Rate</em></p>
+      <p class="calc">conversions ÷ clics × 100</p>
+      <p><span class="ask">Sur 100 visiteurs, combien font ce que je veux ?</span>Mesure la <strong>tenue de promesse</strong> : est-ce que ma page donne bien ce que mon annonce annonçait ?</p>
+    </div>
+    <div class="card">
+      <p class="abbr">CPA</p>
+      <p class="full">Coût par acquisition</p>
+      <p class="calc">coût ÷ conversions</p>
+      <p><span class="ask">Combien me coûte un résultat ?</span>La métrique du décideur. C'est celle qu'on compare à ce que rapporte un client.</p>
+    </div>
+    <div class="card">
+      <p class="abbr">ROAS</p>
+      <p class="full">Retour sur dépense publicitaire</p>
+      <p class="calc">chiffre d'affaires ÷ coût</p>
+      <p><span class="ask">Pour 1 € dépensé, combien rentrent ?</span>Un ROAS de 400 %, c'est 4 € de <strong>chiffre d'affaires</strong> pour 1 € dépensé. Ce n'est pas 4 € de bénéfice.</p>
+    </div>
+  </div>
+
+  <h3>La relation cachée entre CPC, taux de conversion et CPA</h3>
+  <p>Ces trois métriques ne sont pas indépendantes. C'est la relation la plus utile de toute la matinée :</p>
+
+  <div class="formula">CPA = CPC ÷ taux de conversion
+<span class="q">Exemple : 1,50 € le clic, 2 % de conversion → 1,50 ÷ 0,02 = 75 € le résultat.</span></div>
+
+  <p>Conséquence pratique : pour baisser votre coût par résultat, vous n'avez que <strong>deux leviers</strong>. Payer le clic moins cher (meilleure qualité, meilleur ciblage, meilleures enchères), ou convertir mieux (meilleure page, meilleure offre, meilleure cohérence annonce/page). <mark>Doubler le taux de conversion divise le CPA par deux — sans toucher au budget.</mark></p>
+
+  <div class="box ok">
+    <span class="tag">À retenir pour le challenge</span>
+    <p>C'est exactement pour ça que vos landing pages comptent plus que vos campagnes. Un travail sur la page agit sur le dénominateur du CPA. C'est le levier le moins cher et le plus durable — et c'est celui que vous maîtrisez déjà.</p>
+  </div>
+
+  <h3>Le seuil de rentabilité du ROAS</h3>
+  <p>Un ROAS de 300 % peut être excellent ou catastrophique. Tout dépend de votre marge.</p>
+  <div class="formula">ROAS minimum = 1 ÷ taux de marge
+<span class="q">Marge 45 % → il faut au moins 1 ÷ 0,45 = 2,22, soit 222 % de ROAS pour ne pas perdre d'argent.</span></div>
+
+  <h3>Ordres de grandeur 2026 : à quoi je compare ?</h3>
+  <p class="hint">Repères issus de données agrégées d'agences (marché US, mis à jour mi-2026). À utiliser comme boussole, jamais comme objectif : votre secteur, votre pays et votre marque font varier énormément ces chiffres.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Repères par réseau</caption>
+      <thead><tr><th>Réseau</th><th class="num">CTR moyen</th><th class="num">CTR top</th><th class="num">CPC moyen</th><th>Pourquoi cet écart</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Search</strong> (recherche)</td><td class="num">3 – 5 %</td><td class="num">7 – 10 %</td><td class="num">2 – 4 $</td><td>La personne cherche déjà. Intention forte.</td></tr>
+        <tr><td><strong>Shopping</strong></td><td class="num">0,8 – 1,2 %</td><td class="num">—</td><td class="num">—</td><td>Vitrine produit, comparaison visuelle immédiate.</td></tr>
+        <tr><td><strong>Display</strong> (bannières)</td><td class="num">0,05 – 0,1 %</td><td class="num">—</td><td class="num">0,50 – 1 $</td><td>La personne ne cherchait rien. On l'interrompt.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box warn">
+    <span class="tag">Le piège de comparaison</span>
+    <p>Un CTR de <strong>0,08 %</strong> en Display n'est pas une catastrophe : c'est la moyenne du réseau. Le même 0,08 % en Search serait une alarme rouge. <strong>Toujours comparer un taux à son propre référentiel</strong> — même réseau, même secteur, même type de campagne.</p>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Repères par modèle économique</caption>
+      <thead><tr><th>Type d'activité</th><th class="num">Taux de conversion</th><th class="num">CPA</th><th class="num">ROAS</th></tr></thead>
+      <tbody>
+        <tr><td>Tous secteurs confondus</td><td class="num">3 – 5 %</td><td class="num">50 – 80 $</td><td class="num">200 – 400 %</td></tr>
+        <tr><td>E-commerce</td><td class="num">2 – 3 %</td><td class="num">20 – 50 $</td><td class="num">400 – 600 %</td></tr>
+        <tr><td>Services B2B</td><td class="num">5 – 10 %</td><td class="num">100 – 300 $</td><td class="num">—</td></tr>
+        <tr><td>Génération de leads</td><td class="num">7 – 12 %</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>Secteurs très concurrentiels (juridique, assurance)</td><td class="num">—</td><td class="num">—</td><td class="num">CPC 50 – 100 $ +</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Le calculateur : posez vos chiffres, lisez la phrase</h3>
+  <p>Entrez des données, tous les taux se recalculent. Les trois boutons chargent les campagnes du module 02.</p>
+
+  <div class="calcbox">
+    <div class="presets">
+      <button class="btn" type="button" data-preset="marque">Campagne Marque</button>
+      <button class="btn" type="button" data-preset="generique">Campagne Générique</button>
+      <button class="btn" type="button" data-preset="display">Campagne Display</button>
+      <button class="btn" type="button" data-preset="asso">Sondage association</button>
+    </div>
+    <div class="inputs">
+      <div class="field"><label for="ci">Impressions</label><input type="number" id="ci" min="0" step="1" value="96000" inputmode="numeric"></div>
+      <div class="field"><label for="cc">Clics</label><input type="number" id="cc" min="0" step="1" value="1920" inputmode="numeric"></div>
+      <div class="field"><label for="cd">Coût (€)</label><input type="number" id="cd" min="0" step="0.01" value="2880" inputmode="decimal"></div>
+      <div class="field"><label for="cv">Conversions</label><input type="number" id="cv" min="0" step="1" value="38" inputmode="numeric"></div>
+      <div class="field"><label for="cr">Valeur / conv. (€)</label><input type="number" id="cr" min="0" step="0.01" value="32" inputmode="decimal"></div>
+    </div>
+    <div class="outs" id="outs">
+      <div class="out"><div class="k">CTR</div><div class="v" id="o-ctr">—</div><div class="n">clics ÷ impressions</div></div>
+      <div class="out"><div class="k">CPC</div><div class="v" id="o-cpc">—</div><div class="n">coût ÷ clics</div></div>
+      <div class="out"><div class="k">CPM</div><div class="v" id="o-cpm">—</div><div class="n">coût ÷ (imp. ÷ 1000)</div></div>
+      <div class="out"><div class="k">Tx conv.</div><div class="v" id="o-cvr">—</div><div class="n">conv. ÷ clics</div></div>
+      <div class="out"><div class="k">CPA</div><div class="v" id="o-cpa">—</div><div class="n">coût ÷ conversions</div></div>
+      <div class="out"><div class="k">ROAS</div><div class="v" id="o-roas">—</div><div class="n">CA ÷ coût</div></div>
+    </div>
+    <div class="read" id="read"></div>
+  </div>
+
+  <h3>On reprend le tableau du module 02 — cette fois avec les taux</h3>
+  <p class="hint">Mêmes campagnes, mêmes chiffres bruts. Panier moyen : 32 €. Marge brute : 45 % → seuil de rentabilité à 222 % de ROAS.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Le même tableau, une fois divisé</caption>
+      <thead><tr><th>Campagne</th><th class="num">CTR</th><th class="num">CPC</th><th class="num">Tx conv.</th><th class="num">CPA</th><th class="num">ROAS</th></tr></thead>
+      <tbody>
+        <tr><td>Marque</td><td class="num v-ok">20,0 %</td><td class="num">0,25 €</td><td class="num v-ok">7,50 %</td><td class="num v-ok">3,33 €</td><td class="num v-ok">960 %</td></tr>
+        <tr><td>Générique</td><td class="num">2,0 %</td><td class="num">1,50 €</td><td class="num v-warn">1,98 %</td><td class="num v-bad">75,79 €</td><td class="num v-bad">42 %</td></tr>
+        <tr><td>Display</td><td class="num">0,07 %</td><td class="num">0,60 €</td><td class="num v-bad">0,39 %</td><td class="num v-bad">152,50 €</td><td class="num v-bad">21 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>La campagne qui semblait la plus impressionnante (1,45 million d'impressions) est celle qui perd le plus d'argent : elle rapporte 21 centimes pour chaque euro dépensé. La campagne la plus modeste en volume rapporte 9,60 € par euro.</p>
+
+  <div class="box warn">
+    <span class="tag">Nuance de professionnel</span>
+    <p>Le ROAS de 960 % de la campagne Marque est en partie un mirage : ces gens tapaient déjà le nom de la boutique, une bonne partie serait venue sans publicité. C'est le débat classique de la « cannibalisation de la marque ». On ne coupe pas pour autant — on protège son nom contre les concurrents — mais on ne s'en félicite pas non plus.</p>
+  </div>
+
+  <h3>Les trois pièges des taux</h3>
+
+  <div class="split">
+    <div class="box bad">
+      <span class="tag">Piège 1 — les petits volumes</span>
+      <p>3 clics, 1 conversion = « 33 % de taux de conversion ». C'est faux : c'est du hasard. En dessous d'environ <strong>100 clics</strong> ou <strong>30 conversions</strong>, un taux n'est pas encore un signal. On attend, ou on regroupe.</p>
+    </div>
+    <div class="box bad">
+      <span class="tag">Piège 2 — le dénominateur qui change</span>
+      <p>Google Ads compte les clics ; Google Analytics compte les sessions. Un écart de 10–20 % est normal. Un écart de 50 %, c'est un problème de vitesse de page ou de tracking, pas une différence d'outil.</p>
+    </div>
+    <div class="box bad">
+      <span class="tag">Piège 3 — la moyenne qui ment</span>
+      <p>Un ROAS global de 300 % peut cacher un produit à 900 % et trois produits à 40 %. <strong>Toujours segmenter avant de conclure.</strong> Une moyenne, c'est un résumé — pas un diagnostic.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <p><strong>Animation (45 min, découpage) :</strong> 10 min méthode + CTR au tableau, 10 min les autres taux, 5 min la relation CPA = CPC ÷ CVR (à faire calculer à voix haute), 10 min calculateur en autonomie sur leurs propres hypothèses, 10 min correction du tableau.</p>
+    <p><strong>Faire calculer à la main</strong> le CTR de la campagne Marque : 840 ÷ 4 200. Beaucoup vont bloquer sur la division — c'est normal et ce n'est pas grave, laisser sortir les téléphones. Le but est qu'ils voient que 840 sur 4 200, c'est « 1 sur 5 », donc 20 %.</p>
+    <p><strong>Corrigé complet :</strong> Marque — CTR 20 %, CPC 0,25 €, CPM 50 €, CVR 7,5 %, CPA 3,33 €, CA 2 016 €, ROAS 960 %. Générique — CTR 2 %, CPC 1,50 €, CPM 30 €, CVR 1,98 %, CPA 75,79 €, CA 1 216 €, ROAS 42 %. Display — CTR 0,07 %, CPC 0,60 €, CPM 0,42 €, CVR 0,39 %, CPA 152,50 €, CA 128 €, ROAS 21 %.</p>
+    <p><strong>Question de relance :</strong> « on coupe le Display ? » — piège. Réponse nuancée à amener au module 07 : le Display n'a pas vocation à convertir directement, on ne le juge pas au CPA. Mais avec ce CPM de 0,42 € et ce CTR, il ne fait pas non plus un bon travail de notoriété ici.</p>
+  </div>
+</section>
+
+<!-- ============ MODULE 4 ============ -->
+<section id="m4">
+  <div class="modhead">
+    <div class="line"><span class="idx">MODULE 04</span><span class="time">25 min · 10h35 · après la pause</span></div>
+    <h2>Quelle part du gâteau ?</h2>
+    <p class="sub">Les taux du module 03 disent comment vous performez. Ceux-ci disent combien de place vous occupez sur le marché — et pourquoi vous n'en occupez pas plus.</p>
+  </div>
+
+  <h3>Le taux d'impressions</h3>
+  <p>Google sait combien de fois votre annonce <em>aurait pu</em> s'afficher, compte tenu de vos mots-clés, de votre zone géographique et de vos réglages. Le <strong>taux d'impressions</strong> (<em>impression share</em>) compare ce que vous avez obtenu à ce total.</p>
+
+  <div class="formula">Taux d'impressions = impressions obtenues ÷ impressions possibles × 100
+<span class="q">« Sur tout le marché que je pouvais adresser, quelle part ai-je réellement prise ? »</span></div>
+
+  <div class="box key">
+    <span class="tag">L'image mentale</span>
+    <p>Imaginez un gâteau. Le gâteau entier, c'est toutes les recherches sur lesquelles vous étiez éligible ce mois-ci. Votre taux d'impressions, c'est votre part. Un taux de 35 %, c'est : <strong>deux fois sur trois, quelqu'un a cherché ce que vous vendez et vous n'étiez pas là.</strong></p>
+  </div>
+
+  <h3>Les deux raisons de perdre des impressions</h3>
+  <p>C'est ici que Google devient franchement généreux : il vous dit <em>pourquoi</em> vous n'y étiez pas. Et il n'y a que deux réponses possibles.</p>
+
+  <div class="split">
+    <div class="box warn">
+      <span class="tag">Taux d'impressions perdues (budget)</span>
+      <p>« J'aurais pu être vu, mais <strong>ma caisse était vide</strong>. » Votre budget quotidien s'est épuisé avant la fin de la journée. Métrique disponible au niveau de la campagne uniquement.</p>
+      <p style="margin-top:8px;font-size:14px;"><strong>Solution :</strong> augmenter le budget, ou mieux le répartir entre campagnes.</p>
+    </div>
+    <div class="box bad">
+      <span class="tag">Taux d'impressions perdues (classement)</span>
+      <p>« J'aurais pu être vu, mais <strong>je n'étais pas assez bon ou pas assez cher</strong>. » Vous avez perdu l'enchère : soit votre enchère était trop basse, soit votre qualité était insuffisante.</p>
+      <p style="margin-top:8px;font-size:14px;"><strong>Solution :</strong> améliorer la pertinence et la page de destination, ou monter l'enchère. Ajouter du budget ne changera rien.</p>
+    </div>
+  </div>
+
+  <div class="box ok">
+    <span class="tag">La vérification qui rassure</span>
+    <p>Ces trois chiffres font toujours 100 %. Si vous avez 45 % de taux d'impressions, 30 % de perdues (budget) et 25 % de perdues (classement), le compte est bon. C'est un excellent moyen de vérifier qu'on a bien compris le tableau.</p>
+  </div>
+
+  <h3>Où êtes-vous sur la page ?</h3>
+  <div class="tablewrap">
+    <table>
+      <caption>Métriques de position</caption>
+      <thead><tr><th>Métrique</th><th>Ce qu'elle dit</th><th>Comment la lire</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Taux d'affichage en haut de page</strong></td><td>Part de vos impressions apparues au-dessus des résultats naturels</td><td>Bas = vous êtes souvent en bas de page, sous les résultats organiques</td></tr>
+        <tr><td><strong>Taux d'affichage en première position</strong></td><td>Part de vos impressions apparues tout en haut, avant les autres annonces</td><td>La position la plus chère. Utile surtout sur les requêtes de marque défensives</td></tr>
+        <tr><td><strong>Taux d'impressions exact</strong></td><td>Part obtenue sur les requêtes identiques ou très proches de vos mots-clés</td><td>Compare votre présence sur votre cœur de cible, hors élargissements</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Le niveau de qualité (1 à 10)</h3>
+  <p>C'est la note que Google attribue à chacun de vos mots-clés. Elle repose sur trois composantes : le <strong>CTR attendu</strong> (est-ce qu'on va cliquer ?), la <strong>pertinence de l'annonce</strong> (est-ce qu'elle répond à la requête ?) et l'<strong>expérience sur la page de destination</strong> (est-ce que la page tient la promesse et charge vite ?).</p>
+  <p>Une bonne note fait baisser votre coût par clic à position égale. C'est le mécanisme par lequel Google récompense la pertinence — et c'est, une fois de plus, votre landing page qui est en jeu.</p>
+
+  <div class="box">
+    <span class="tag">Repères sains</span>
+    <p>Niveau de qualité : <strong>5 à 7 sur 10</strong> est la zone normale. Taux d'impressions : <strong>60 à 80 %</strong> est considéré comme sain sur une campagne mature. En dessous de 40 %, il y a de la place à prendre. Au-dessus de 90 %, on approche du plafond — et c'est un signal en soi (voir le module 05).</p>
+  </div>
+
+  <div class="note">
+    <p><strong>Animation :</strong> le concept de « part du gâteau » passe très bien avec un dessin de camembert en trois parts au tableau : ce que j'ai eu / perdu par manque d'argent / perdu par manque de qualité. Faire remarquer que ce sont les deux seules raisons possibles, et que le diagnostic tient donc en une seule lecture.</p>
+    <p><strong>Erreur fréquente à corriger :</strong> confondre taux d'impressions et couverture (nombre de personnes touchées). Le taux d'impressions est une part de marché, pas un nombre de gens. Deux personnes peuvent générer 100 impressions.</p>
+    <p><strong>Point à ne pas creuser :</strong> la position moyenne n'existe plus depuis 2019, remplacée par les taux d'affichage en haut / première position. Certains tutoriels en ligne en parlent encore — les prévenir.</p>
+  </div>
+</section>
+
+<!-- ============ MODULE 5 ============ -->
+<section id="m5">
+  <div class="modhead">
+    <div class="line"><span class="idx">MODULE 05</span><span class="time">50 min · 11h00</span></div>
+    <h2>Croiser les chiffres : la grille de diagnostic</h2>
+    <p class="sub">Le module le plus utile de la matinée. Un chiffre seul est muet. C'est le couple de chiffres qui parle — et il n'y a qu'une douzaine de couples à connaître.</p>
+  </div>
+
+  <div class="say">Un bon analyste ne regarde jamais une colonne. Il regarde deux colonnes en même temps et se demande : « qu'est-ce qui pourrait expliquer les deux à la fois ? »</div>
+
+  <h3>Comment lire cette grille</h3>
+  <p>Chaque ligne est un <strong>symptôme</strong> : une combinaison de deux ou trois chiffres. Dépliez-la pour trouver ce qu'elle veut dire, ce qu'on fait, et un cas concret. Ce sont les douze situations que vous rencontrerez dans 90 % des cas réels.</p>
+
+  <div class="diag">
+
+    <details class="dx">
+      <summary><span class="sig">01</span><span class="sym">CTR élevé <em>+</em> taux d'impressions proche de 90–100 % <em>+</em> volume qui stagne</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>Votre niche est saturée.</strong> Vous avez déjà touché à peu près tout le monde qui cherche ce que vous proposez. Votre annonce plaît (CTR élevé) et vous êtes présent quasiment à chaque fois (taux d'impressions au plafond). Il n'y a tout simplement plus de gâteau à prendre.</dd>
+        <dt>Le piège à éviter</dt>
+        <dd>Augmenter le budget ne servira à rien : il n'y a plus d'impressions disponibles à acheter. Vous allez juste payer plus cher les mêmes clics.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>On <strong>élargit</strong> : nouveaux mots-clés adjacents, nouvelles zones géographiques, correspondance plus large, nouvelles langues. Ou bien on <strong>monte d'un étage dans le tunnel</strong> — on arrête d'attendre que les gens cherchent, on va créer la demande (Display, YouTube, Demand Gen, Meta Ads).</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Une association de Reims fait la promotion d'un outil de découverte des métiers de la gastronomie. Elle achète « métiers de la restauration Reims » : 200 recherches par mois, taux d'impressions 96 %, CTR 12 %. C'est le plafond physique de la niche. Pour faire plus de volume, il faut soit élargir au Grand Est entier, soit changer d'étage : aller chercher les collégiens et leurs parents là où ils n'ont rien demandé — YouTube, Instagram, presse locale.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">02</span><span class="sym">CTR élevé <em>+</em> taux de conversion faible</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>Promesse trahie.</strong> Votre annonce attire — donc le message fonctionne. Mais entre le clic et l'action, quelque chose casse. Soit la page ne tient pas ce que l'annonce annonçait, soit l'annonce attire les mauvaises personnes.</dd>
+        <dt>Les cinq causes, dans l'ordre de fréquence</dt>
+        <dd>1. Incohérence annonce → page (on promet A, la page parle de B).<br>2. Le prix n'était pas dans l'annonce, et il surprend sur la page.<br>3. Correspondance de mots-clés trop large : vous payez des clics hors sujet.<br>4. Formulaire trop long, page trop lente, page non lisible sur mobile.<br>5. Les mots « gratuit », « pas cher » attirent des gens qui n'achèteront jamais.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>On ouvre le <strong>rapport sur les termes de recherche</strong> pour voir les vraies requêtes payées, on ajoute des mots-clés négatifs, on qualifie l'annonce (« à partir de 49 € », « pour les entreprises »), et on aligne le titre de la page sur le titre de l'annonce, mot pour mot si possible.</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Un blog spécialisé promet « Le guide complet du potager en carré — gratuit ». CTR 8 %, excellent. Mais la page demande un email <em>avant</em> d'afficher quoi que ce soit. Taux de conversion : 1,2 %. En affichant les trois premiers chapitres avant le formulaire, le taux passe à 6 %. Rien n'a changé côté campagne — le CPA a été divisé par cinq.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">03</span><span class="sym">CTR faible <em>+</em> impressions élevées</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>On vous voit et on ne veut pas de vous.</strong> Vous avez de la visibilité, donc ni un problème de budget ni un problème d'éligibilité. Le problème est le message, ou le public.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>Réécrire les titres d'annonce en reprenant les mots exacts de la requête. Resserrer les mots-clés. Vérifier qu'on n'est pas en train de s'afficher sur des recherches sans rapport. Sur Search, un CTR durablement sous 2 % mérite une remise à plat du message.</dd>
+        <dt>Conséquence en cascade</dt>
+        <dd>Un CTR faible fait baisser le niveau de qualité, ce qui fait <em>monter</em> le coût par clic. Le problème s'aggrave tout seul si on ne le traite pas.</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Une boutique e-commerce de thés achète « thé vert ». 96 000 impressions, CTR 2 %. Les gens qui tapent « thé vert » cherchent souvent une définition, des bienfaits, une recette — pas une boutique. Le mot-clé est trop haut dans le tunnel pour une annonce transactionnelle.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">04</span><span class="sym">Taux de conversion élevé <em>+</em> taux d'impressions perdues (budget) élevé</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>Votre machine tourne bien, mais elle est bridée.</strong> Chaque euro dépensé produit un bon résultat, et pourtant vous êtes absent une partie du temps parce que le budget s'épuise. Vous laissez de l'argent sur la table, tous les jours.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>On augmente le budget de cette campagne — c'est l'un des rares cas où c'est franchement la bonne réponse. Si le budget global est fixe, on le prend sur une campagne au CPA plus élevé.</dd>
+        <dt>À vérifier avant</dt>
+        <dd>Que le CPA reste acceptable quand le volume monte. En achetant plus d'impressions, vous achetez souvent des impressions <em>moins</em> qualifiées : le taux de conversion baisse presque toujours un peu quand on monte en volume.</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">La campagne Marque de la boutique de thés : CPA à 3,33 €, taux d'impressions perdues (budget) à 38 %. Traduction : plus d'un tiers du temps, quelqu'un tape le nom de la boutique et voit un concurrent à la place. C'est le meilleur problème du monde — et le plus facile à corriger.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">05</span><span class="sym">Taux d'impressions perdues (classement) élevé <em>+</em> niveau de qualité bas</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>Problème de qualité, pas de budget.</strong> Vous perdez les enchères. Le budget n'est pas le sujet : si vous rajoutez 500 €, vous perdrez les mêmes enchères, juste avec plus d'argent disponible.</dd>
+        <dt>Ce qu'on fait, dans l'ordre</dt>
+        <dd>1. Améliorer la pertinence : le mot-clé doit apparaître dans le titre de l'annonce et sur la page.<br>2. Accélérer et clarifier la page de destination.<br>3. Resserrer les groupes d'annonces : un thème = un groupe.<br>4. En dernier recours seulement, monter l'enchère.</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Un blog achète « recette pain maison » mais renvoie vers sa page d'accueil. Niveau de qualité 3/10, impressions perdues (classement) 71 %. En créant une page dédiée à la recette et en la mettant en destination, la note monte à 8/10 et le coût par clic baisse de 40 % sans toucher aux enchères.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">06</span><span class="sym">CPC élevé <em>+</em> CTR faible</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>Le cercle vicieux du niveau de qualité.</strong> Google fait payer plus cher les annonces peu pertinentes. Faible CTR → note basse → clic plus cher → moins de budget pour le volume → moins de données pour améliorer. La spirale s'auto-entretient.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>On casse la boucle par le CTR, jamais par l'enchère. Nouveaux titres, nouvelles accroches, mots-clés plus précis. C'est le seul levier qui améliore les deux chiffres en même temps.</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Sur un marché concurrentiel, deux annonceurs enchérissent 3 € et 5 €. Celui à 3 € a un CTR de 9 %, l'autre 1,5 %. Le premier passe devant et paie 1,80 € le clic. Le second est derrière et paie 4,20 €. Même mot-clé, même journée.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">07</span><span class="sym">Beaucoup de clics <em>+</em> zéro conversion</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>Suspectez d'abord le tracking, pas la campagne.</strong> Un zéro parfait est presque toujours un problème de mesure. Un vrai mauvais taux de conversion produit 1 ou 2 conversions, pas exactement zéro.</dd>
+        <dt>La check-list, dans cet ordre</dt>
+        <dd>1. Une action de conversion est-elle créée dans le compte ?<br>2. La balise est-elle bien posée sur la page de remerciement ?<br>3. La bannière de consentement bloque-t-elle la mesure ?<br>4. La fenêtre de conversion est-elle trop courte pour un cycle d'achat long ?<br>5. Et seulement après : la page est-elle mauvaise ?</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Une campagne pour un sondage en ligne affiche 480 clics et 0 conversion pendant deux semaines. Le formulaire redirige vers une page externe : la balise n'a jamais été posée dessus. 137 personnes avaient bien répondu au sondage.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">08</span><span class="sym">Clics dans Google Ads <em>&gt;&gt;</em> sessions dans Analytics</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd>Des gens cliquent et n'arrivent jamais. Un écart de <strong>10 à 20 % est normal</strong> (retours en arrière, blocage de scripts, consentement refusé). Au-delà de 40 %, il y a un vrai problème.</dd>
+        <dt>Les causes classiques</dt>
+        <dd>Page trop lente sur mobile — au-delà de trois secondes, une part importante des visiteurs abandonne. Redirection qui perd les paramètres de suivi. Erreur 404 sur une URL de destination. Balise Analytics absente sur la landing page.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>On teste l'URL de destination sur mobile, en 4G, sans cache. C'est un test de trente secondes qui explique souvent des semaines de mauvais résultats.</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Une boutique e-commerce paie 1 015 clics vers une page produit avec une vidéo d'accueil non compressée de 8 Mo. Analytics n'enregistre que 520 sessions. La moitié du budget publicitaire est partie dans un écran blanc.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">09</span><span class="sym">Taux de conversion excellent <em>+</em> CPA supérieur à la marge</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>Ce n'est pas un problème marketing, c'est un problème d'économie unitaire.</strong> La campagne fait très bien son travail. C'est le modèle qui ne tient pas : vous vendez à 30 € un produit qui coûte 45 € à acquérir.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>Aucune optimisation de campagne ne rattrapera ça. Les leviers sont ailleurs : augmenter le panier moyen (ventes additionnelles, lots), augmenter la valeur vie client (abonnement, réachat), ou changer de canal d'acquisition.</dd>
+        <dt>Le calcul à poser</dt>
+        <dd>CPA acceptable = marge unitaire × nombre d'achats attendus dans la durée. Si un client rapporte 18 € de marge et revient trois fois, vous pouvez payer jusqu'à 54 € pour l'acquérir — pas 18 €.</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">La campagne Générique de la boutique de thés : taux de conversion 1,98 %, CPA 75,79 €, panier moyen 32 €. Chaque vente fait perdre de l'argent. Soit on arrête, soit on transforme l'achat unique en abonnement mensuel.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">10</span><span class="sym">Impressions qui explosent <em>+</em> CTR qui s'effondre du jour au lendemain</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>Votre ciblage a dérapé.</strong> Presque toujours : une correspondance large qui va chercher des requêtes hors sujet, ou un système automatisé qui a élargi tout seul. Vous êtes soudain visible partout, y compris là où vous n'avez rien à faire.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>Ouvrir le <strong>rapport sur les termes de recherche</strong> immédiatement. Trier par impressions décroissantes. Ajouter en mots-clés négatifs tout ce qui n'a rien à voir. C'est le premier réflexe d'hygiène de compte, à faire chaque semaine.</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Une boutique de thés passe « thé vert » en correspondance large. Elle se met à s'afficher sur « thé vert bienfaits », « thé vert matcha recette », « thé vert cheveux » et « the greatest showman ». Impressions ×4, CTR divisé par trois, budget consommé en trois jours.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">11</span><span class="sym">Taux d'affichage en haut de page faible <em>+</em> CTR correct</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd>Vous êtes le plus souvent <strong>en bas de page</strong>, sous les résultats naturels, et malgré ça votre annonce fonctionne. C'est un signal de potentiel : le même message plus haut sur la page ferait mécaniquement plus de volume.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>C'est l'un des rares cas où monter l'enchère se justifie franchement, parce qu'on a la preuve que le message tient. On peut aussi passer sur une stratégie d'enchères orientée position.</dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Un blog monétisé a un CTR de 5 % avec seulement 22 % d'affichage en haut de page. En augmentant l'enchère de 30 %, le taux d'affichage en haut passe à 60 % et le volume de clics double, à CPC quasiment identique — parce que le bon CTR a aussi fait monter le niveau de qualité.</dd>
+      </dl></div>
+    </details>
+
+    <details class="dx">
+      <summary><span class="sig">12</span><span class="sym">ROAS global correct <em>+</em> ROAS par produit très dispersé</span><span class="arrow">›</span></summary>
+      <div class="dx-body"><dl>
+        <dt>Ce que ça veut dire</dt>
+        <dd><strong>La moyenne ment.</strong> Un ROAS global de 300 % peut être un produit à 900 % qui porte trois produits à 40 %. Vous financez vos échecs avec votre succès sans le savoir.</dd>
+        <dt>Ce qu'on fait</dt>
+        <dd>Segmenter systématiquement avant de conclure : par produit, par appareil, par zone, par jour de semaine, par audience. La règle : <strong>si vous n'avez pas segmenté, vous n'avez pas encore diagnostiqué.</strong></dd>
+        <dt>Cas concret</dt>
+        <dd class="case">Une boutique découvre que 78 % de son chiffre d'affaires publicitaire vient du mobile, mais que 61 % de son budget part sur ordinateur, où le taux de conversion est trois fois plus faible. Rien dans le chiffre global ne le laissait voir.</dd>
+      </dl></div>
+    </details>
+
+  </div>
+
+  <h3>Exercice 2 — Trois tableaux, trois diagnostics <span style="font-family:var(--mono);font-size:12px;color:var(--ink-3);font-weight:400;">· 15 min en binôme</span></h3>
+  <p class="hint">Pour chaque campagne : quel est le symptôme, que veut-il dire, quelle est la première action ? Une phrase par question suffit.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Cas A — Boutique e-commerce · vente de coffrets cadeaux · 30 jours</caption>
+      <thead><tr><th>Campagne</th><th class="num">Impr.</th><th class="num">CTR</th><th class="num">CPC</th><th class="num">Tx conv.</th><th class="num">Tx impr.</th><th class="num">Perdu budget</th><th class="num">Perdu classement</th></tr></thead>
+      <tbody>
+        <tr><td>Coffrets — générique</td><td class="num">54 000</td><td class="num">4,1 %</td><td class="num">0,92 €</td><td class="num">3,8 %</td><td class="num">31 %</td><td class="num">58 %</td><td class="num">11 %</td></tr>
+        <tr><td>Coffrets — marque</td><td class="num">2 100</td><td class="num">18,0 %</td><td class="num">0,21 €</td><td class="num">9,1 %</td><td class="num">94 %</td><td class="num">3 %</td><td class="num">3 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Cas B — Blog spécialisé · objectif : inscriptions à la newsletter · 30 jours</caption>
+      <thead><tr><th>Groupe d'annonces</th><th class="num">Impr.</th><th class="num">CTR</th><th class="num">Clics</th><th class="num">Sessions GA4</th><th class="num">Conv.</th><th class="num">Niv. qualité</th></tr></thead>
+      <tbody>
+        <tr><td>Guide débutant</td><td class="num">38 400</td><td class="num">6,2 %</td><td class="num">2 381</td><td class="num">1 190</td><td class="num">24</td><td class="num">7/10</td></tr>
+        <tr><td>Comparatif outils</td><td class="num">12 900</td><td class="num">1,1 %</td><td class="num">142</td><td class="num">131</td><td class="num">11</td><td class="num">3/10</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Cas C — Association · objectif : faire remplir un questionnaire d'orientation · 30 jours</caption>
+      <thead><tr><th>Campagne</th><th class="num">Impr.</th><th class="num">CTR</th><th class="num">Clics</th><th class="num">Coût</th><th class="num">Conv.</th><th class="num">Tx impr.</th></tr></thead>
+      <tbody>
+        <tr><td>Métiers — recherche locale</td><td class="num">1 850</td><td class="num">11,4 %</td><td class="num">211</td><td class="num">63 €</td><td class="num">48</td><td class="num">96 %</td></tr>
+        <tr><td>Orientation — recherche large</td><td class="num">142 000</td><td class="num">0,9 %</td><td class="num">1 278</td><td class="num">639 €</td><td class="num">0</td><td class="num">18 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <p><strong>Corrigé — Cas A.</strong> Générique : 58 % d'impressions perdues pour cause de budget avec un taux de conversion correct à 3,8 % → symptôme 04, machine bridée. Première action : augmenter le budget, en surveillant que le CPA (0,92 ÷ 0,038 ≈ 24 €) reste tenable. Marque : taux d'impressions 94 %, CTR 18 % → symptôme 01, niche saturée. Aucune action possible côté budget, c'est le plafond de la marque. Pour croître, il faut faire connaître la marque ailleurs.</p>
+    <p><strong>Corrigé — Cas B.</strong> Guide débutant : 2 381 clics pour 1 190 sessions, soit 50 % de perte → symptôme 08, la page ne charge pas ou le suivi est cassé. C'est prioritaire : la moitié du budget est perdue avant même la page. Comparatif outils : CTR 1,1 % et niveau de qualité 3/10 → symptômes 03 et 05 combinés. À noter que malgré ses 142 clics seulement, ce groupe fait 11 conversions (7,7 % de taux de conversion) contre 24 pour 2 381 clics (1 %). Le petit groupe est en fait le meilleur — leçon sur les volumes trompeurs.</p>
+    <p><strong>Corrigé — Cas C.</strong> Locale : CTR 11,4 %, taux d'impressions 96 %, CPA de 63 ÷ 48 = 1,31 € → symptôme 01, excellente campagne mais niche saturée. Large : 1 278 clics, 639 € dépensés, 0 conversion → symptôme 07, on suspecte le tracking avant tout. Si le tracking est bon, c'est un problème d'intention : « orientation » en large ramène des recherches sans rapport (symptôme 10). Faire ouvrir le débat : couper la campagne large ou la réparer ? Bonne réponse : on la met en pause le temps de vérifier le suivi, on ne coupe pas définitivement avant de savoir.</p>
+    <p><strong>Timing :</strong> 15 min en binôme, 15 min de restitution collective, 20 min de parcours de la grille. Ne pas parcourir les douze symptômes un par un en cours magistral — en présenter quatre ou cinq, laisser découvrir les autres pendant l'exercice.</p>
+  </div>
+</section>
+
+<!-- ============ MODULE 6 ============ -->
+<section id="m6">
+  <div class="modhead">
+    <div class="line"><span class="idx">MODULE 06</span><span class="time">30 min · 11h50</span></div>
+    <h2>Configurer un compte, étape par étape</h2>
+    <p class="sub">Maintenant que vous savez lire, voyons où ces chiffres se fabriquent. Objectif : comprendre l'architecture, pas lancer une campagne.</p>
+  </div>
+
+  <div class="box bad">
+    <span class="tag">Règle du jour</span>
+    <p>Personne ne touche au compte Google Ads de Bruno. Si vous voulez manipuler l'interface, créez <strong>votre propre compte</strong> avec votre adresse personnelle, et n'activez aucune campagne. Tout ce qu'on va voir ci-dessous se fait sans dépenser un euro.</p>
+  </div>
+
+  <h3>La structure gigogne</h3>
+  <p>Tout Google Ads tient dans quatre niveaux emboîtés. Si vous retenez ça, vous ne serez jamais perdu dans l'interface.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Compte › Campagne › Groupe d'annonces › Annonces &amp; mots-clés</caption>
+      <thead><tr><th>Niveau</th><th>Ce qu'on y décide</th><th>Analogie du magasin</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Compte</strong></td><td>Facturation, devise, fuseau horaire, accès utilisateurs, actions de conversion</td><td>Le magasin</td></tr>
+        <tr><td><strong>Campagne</strong></td><td>Budget quotidien, type de campagne, zone géographique, langue, stratégie d'enchères, calendrier</td><td>Le rayon</td></tr>
+        <tr><td><strong>Groupe d'annonces</strong></td><td>Un thème unique : ses mots-clés et ses annonces vont ensemble</td><td>L'étagère</td></tr>
+        <tr><td><strong>Annonces &amp; mots-clés</strong></td><td>Les titres, les descriptions, les URL, les termes achetés</td><td>Les produits sur l'étagère</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box key">
+    <span class="tag">La règle qui évite 80 % des erreurs de structure</span>
+    <p><strong>Un groupe d'annonces = un seul thème.</strong> Si vos mots-clés d'un même groupe ne peuvent pas partager la même annonce et la même page de destination, c'est qu'il faut les séparer en deux groupes. C'est ce qui fait monter le niveau de qualité.</p>
+  </div>
+
+  <h3>Les huit étapes de création — et le piège du tunnel</h3>
+
+  <ol class="steps">
+    <li><strong>Aller directement sur ads.google.com</strong><p>Sans passer par une recherche Google : les premiers résultats sont souvent des annonces de revendeurs.</p></li>
+    <li><strong>Refuser le tunnel de création de campagne</strong><p>Google pousse à créer une campagne <em>avant</em> d'avoir configuré le compte. C'est le piège principal. Il faut cliquer sur « Passer en mode expert » ou ignorer successivement les écrans jusqu'à atteindre le compte vide.</p></li>
+    <li><strong>Régler les trois paramètres irréversibles</strong><p>Pays de facturation, fuseau horaire (Europe/Paris), devise (EUR). Ces trois réglages sont très difficiles à modifier ensuite : une erreur ici oblige souvent à recréer le compte.</p></li>
+    <li><strong>Poser le suivi des conversions AVANT toute campagne</strong><p>C'est la fondation. Créer les actions de conversion (achat, formulaire, appel, inscription), installer la balise Google ou passer par Google Tag Manager, et vérifier qu'une conversion test remonte bien.</p></li>
+    <li><strong>Créer la campagne : objectif, type, budget, zone</strong><p>Le budget est <em>quotidien</em>. Google peut dépenser jusqu'à deux fois le budget quotidien un jour donné, mais jamais plus de 30,4 fois le budget quotidien sur le mois.</p></li>
+    <li><strong>Créer les groupes d'annonces et choisir les mots-clés</strong><p>Un thème par groupe. Choisir les correspondances. Poser tout de suite une première liste de mots-clés négatifs (« gratuit », « emploi », « avis », « pdf », selon le cas).</p></li>
+    <li><strong>Écrire les annonces</strong><p>Reprendre les mots de la requête dans le titre. Annoncer le prix ou la condition si elle est discriminante. Renvoyer vers une page qui tient exactement la promesse du titre.</p></li>
+    <li><strong>Ne pas lancer — laisser en brouillon ou en pause</strong><p>C'est là qu'on s'arrête aujourd'hui. On regarde les estimations, on comprend l'interface, et on ferme.</p></li>
+  </ol>
+
+  <h3>Ce que vous pouvez faire aujourd'hui sans dépenser un euro</h3>
+  <div class="split">
+    <div class="box ok">
+      <span class="tag">Autorisé et utile</span>
+      <ul style="margin-bottom:0;">
+        <li>Créer un compte en mode expert, <strong>sans campagne active</strong></li>
+        <li>Utiliser le <strong>planificateur de mots-clés</strong> : volumes de recherche, suggestions, estimations de coût</li>
+        <li>Créer une campagne et la laisser en <strong>brouillon</strong> ou en pause</li>
+        <li>Explorer le diagnostic et l'aperçu des annonces</li>
+        <li>Regarder les rapports d'un compte de démonstration si vous en trouvez un</li>
+      </ul>
+    </div>
+    <div class="box bad">
+      <span class="tag">À ne pas faire</span>
+      <ul style="margin-bottom:0;">
+        <li>Activer une campagne, même « juste pour voir »</li>
+        <li>Utiliser un code promo type « 400 € offerts » : il déclenche une obligation de dépense réelle</li>
+        <li>Demander un accès au compte de Bruno</li>
+        <li>Renseigner une carte bancaire professionnelle</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Les correspondances de mots-clés</h3>
+  <p>C'est le réglage qui décide sur quelles recherches réelles votre annonce s'affiche. Il explique à lui seul une grande partie des budgets gaspillés.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Trois correspondances, de la plus étroite à la plus large</caption>
+      <thead><tr><th>Type</th><th>Syntaxe</th><th>Ce que ça déclenche</th><th>Quand l'utiliser</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Exact</strong></td><td><code>[thé vert bio]</code></td><td>Les recherches de sens équivalent, très proches du mot-clé</td><td>Quand vous savez exactement ce que vous voulez acheter. Le plus sûr.</td></tr>
+        <tr><td><strong>Expression</strong></td><td><code>"thé vert bio"</code></td><td>Les recherches qui incluent ce sens, potentiellement plus précises</td><td>Bon compromis volume / contrôle. Le réglage par défaut recommandé.</td></tr>
+        <tr><td><strong>Large</strong></td><td><code>thé vert bio</code></td><td>Tout ce que Google juge « en rapport », même sans les mots</td><td>Pour découvrir de nouvelles requêtes — avec du budget et une surveillance quotidienne.</td></tr>
+        <tr><td><strong>Négatif</strong></td><td><code>-gratuit</code></td><td>Empêche l'affichage sur ces termes</td><td>Toujours. C'est le levier d'économie le plus rentable d'un compte.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box warn">
+    <span class="tag">Le réflexe hebdomadaire</span>
+    <p>Ouvrir le <strong>rapport sur les termes de recherche</strong> une fois par semaine. Il montre les <em>vraies</em> requêtes que vous avez payées, par opposition aux mots-clés que vous aviez achetés. Tout ce qui n'a rien à voir part en mots-clés négatifs. Dix minutes par semaine, parfois 30 % de budget économisé.</p>
+  </div>
+
+  <h3>Les types de campagnes en 2026</h3>
+  <div class="tablewrap">
+    <table>
+      <caption>Où s'affichent vos annonces, selon le type choisi</caption>
+      <thead><tr><th>Type</th><th>Où</th><th>Logique</th><th>Étage du tunnel</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Search</strong></td><td>Résultats de recherche Google</td><td>Capter une intention déjà exprimée</td><td>Bas</td></tr>
+        <tr><td><strong>Shopping</strong></td><td>Onglet Shopping, résultats produits</td><td>Vitrine produit avec prix et image</td><td>Bas</td></tr>
+        <tr><td><strong>Performance Max</strong></td><td>Tous les inventaires Google à la fois</td><td>Vous fournissez des ressources, l'IA arbitre la diffusion</td><td>Milieu / bas</td></tr>
+        <tr><td><strong>Demand Gen</strong></td><td>YouTube (dont Shorts), Discover, Gmail</td><td>Créer l'envie sur des formats visuels</td><td>Haut / milieu</td></tr>
+        <tr><td><strong>Display</strong></td><td>Sites partenaires, applications</td><td>Bannières, notoriété, remarketing</td><td>Haut</td></tr>
+        <tr><td><strong>Vidéo</strong></td><td>YouTube</td><td>Narration, démonstration, mémorisation</td><td>Haut</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box key">
+    <span class="tag">Nouveauté à connaître — AI Max</span>
+    <p>En 2026, Google fait converger les campagnes Search dynamiques (DSA) vers <strong>AI Max</strong>, une extension des campagnes Search qui active trois choses : une correspondance de requêtes élargie par l'IA, la personnalisation automatique du texte des annonces, et l'extension de l'URL finale (l'IA peut envoyer vers une autre page de votre site qu'elle juge plus pertinente).</p>
+    <p style="margin-top:10px;">Calendrier annoncé par Google : mise à niveau volontaire dès maintenant, <strong>mise à niveau automatique à partir de septembre 2026</strong>, fin de création de nouvelles DSA en septembre 2026, extinction complète des DSA repoussée à <strong>février 2027</strong>. Google annonce environ <strong>7 % de conversions supplémentaires</strong> à coût équivalent quand toutes les fonctions sont activées.</p>
+    <p style="margin-top:10px;"><strong>Ce que ça change pour vous :</strong> de plus en plus, on ne pilote plus des mots-clés, on pilote des <em>signaux</em> — la qualité des données de conversion, les ressources créatives, les exclusions. D'où l'importance de savoir lire les chiffres : c'est devenu la principale compétence différenciante.</p>
+  </div>
+
+  <h3>Les stratégies d'enchères</h3>
+  <div class="tablewrap">
+    <table>
+      <caption>Qui décide du prix du clic</caption>
+      <thead><tr><th>Stratégie</th><th>Ce que Google optimise</th><th>Prérequis</th></tr></thead>
+      <tbody>
+        <tr><td>CPC manuel</td><td>Rien — vous fixez tout</td><td>Aucun. Utile pour apprendre.</td></tr>
+        <tr><td>Maximiser les clics</td><td>Le volume de trafic</td><td>Aucun. Attention : optimise le volume, pas la qualité.</td></tr>
+        <tr><td>Maximiser les conversions</td><td>Le nombre de conversions</td><td>Suivi des conversions fonctionnel</td></tr>
+        <tr><td>CPA cible</td><td>Le nombre de conversions à un coût donné</td><td>Environ 30 conversions sur 30 jours</td></tr>
+        <tr><td>ROAS cible</td><td>La valeur générée par euro dépensé</td><td>Valeurs de conversion transmises (e-commerce)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="say">Sans suivi des conversions, toutes les stratégies automatiques sont aveugles. Elles optimisent ce qu'elles voient — et elles ne voient que ce que vous avez configuré.</div>
+
+  <div class="note">
+    <p><strong>Animation :</strong> faire cette partie en démonstration écran plutôt qu'en lecture de slides, sur un compte personnel vierge. Montrer explicitement le tunnel de création et comment en sortir : c'est le moment le plus concrètement utile du module.</p>
+    <p>Si personne ne veut créer de compte, montrer au moins le <strong>planificateur de mots-clés</strong> — c'est l'outil qu'ils pourront réutiliser gratuitement pour leur challenge, y compris pour trouver les mots à mettre dans leur landing page et dans leurs objets d'emails.</p>
+    <p><strong>Ne pas s'attarder</strong> sur Performance Max et AI Max : mentionner, expliquer la logique du glissement mots-clés → signaux, et passer. Le sujet est trop dense pour ce niveau et n'est pas utile au challenge.</p>
+  </div>
+</section>
+
+<!-- ============ MODULE 7 ============ -->
+<section id="m7">
+  <div class="modhead">
+    <div class="line"><span class="idx">MODULE 07</span><span class="time">40 min · 12h20 — le plus important</span></div>
+    <h2>Le tunnel de conversion</h2>
+    <p class="sub">Le module qui relie tout ce qu'on a vu ce matin à votre métier de growth. Si vous ne retenez qu'une chose de la journée, c'est celle-ci.</p>
+  </div>
+
+  <h3>Pourquoi on parle de tunnel</h3>
+  <p>Parce que personne n'achète au premier contact. Entre le moment où quelqu'un ne vous connaît pas et le moment où il agit, il y a une série d'étapes, et à chaque étape on perd du monde. Le tunnel, c'est simplement la représentation de cette déperdition — et le fait qu'elle soit <strong>normale</strong>.</p>
+
+  <div class="funnel">
+    <div class="stage t">
+      <span class="st">Haut de tunnel · TOFU</span>
+      <span class="sn">Découverte</span>
+      <span class="sd">Ils ne vous connaissent pas et ne cherchent rien. Objectif : exister dans leur tête.</span>
+    </div>
+    <div class="stage m">
+      <span class="st">Milieu de tunnel · MOFU</span>
+      <span class="sn">Considération</span>
+      <span class="sd">Ils ont un problème et comparent des solutions. Objectif : être dans la liste courte.</span>
+    </div>
+    <div class="stage b">
+      <span class="st">Bas de tunnel · BOFU</span>
+      <span class="sn">Décision</span>
+      <span class="sd">Ils sont prêts à agir. Objectif : ne pas rater le rendez-vous.</span>
+    </div>
+  </div>
+
+  <h3>La différence structurelle entre Google Ads et Meta Ads</h3>
+  <p>C'est la distinction la plus utile pour choisir un canal — et c'est aussi le pont vers le cours Meta Ads.</p>
+
+  <div class="split">
+    <div class="box">
+      <span class="tag">Google Ads — capter la demande</span>
+      <p>Les gens <strong>cherchent déjà</strong>. Vous vous placez sur le chemin d'une intention qui existe. Vous ne créez pas le besoin, vous le récoltez.</p>
+      <p style="margin-top:8px;font-size:14px;"><strong>Conséquence :</strong> naturellement bas de tunnel. Volume limité par le nombre de recherches. Taux de conversion élevé, mais plafond de croissance rapide (symptôme 01).</p>
+    </div>
+    <div class="box">
+      <span class="tag">Meta Ads — créer la demande</span>
+      <p>Les gens <strong>ne cherchaient rien</strong>. Vous interrompez un fil d'actualité. Vous devez d'abord provoquer l'intérêt.</p>
+      <p style="margin-top:8px;font-size:14px;"><strong>Conséquence :</strong> naturellement haut de tunnel. Volume quasi illimité. Taux de conversion plus faible, mais capacité à faire découvrir ce que personne ne cherchait.</p>
+    </div>
+  </div>
+
+  <div class="say">Google récolte ce qui pousse déjà. Meta plante des graines. Une campagne qui ne fait que récolter finit toujours par saturer sa niche.</div>
+
+  <h3>Quel type de campagne pour quel étage</h3>
+  <div class="tablewrap">
+    <table>
+      <caption>Mapping campagnes ↔ étages ↔ métriques de jugement</caption>
+      <thead><tr><th>Étage</th><th>Formats Google Ads</th><th>Message</th><th>On juge avec</th><th>On NE juge PAS avec</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Haut</strong><br>Découverte</td>
+          <td>YouTube / Vidéo, Display, Demand Gen</td>
+          <td>« Ce problème existe, et voilà à quoi il ressemble »</td>
+          <td>Couverture, CPM, taux de visionnage, nouvelles audiences, recherches de marque</td>
+          <td class="v-bad">Le CPA. Le ROAS.</td>
+        </tr>
+        <tr>
+          <td><strong>Milieu</strong><br>Considération</td>
+          <td>Search générique, Demand Gen, Performance Max</td>
+          <td>« Voilà comment on le résout, et pourquoi nous »</td>
+          <td>CTR, coût par visite qualifiée, taux d'inscription, ajouts au panier</td>
+          <td class="v-bad">Le ROAS seul.</td>
+        </tr>
+        <tr>
+          <td><strong>Bas</strong><br>Décision</td>
+          <td>Search marque et transactionnel, Shopping, remarketing</td>
+          <td>« C'est ici, maintenant, à ce prix »</td>
+          <td>Taux de conversion, CPA, ROAS, taux d'impressions</td>
+          <td class="v-bad">La couverture.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box key">
+    <span class="tag">La règle qui sauve des budgets</span>
+    <p><strong>On ne juge jamais un étage avec les métriques de l'étage du dessous.</strong> Couper une campagne YouTube parce que son CPA est mauvais, c'est comme licencier le commercial qui prend les rendez-vous parce qu'il ne signe pas de contrats. C'est l'erreur d'analyse la plus fréquente en publicité, y compris chez des professionnels.</p>
+  </div>
+
+  <h3>Le lien avec le growth : où s'arrête la publicité</h3>
+  <p>Vous connaissez le modèle AARRR. Le tunnel publicitaire n'en couvre que le début.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Le tunnel pub dans le framework AARRR</caption>
+      <thead><tr><th>Étape AARRR</th><th>Ce qui se joue</th><th>Google Ads</th><th>Email</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Acquisition</strong></td><td>Faire venir</td><td class="v-ok">Cœur de métier</td><td class="blank">non</td></tr>
+        <tr><td><strong>Activation</strong></td><td>Première action réussie</td><td>Partiel — via la landing page</td><td class="v-ok">Oui — séquence de bienvenue</td></tr>
+        <tr><td><strong>Rétention</strong></td><td>Revenir, rester</td><td>Remarketing uniquement</td><td class="v-ok">Cœur de métier</td></tr>
+        <tr><td><strong>Recommandation</strong></td><td>Faire venir les autres</td><td class="blank">non</td><td class="v-ok">Oui — parrainage</td></tr>
+        <tr><td><strong>Revenu</strong></td><td>Monétiser</td><td>Indirect</td><td class="v-ok">Oui — relances, ventes additionnelles</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Autrement dit : <strong>la publicité achète l'attention, l'email possède la relation.</strong> C'est pour ça que l'après-midi porte sur l'emailing — et c'est pour ça que dans un contexte de budget contraint, l'email est presque toujours le meilleur investissement.</p>
+
+  <h3>Application directe à votre challenge</h3>
+  <div class="split">
+    <div class="box ok">
+      <span class="tag">Votre landing page</span>
+      <p>C'est le point de bascule entre le milieu et le bas du tunnel. Tout ce qui l'améliore agit sur le <strong>dénominateur du CPA</strong> — le levier le moins cher qui existe. C'est déjà fait et validé : c'est votre actif.</p>
+    </div>
+    <div class="box ok">
+      <span class="tag">Votre campagne mail</span>
+      <p>C'est du milieu de tunnel répété, plus de la rétention. Vous ne payez pas à l'impression : vous exploitez une audience que vous possédez déjà. C'est le sujet de cet après-midi.</p>
+    </div>
+  </div>
+
+  <div class="box warn">
+    <span class="tag">Rappel de cadrage</span>
+    <p>Dans le challenge, <strong>on ne lance pas Google Ads</strong>. L'objectif de ce module n'est pas que vous sachiez acheter des clics : c'est que vous sachiez <em>où la publicité s'insère</em>, ce qu'elle peut et ne peut pas faire, et comment en lire les résultats quand on vous en présentera. C'est exactement ce qu'on vous demandera en entreprise.</p>
+  </div>
+
+  <div class="note">
+    <p><strong>Animation :</strong> c'est le module à ne pas sacrifier si vous prenez du retard. Quitte à raccourcir le module 06, gardez 40 minutes ici.</p>
+    <p>Exercice oral rapide et efficace : leur faire placer leur propre projet de challenge sur les trois étages. « Votre landing page, elle parle à qui ? À quelqu'un qui vous connaît déjà ou à quelqu'un qui découvre ? » La plupart écrivent des pages de bas de tunnel pour un public de haut de tunnel — c'est le déclic du module.</p>
+    <p><strong>Pont vers le cours Meta Ads :</strong> annoncer que la prochaine séance porte sur Meta et que la grille de lecture est identique. Seules les métriques de haut de tunnel prennent plus d'importance : fréquence, coût par mille, hook rate, taux de visionnage à 3 secondes.</p>
+  </div>
+</section>
+
+<!-- ============ MODULE 8 ============ -->
+<section id="m8">
+  <div class="modhead">
+    <div class="line"><span class="idx">MODULE 08</span><span class="time">35 min · 13h30 — ouverture de l'après-midi</span></div>
+    <h2>Intro emailing : le canal que vous possédez</h2>
+    <p class="sub">Même grille de lecture, autre canal. Et surtout : les prérequis techniques à débloquer avant de pouvoir envoyer quoi que ce soit.</p>
+  </div>
+
+  <h3>Pourquoi l'email, alors qu'on vient de parler de pub</h3>
+  <p>En publicité, vous <em>louez</em> l'attention : dès que vous arrêtez de payer, le trafic s'arrête. En email, vous <strong>possédez</strong> l'audience. C'est le seul canal où votre travail s'accumule au lieu de se consommer.</p>
+  <p>Les ordres de grandeur du retour sur investissement sont sans commune mesure avec les autres canaux — les études sectorielles annoncent généralement entre <strong>33 € et 42 € de chiffre d'affaires pour 1 € investi</strong>. À prendre avec des pincettes (ces chiffres viennent d'acteurs du secteur), mais l'écart avec la publicité payante est réel et robuste.</p>
+
+  <h3>Les taux de l'email : exactement la même logique</h3>
+  <p>Bonne nouvelle : vous savez déjà les lire. Ce sont les mêmes divisions, avec d'autres dénominateurs.</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>Les métriques email et leurs repères</caption>
+      <thead><tr><th>Métrique</th><th>Calcul</th><th>La question</th><th class="num">Repère</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Taux de délivrabilité</strong></td><td>délivrés ÷ envoyés</td><td>Mes emails arrivent-ils ?</td><td class="num">&gt; 98 %</td></tr>
+        <tr><td><strong>Taux de rebond</strong></td><td>rejets ÷ envoyés</td><td>Ma liste est-elle propre ?</td><td class="num">&lt; 2 %</td></tr>
+        <tr><td><strong>Taux d'ouverture</strong></td><td>ouvertures ÷ délivrés</td><td>Mon objet donne-t-il envie ?</td><td class="num">18 – 38 %</td></tr>
+        <tr><td><strong>Taux de clic</strong></td><td>clics ÷ délivrés</td><td>Mon contenu fait-il agir ?</td><td class="num">1,3 – 5 %</td></tr>
+        <tr><td><strong>CTOR</strong></td><td>clics ÷ ouvertures</td><td>Une fois ouvert, mon email tient-il ?</td><td class="num">8 – 15 %</td></tr>
+        <tr><td><strong>Taux de désabonnement</strong></td><td>désabos ÷ délivrés</td><td>Est-ce que je fatigue ma liste ?</td><td class="num">&lt; 0,3 %</td></tr>
+        <tr><td><strong>Taux de plainte</strong></td><td>signalements spam ÷ délivrés</td><td>Suis-je perçu comme un spammeur ?</td><td class="num v-bad">&lt; 0,1 % · jamais 0,3 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="hint">Repères France / international, données 2025–2026 agrégées (DMA France, Klaviyo). L'écart entre les sources est énorme selon le secteur et le mode de collecte : utilisez-les comme boussole, pas comme objectif.</p>
+
+  <div class="box warn">
+    <span class="tag">Le taux d'ouverture n'est plus fiable</span>
+    <p>Depuis la protection de la confidentialité d'Apple Mail, une partie des « ouvertures » est déclenchée automatiquement par le serveur, sans qu'un humain ait lu quoi que ce soit. Résultat : les taux d'ouverture sont artificiellement gonflés et incomparables d'une liste à l'autre. <strong>Pilotez au taux de clic et au CTOR.</strong></p>
+  </div>
+
+  <div class="box key">
+    <span class="tag">Le parallèle à faire en salle</span>
+    <p>L'objet d'un email joue exactement le rôle du titre d'une annonce Google : il décide de l'ouverture, comme le titre décide du clic. Et le contenu de l'email joue le rôle de la landing page : il décide de l'action. <mark>Objet = CTR. Contenu = taux de conversion.</mark> Même diagnostic, même grille : beaucoup d'ouvertures et peu de clics, c'est une promesse trahie.</p>
+  </div>
+
+  <h3>Les prérequis techniques — le point bloquant</h3>
+  <p>Avant d'envoyer une seule campagne, il faut prouver aux boîtes mail que vous êtes bien qui vous prétendez être. Sans ça, vos emails partent en spam ou sont rejetés, quelle que soit la qualité du contenu.</p>
+
+  <ol class="steps">
+    <li><strong>Un sous-domaine d'envoi dédié</strong>
+      <p>On n'envoie jamais ses campagnes depuis le domaine principal. On crée un sous-domaine du type <code>mail.exemple.fr</code> ou <code>news.exemple.fr</code>. Si la réputation d'envoi se dégrade, elle n'entraîne pas les emails professionnels quotidiens avec elle.</p></li>
+    <li><strong>SPF</strong> — qui a le droit d'envoyer en mon nom
+      <p>Un enregistrement DNS qui liste les serveurs autorisés à envoyer pour votre domaine.</p></li>
+    <li><strong>DKIM</strong> — la signature cryptographique
+      <p>Chaque email est signé. Le destinataire vérifie la signature avec une clé publique publiée dans votre DNS.</p></li>
+    <li><strong>DMARC</strong> — que faire si ça ne colle pas
+      <p>La politique à appliquer en cas d'échec. On démarre en <code>p=none</code> avec une adresse de rapport, puis on durcit progressivement vers <code>p=quarantine</code> puis <code>p=reject</code>.</p></li>
+    <li><strong>Alignement</strong>
+      <p>Au moins l'un des deux (SPF ou DKIM) doit être <em>aligné</em> avec le domaine affiché dans le champ « De ». C'est l'erreur la plus fréquente : tout est configuré, mais rien n'est aligné, et DMARC échoue quand même.</p></li>
+  </ol>
+
+  <div class="box bad">
+    <span class="tag">Les règles Gmail / Yahoo / Microsoft en vigueur</span>
+    <p>Pour tout expéditeur dépassant <strong>5 000 emails par jour</strong> vers ces boîtes : SPF <em>et</em> DKIM configurés et valides, DMARC au minimum en <code>p=none</code> avec rapports, au moins un des deux aligné avec le domaine du « De », désabonnement en un clic (en-tête <code>List-Unsubscribe</code>) traité <strong>sous 2 jours</strong>, taux de plaintes maintenu <strong>sous 0,1 %</strong> et jamais au-dessus de 0,3 %, connexion TLS, et DNS inverse cohérent sur l'IP d'envoi.</p>
+    <p style="margin-top:10px;">Ces règles ne sont plus des recommandations. Depuis fin 2025, Gmail rejette définitivement (erreur 550) au lieu de différer les messages non conformes. En dessous de 5 000 emails par jour, l'authentification reste très fortement recommandée : les filtres appliquent les mêmes signaux.</p>
+  </div>
+
+  <h3>Brevo : ce qu'il faut savoir avant cet après-midi</h3>
+  <div class="split">
+    <div class="box">
+      <span class="tag">Le plan gratuit</span>
+      <p><strong>300 emails par jour</strong> (soit environ 9 000 par mois), contacts illimités, sans limite de durée. Largement suffisant pour le challenge. Les envois portent la marque Brevo tant qu'on n'est pas sur un plan payant.</p>
+    </div>
+    <div class="box">
+      <span class="tag">Ce qu'on paramètre</span>
+      <p>Authentification du domaine d'envoi (code Brevo, DKIM, DMARC), listes et attributs de contacts, segments, formulaires d'inscription en double opt-in, modèles d'emails, et automatisations simples.</p>
+    </div>
+  </div>
+
+  <h4>Listes, segments, et pourquoi ce n'est pas la même chose</h4>
+  <ul>
+    <li>Une <strong>liste</strong> est un contenant : on y range des contacts. Un contact peut être dans plusieurs listes.</li>
+    <li>Un <strong>segment</strong> est un filtre dynamique : « tous ceux qui ont ouvert un email dans les 90 derniers jours », « tous ceux du Grand Est ». Il se recalcule tout seul.</li>
+    <li>La règle : <strong>on segmente avant d'envoyer.</strong> Envoyer à toute la base est le moyen le plus rapide de faire monter le taux de plaintes et de casser sa délivrabilité.</li>
+  </ul>
+
+  <h4>Double opt-in et RGPD</h4>
+  <p>Le <strong>double opt-in</strong> — un email de confirmation avant l'inscription définitive — coûte quelques pourcents d'inscrits et protège tout le reste : moins de fausses adresses, moins de rebonds, moins de plaintes, meilleure délivrabilité. Côté RGPD : consentement libre et explicite, finalité annoncée, désabonnement en un clic dans chaque email, et pas d'achat de listes. Une base achetée détruit une réputation d'envoi en une seule campagne.</p>
+
+  <h4>La montée en volume</h4>
+  <p>Un domaine neuf qui envoie 5 000 emails d'un coup est traité comme un spammeur. On monte progressivement sur deux à quatre semaines, en commençant par les contacts les plus engagés — ceux qui ouvrent et cliquent envoient un signal positif aux boîtes mail.</p>
+
+  <div class="box key">
+    <span class="tag">Brief technique à transmettre à l'IT</span>
+    <p>Ce qu'il faut demander, formulé pour quelqu'un qui gère le DNS. Bruno a déjà validé le principe — il ne reste que l'exécution technique.</p>
+    <div class="code">Objet : configuration DNS pour l'envoi d'emails (sous-domaine dédié)
+
+1. Créer le sous-domaine d'envoi        ex. mail.&lt;domaine&gt;.fr
+2. Enregistrement Brevo (TXT)           fourni dans Brevo > Expéditeurs > Domaines
+3. Clé DKIM (TXT)                       fournie par Brevo pour ce sous-domaine
+4. SPF (TXT)                            inclure le serveur d'envoi Brevo
+5. DMARC (TXT) sur _dmarc.&lt;domaine&gt;     v=DMARC1; p=none; rua=mailto:dmarc@&lt;domaine&gt;.fr
+6. Vérifier l'alignement SPF/DKIM avec le domaine du champ « De »
+7. Confirmer la propagation dans Brevo (bouton de vérification)
+
+Délai de propagation DNS : de quelques minutes à 48 h.
+Bloquant : aucune campagne ne peut partir avant validation.</div>
+    <p style="margin-top:12px;font-size:14px;">Les valeurs exactes des enregistrements sont générées par Brevo pour chaque domaine : elles se récupèrent dans l'interface, onglet Expéditeurs &amp; domaines. Ne pas les inventer.</p>
+  </div>
+
+  <div class="note">
+    <p><strong>Animation :</strong> ce module n'est qu'une ouverture. Le vrai travail emailing est l'après-midi. Objectif ici : qu'ils repartent en pause déjeuner avec la grille de lecture des taux email et la conscience que le DNS est bloquant.</p>
+    <p><strong>Point d'attention organisation :</strong> la configuration DNS doit être lancée <em>avant</em> l'atelier de l'après-midi, sinon ils construiront des campagnes qu'ils ne pourront pas envoyer. Relancer l'IT de Bruno ce matin.</p>
+    <p><strong>Exercice express (5 min) :</strong> leur faire écrire trois objets d'email pour leur projet, puis leur demander lequel est un « titre d'annonce Google » et lequel est un « clickbait ». Le pont avec le module 03 rend le point mémorable.</p>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz">
+  <div class="modhead">
+    <div class="line"><span class="idx">QUIZ</span><span class="time">10 min · fin de matinée</span></div>
+    <h2>Dix questions pour vérifier</h2>
+    <p class="sub">Une bonne réponse par question. L'explication s'affiche après votre choix — l'objectif est de comprendre, pas de scorer.</p>
+  </div>
+  <div class="quiz" id="quizbox"></div>
+  <div class="score" id="score">0 / 10 · répondez aux questions pour voir votre score</div>
+</section>
+
+<!-- ============ ANNEXES ============ -->
+<section id="annexes">
+  <div class="modhead">
+    <div class="line"><span class="idx">ANNEXES</span></div>
+    <h2>Aide-mémoire, glossaire, ressources</h2>
+    <p class="sub">À garder ouvert pendant vos challenges.</p>
+  </div>
+
+  <h3>Toutes les formules sur une page</h3>
+  <div class="tablewrap">
+    <table>
+      <caption>Aide-mémoire des calculs</caption>
+      <thead><tr><th>Métrique</th><th>Formule</th><th>La phrase</th></tr></thead>
+      <tbody>
+        <tr><td>CTR</td><td><code>clics ÷ impressions × 100</code></td><td>Sur 100 qui voient, combien cliquent</td></tr>
+        <tr><td>CPC</td><td><code>coût ÷ clics</code></td><td>Prix d'un visiteur</td></tr>
+        <tr><td>CPM</td><td><code>coût ÷ (impressions ÷ 1000)</code></td><td>Prix de 1 000 affichages</td></tr>
+        <tr><td>Taux de conversion</td><td><code>conversions ÷ clics × 100</code></td><td>Sur 100 visiteurs, combien agissent</td></tr>
+        <tr><td>CPA</td><td><code>coût ÷ conversions</code></td><td>Prix d'un résultat</td></tr>
+        <tr><td>CPA (relation)</td><td><code>CPC ÷ taux de conversion</code></td><td>Deux leviers seulement</td></tr>
+        <tr><td>ROAS</td><td><code>chiffre d'affaires ÷ coût</code></td><td>Retour par euro dépensé</td></tr>
+        <tr><td>ROAS de rentabilité</td><td><code>1 ÷ taux de marge</code></td><td>En dessous, on perd de l'argent</td></tr>
+        <tr><td>Taux d'impressions</td><td><code>impressions ÷ impressions possibles × 100</code></td><td>Ma part du gâteau</td></tr>
+        <tr><td>Contrôle</td><td><code>tx impr. + perdu budget + perdu classement = 100 %</code></td><td>Vérification du tableau</td></tr>
+        <tr><td>CTOR (email)</td><td><code>clics ÷ ouvertures × 100</code></td><td>Une fois ouvert, ça tient ?</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Glossaire — les interfaces mélangent français et anglais</h3>
+  <div class="glossary">
+    <div><dt>Impression</dt><dd>Un affichage de l'annonce. <em>impression</em></dd></div>
+    <div><dt>Taux de clic</dt><dd>Clics ÷ impressions. <em>CTR — click-through rate</em></dd></div>
+    <div><dt>Coût par clic</dt><dd>Prix payé par clic. <em>CPC — cost per click</em></dd></div>
+    <div><dt>Coût par acquisition</dt><dd>Prix payé par conversion. <em>CPA — cost per action</em></dd></div>
+    <div><dt>Taux d'impressions</dt><dd>Part de marché publicitaire. <em>impression share — IS</em></dd></div>
+    <div><dt>Impressions perdues (budget)</dt><dd>Absent faute de budget. <em>search lost IS (budget)</em></dd></div>
+    <div><dt>Impressions perdues (classement)</dt><dd>Absent faute de qualité ou d'enchère. <em>search lost IS (rank)</em></dd></div>
+    <div><dt>Classement de l'annonce</dt><dd>Le score qui décide de l'affichage. <em>Ad Rank</em></dd></div>
+    <div><dt>Niveau de qualité</dt><dd>Note de 1 à 10 par mot-clé. <em>Quality Score</em></dd></div>
+    <div><dt>Groupe d'annonces</dt><dd>Un thème = ses mots-clés + ses annonces. <em>ad group</em></dd></div>
+    <div><dt>Mot-clé négatif</dt><dd>Terme sur lequel on refuse de s'afficher. <em>negative keyword</em></dd></div>
+    <div><dt>Termes de recherche</dt><dd>Les vraies requêtes payées. <em>search terms report</em></dd></div>
+    <div><dt>Remarketing</dt><dd>Recibler ceux qui sont déjà venus. <em>remarketing / retargeting</em></dd></div>
+    <div><dt>Haut / milieu / bas de tunnel</dt><dd>Étages du parcours d'achat. <em>TOFU / MOFU / BOFU</em></dd></div>
+    <div><dt>Retour sur dépense pub</dt><dd>CA ÷ coût. <em>ROAS</em></dd></div>
+    <div><dt>Taux d'ouverture</dt><dd>Ouvertures ÷ délivrés. <em>open rate</em></dd></div>
+  </div>
+
+  <h3>Pour aller plus loin</h3>
+  <div class="split">
+    <div class="box">
+      <span class="tag">Officiel et gratuit</span>
+      <ul style="margin-bottom:0;">
+        <li><strong>Google Skillshop</strong> — les certifications officielles Google Ads, gratuites, en français</li>
+        <li><strong>Centre d'aide Google Ads</strong> — la référence pour les définitions exactes des métriques</li>
+        <li><strong>Planificateur de mots-clés</strong> — volumes de recherche réels, utilisable sans campagne active</li>
+      </ul>
+    </div>
+    <div class="box">
+      <span class="tag">Vulgarisateurs anglophones à suivre</span>
+      <ul style="margin-bottom:0;">
+        <li><strong>Surfside PPC</strong> — tutoriels pas-à-pas, formation Google Ads gratuite complète en playlist</li>
+        <li><strong>Solutions 8 (Aaron Young)</strong> — analyses de comptes réels, très bon sur le diagnostic</li>
+        <li><strong>Search Engine Land</strong> et <strong>PPC Live</strong> — pour les évolutions produit et les données de terrain</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footnote">
+    <p><strong>Sources et repères chiffrés.</strong> Les ordres de grandeur cités proviennent de données agrégées publiées en 2026 et sont à traiter comme des repères de marché, pas comme des objectifs. Les définitions de métriques, le calendrier AI Max et les correspondances de mots-clés viennent de la documentation officielle Google. Les exigences d'authentification email correspondent aux règles Gmail / Yahoo / Microsoft en vigueur en 2026.</p>
+    <p style="margin-top:16px;">Support de cours · Rocket School · Promo S99 · août 2026</p>
+  </div>
+</section>
+
+  </main>
+</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- mode formateur ---------- */
+  var page = document.getElementById('page');
+  var coach = document.getElementById('coach');
+  coach.addEventListener('change', function(){
+    page.classList.toggle('coach', coach.checked);
+  });
+
+  /* ---------- calculateur ---------- */
+  var F = {
+    ci: document.getElementById('ci'), cc: document.getElementById('cc'),
+    cd: document.getElementById('cd'), cv: document.getElementById('cv'),
+    cr: document.getElementById('cr')
+  };
+  var O = {
+    ctr: document.getElementById('o-ctr'), cpc: document.getElementById('o-cpc'),
+    cpm: document.getElementById('o-cpm'), cvr: document.getElementById('o-cvr'),
+    cpa: document.getElementById('o-cpa'), roas: document.getElementById('o-roas')
+  };
+  var readEl = document.getElementById('read');
+
+  var PRESETS = {
+    marque:    {ci:4200,    cc:840,  cd:210,  cv:63, cr:32},
+    generique: {ci:96000,   cc:1920, cd:2880, cv:38, cr:32},
+    display:   {ci:1450000, cc:1015, cd:610,  cv:4,  cr:32},
+    asso:      {ci:1850,    cc:211,  cd:63,   cv:48, cr:0}
+  };
+
+  function n(el){ var v = parseFloat(el.value); return isFinite(v) && v >= 0 ? v : 0; }
+  function pct(x, d){ return x.toLocaleString('fr-FR', {minimumFractionDigits:d, maximumFractionDigits:d}) + ' %'; }
+  function eur(x, d){ return x.toLocaleString('fr-FR', {minimumFractionDigits:d, maximumFractionDigits:d}) + ' €'; }
+
+  function compute(){
+    var imp = n(F.ci), cli = n(F.cc), cost = n(F.cd), conv = n(F.cv), val = n(F.cr);
+    var ctr  = imp > 0 ? (cli / imp) * 100 : null;
+    var cpc  = cli > 0 ? cost / cli : null;
+    var cpm  = imp > 0 ? cost / (imp / 1000) : null;
+    var cvr  = cli > 0 ? (conv / cli) * 100 : null;
+    var cpa  = conv > 0 ? cost / conv : null;
+    var ca   = conv * val;
+    var roas = cost > 0 && val > 0 ? (ca / cost) * 100 : null;
+
+    O.ctr.textContent  = ctr  === null ? '—' : pct(ctr, ctr < 1 ? 3 : 2);
+    O.cpc.textContent  = cpc  === null ? '—' : eur(cpc, 2);
+    O.cpm.textContent  = cpm  === null ? '—' : eur(cpm, 2);
+    O.cvr.textContent  = cvr  === null ? '—' : pct(cvr, 2);
+    O.cpa.textContent  = cpa  === null ? '—' : eur(cpa, 2);
+    O.roas.textContent = roas === null ? '—' : pct(roas, 0);
+
+    var lines = [];
+    function surCent(rate, avant, apres){
+      // sous 1 %, « sur 100 » donne des décimales illisibles : on change d'échelle
+      var base = rate >= 1 ? 100 : (rate >= 0.1 ? 1000 : 10000);
+      var val = rate * base / 100;
+      return 'Sur ' + base.toLocaleString('fr-FR') + ' ' + avant + ', <strong>' +
+        val.toLocaleString('fr-FR', {maximumFractionDigits: val < 10 ? 1 : 0}) + '</strong> ' + apres;
+    }
+    if (ctr !== null) {
+      lines.push(surCent(ctr, 'personnes qui ont vu l’annonce', 'ont cliqué.'));
+    }
+    if (cvr !== null) {
+      lines.push(surCent(cvr, 'visiteurs arrivés sur la page', 'ont fait l’action voulue.'));
+    }
+    if (cpa !== null) {
+      lines.push('Chaque résultat a coûté <strong>' + eur(cpa, 2) + '</strong>' +
+        (cpc !== null && cvr !== null && cvr > 0
+          ? ' — soit ' + eur(cpc, 2) + ' le clic divisé par ' + pct(cvr, 2) + ' de conversion.'
+          : '.'));
+    }
+    if (roas !== null) {
+      lines.push('Pour 1 € dépensé, <strong>' +
+        (roas / 100).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) +
+        ' €</strong> de chiffre d’affaires sont rentrés (' + eur(ca, 0) + ' au total).');
+    }
+
+    var flags = [];
+    if (cli > 0 && cli < 100) flags.push('Moins de 100 clics : les taux ne sont pas encore fiables, c’est encore du hasard.');
+    if (conv > 0 && conv < 30) flags.push('Moins de 30 conversions : le taux de conversion et le CPA restent instables.');
+    if (cli > 200 && conv === 0) flags.push('Beaucoup de clics et zéro conversion : vérifiez d’abord le suivi des conversions (symptôme 07).');
+    if (ctr !== null && ctr > 0 && ctr < 1 && imp > 10000) flags.push('CTR sous 1 % avec beaucoup d’impressions : message ou ciblage à revoir (symptôme 03) — sauf s’il s’agit de Display.');
+    if (roas !== null && roas > 0 && roas < 100) flags.push('ROAS sous 100 % : chaque euro dépensé rapporte moins d’un euro de chiffre d’affaires.');
+
+    var html = lines.length
+      ? '<ul>' + lines.map(function(l){ return '<li>' + l + '</li>'; }).join('') + '</ul>'
+      : '<p style="margin:0;">Entrez des chiffres pour voir la lecture en français.</p>';
+    if (flags.length) {
+      html += '<p style="margin:12px 0 0;font-weight:600;">À signaler</p><ul>' +
+        flags.map(function(l){ return '<li>' + l + '</li>'; }).join('') + '</ul>';
+    }
+    readEl.innerHTML = html;
+  }
+
+  Object.keys(F).forEach(function(k){ F[k].addEventListener('input', compute); });
+
+  var presetBtns = Array.prototype.slice.call(document.querySelectorAll('[data-preset]'));
+  presetBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var p = PRESETS[b.getAttribute('data-preset')];
+      if (!p) return;
+      F.ci.value = p.ci; F.cc.value = p.cc; F.cd.value = p.cd; F.cv.value = p.cv; F.cr.value = p.cr;
+      presetBtns.forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      compute();
+    });
+  });
+  compute();
+
+  /* ---------- quiz ---------- */
+  var QS = [
+    { q:"Une campagne affiche 40 000 impressions et 400 clics. Quel est le CTR ?",
+      o:["1 %","4 %","0,4 %","10 %"], a:0,
+      e:"400 ÷ 40 000 = 0,01, soit 1 %. Le réflexe : le CTR se divise toujours par les impressions." },
+    { q:"Le CPC est de 2 € et le taux de conversion de 4 %. Quel est le CPA ?",
+      o:["8 €","0,08 €","50 €","24 €"], a:2,
+      e:"CPA = CPC ÷ taux de conversion = 2 ÷ 0,04 = 50 €. Il faut donc 25 clics pour un résultat." },
+    { q:"Taux d'impressions 45 %, perdues (budget) 40 %, perdues (classement) 15 %. Que fait-on en priorité ?",
+      o:["Améliorer la page de destination","Augmenter le budget","Baisser les enchères","Ajouter des mots-clés"], a:1,
+      e:"La plus grosse perte vient du budget (40 %). C'est le symptôme 04 : la machine est bridée. On vérifie que le CPA est acceptable, puis on augmente le budget." },
+    { q:"CTR de 12 % et taux d'impressions de 97 %, mais le volume ne monte plus. Que se passe-t-il ?",
+      o:["L'annonce est mauvaise","Le budget est insuffisant","La niche est saturée","Le suivi est cassé"], a:2,
+      e:"Symptôme 01. Vous êtes présent quasiment à chaque recherche et vous plaisez. Il n'y a plus d'impressions à acheter : pour croître, il faut élargir ou monter d'un étage dans le tunnel." },
+    { q:"1 200 clics, 0 conversion depuis deux semaines. Premier réflexe ?",
+      o:["Couper la campagne","Vérifier le suivi des conversions","Doubler l'enchère","Changer les visuels"], a:1,
+      e:"Symptôme 07. Un zéro parfait est presque toujours un problème de mesure. On ne coupe jamais avant d'avoir vérifié que la conversion est bien trackée." },
+    { q:"Un CTR de 0,08 % sur une campagne Display, c'est :",
+      o:["Une alerte rouge","Dans la moyenne du réseau","Excellent","Impossible"], a:1,
+      e:"Le CTR moyen du Display se situe autour de 0,05 à 0,1 %. Le même chiffre sur le réseau de recherche serait alarmant. Comparez toujours à votre propre référentiel." },
+    { q:"Marge brute de 40 %. Quel ROAS minimum pour ne pas perdre d'argent ?",
+      o:["140 %","400 %","250 %","40 %"], a:2,
+      e:"ROAS minimum = 1 ÷ taux de marge = 1 ÷ 0,40 = 2,5, soit 250 %. En dessous, chaque vente coûte plus qu'elle ne rapporte." },
+    { q:"Vous perdez 70 % d'impressions à cause du classement. Que faites-vous ?",
+      o:["Augmenter le budget quotidien","Améliorer la pertinence et la page de destination","Ajouter des mots-clés négatifs","Attendre"], a:1,
+      e:"Symptôme 05 : c'est un problème de qualité ou d'enchère, pas de budget. Ajouter de l'argent ne fera pas gagner les enchères perdues." },
+    { q:"Sur quelle métrique juge-t-on une campagne YouTube de notoriété ?",
+      o:["Le CPA","Le ROAS","La couverture et le coût pour mille","Le taux d'impressions exact"], a:2,
+      e:"On ne juge jamais un étage avec les métriques de l'étage du dessous. Le haut de tunnel se juge en couverture, CPM et taux de visionnage." },
+    { q:"En emailing, beaucoup d'ouvertures mais très peu de clics. Le problème est :",
+      o:["L'objet de l'email","Le contenu de l'email","La délivrabilité","La taille de la liste"], a:1,
+      e:"L'objet a fait son travail puisqu'on ouvre. C'est le contenu qui ne tient pas la promesse. C'est exactement le symptôme 02 transposé à l'email : CTR élevé, conversion faible." }
+  ];
+
+  var box = document.getElementById('quizbox');
+  var scoreEl = document.getElementById('score');
+  var answered = 0, right = 0;
+
+  QS.forEach(function(item, i){
+    var card = document.createElement('div');
+    card.className = 'q';
+
+    var num = document.createElement('div');
+    num.className = 'qn';
+    num.textContent = 'QUESTION ' + String(i + 1).padStart(2, '0');
+
+    var title = document.createElement('div');
+    title.className = 'qt';
+    title.textContent = item.q;
+
+    var opts = document.createElement('div');
+    opts.className = 'opts';
+
+    var exp = document.createElement('div');
+    exp.className = 'exp';
+    exp.textContent = item.e;
+
+    item.o.forEach(function(label, j){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      b.textContent = label;
+      b.addEventListener('click', function(){
+        var all = opts.querySelectorAll('.opt');
+        Array.prototype.forEach.call(all, function(x, k){
+          x.disabled = true;
+          if (k === item.a) x.classList.add('right');
+          else if (k === j) x.classList.add('wrong');
+        });
+        exp.classList.add('show');
+        answered++;
+        if (j === item.a) right++;
+        scoreEl.textContent = right + ' / ' + QS.length + ' · ' + answered +
+          ' question' + (answered > 1 ? 's' : '') + ' répondue' + (answered > 1 ? 's' : '');
+      });
+      opts.appendChild(b);
+    });
+
+    card.appendChild(num);
+    card.appendChild(title);
+    card.appendChild(opts);
+    card.appendChild(exp);
+    box.appendChild(card);
+  });
+
+  /* ---------- navigation active ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var targets = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (!en.isIntersecting) return;
+        links.forEach(function(a){
+          a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id);
+        });
+      });
+    }, { rootMargin: '-12% 0px -78% 0px', threshold: 0 });
+    targets.forEach(function(t){ io.observe(t); });
+  }
+})();
+</script>
+</body>
+</html>

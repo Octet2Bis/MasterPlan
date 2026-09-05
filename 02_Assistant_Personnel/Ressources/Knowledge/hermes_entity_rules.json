@@ -4,14 +4,14 @@
       "id": "ent_aevum",
       "label": "Aevum (Positive Friction & Longevity App)",
       "type": "PROJECT",
-      "pillar": "03_Developpement_App",
+      "pillar": "03_Developpement_App_and_Design",
       "keywords": ["aevum", "screen time", "familycontrols", "shield", "bouclier", "soupir", "crevette"]
     },
     {
       "id": "ent_transit_da",
       "label": "Design Transit Signalétique / Swiss Craft",
       "type": "DESIGN_SYSTEM",
-      "pillar": "03_Developpement_App",
+      "pillar": "03_Developpement_App_and_Design",
       "keywords": ["signalétique", "métro", "train", "transit", "station", "flipper", "pinball", "swiss craft"]
     },
     {
@@ -32,7 +32,7 @@
       "id": "ent_longevity_protocols",
       "label": "Protocoles Physiologiques de Longévité",
       "type": "RESEARCH_DOMAIN",
-      "pillar": "03_Developpement_App",
+      "pillar": "03_Developpement_App_and_Design",
       "keywords": ["santé", "sommeil", "posture", "respiration", "vagal", "cervicales", "mélatonine", "huberman"]
     },
     {

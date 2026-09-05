@@ -16,7 +16,7 @@ Le **Master Plan** est une infrastructure modulaire d'ingénierie logicielle, d'
 | **Loi Fondamentale** | 👉 [`AGENTS.md`](AGENTS.md) — Plafond strict (< 250 lignes), zéro inlining JSON et Quality Gates obligatoires |
 | **Pilier 01 : GTM & Growth** | 👉 [`01_GTM_Growth/`](01_GTM_Growth/) — Moteurs d'enrichissement, scoring neuro-cognitif, pipelines de prospection |
 | **Pilier 02 : Assistant Personnel** | 👉 [`02_Assistant_Personnel/`](02_Assistant_Personnel/) — Ingestion Telegram sécurisée 2FA, automatisation, career ops |
-| **Pilier 03 : Développement d'Apps** | 👉 [`03_Developpement_App/`](03_Developpement_App/) — Application native iOS **Aevum** (SwiftUI / Screen Time) & Simulateur Web |
+| **Pilier 03 : Développement d'Apps** | 👉 [`03_Developpement_App_and_Design/`](03_Developpement_App_and_Design/) — Application native iOS **Aevum** (SwiftUI / Screen Time) & Simulateur Web |
 
 ---
 
@@ -32,7 +32,7 @@ Le **Master Plan** est une infrastructure modulaire d'ingénierie logicielle, d'
 
 ```bash
 # Vérification d'intégrité du code (Dev Web & iOS)
-node 03_Developpement_App/toolbox/test_code_integrity.js
+node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js
 
 # Vérification des pipelines et scoring (GTM)
 python 01_GTM_Growth/toolbox/test_quality_gates.py

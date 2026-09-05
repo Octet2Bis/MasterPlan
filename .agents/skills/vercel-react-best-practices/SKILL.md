@@ -1,6 +1,6 @@
 ---
 name: vercel-react-best-practices
-description: Standards officiels Vercel Labs pour React 19, Next.js 15, Server Components (RSC), Server Actions, Streaming SSR, Tree-shaking et déploiements éphémères. À utiliser dans 03_Developpement_App/03_Web_and_Fullstack/.
+description: Standards officiels Vercel Labs pour React 19, Next.js 15, Server Components (RSC), Server Actions, Streaming SSR, Tree-shaking et déploiements éphémères. À utiliser dans 03_Developpement_App_and_Design/03_Web_and_Fullstack/.
 ---
 
 # ⚡ Vercel Labs : React 19 & Next.js Best Practices

@@ -1,6 +1,6 @@
 ---
 name: gtm-aso-app-store
-description: Spécialiste App Store Optimization (ASO) pour applications iOS natives (Aevum). Calibre les métadonnées Apple (Titres 30 chars, Sous-titres 30 chars, Mots-clés 100 chars, Textes promotionnels) et les textes de conversion pour maximiser le ranking organique et le taux de téléchargement. À utiliser dans 01_GTM_Growth/02_Acquisition_and_AEO/ et 03_Developpement_App/.
+description: Spécialiste App Store Optimization (ASO) pour applications iOS natives (Aevum). Calibre les métadonnées Apple (Titres 30 chars, Sous-titres 30 chars, Mots-clés 100 chars, Textes promotionnels) et les textes de conversion pour maximiser le ranking organique et le taux de téléchargement. À utiliser dans 01_GTM_Growth/02_Acquisition_and_AEO/ et 03_Developpement_App_and_Design/.
 ---
 
 # 🍏 App Store Optimization (ASO) & iOS Metadata Engine

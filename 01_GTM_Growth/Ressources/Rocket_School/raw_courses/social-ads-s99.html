@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Social Ads 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* ============================================================
+   SOCIAL ADS 2026 — S94 Challenge 2
+   Palette : graphite monochrome. La couleur n'apparaît que
+   là où un chiffre est jugé (ok / warn / bad).
+   ============================================================ */
+
+:root{
+  --ground:#F3F4F2;
+  --surface:#FBFCFA;
+  --surface-2:#ECEEEB;
+  --ink:#15181A;
+  --ink-2:#3E4548;
+  --ink-3:#757E80;
+  --rule:#D5D9D4;
+  --rule-2:#E5E8E3;
+  --accent:#14605B;
+  --ok:#2C6A3F;
+  --warn:#8A5A12;
+  --bad:#97302B;
+  --bar:46px;
+
+  --sans:"Instrument Sans", ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101312;
+    --surface:#171B1A;
+    --surface-2:#1E2322;
+    --ink:#E9ECEA;
+    --ink-2:#B4BBB8;
+    --ink-3:#7C8583;
+    --rule:#2C3231;
+    --rule-2:#222726;
+    --accent:#63C1B8;
+    --ok:#72C08D;
+    --warn:#D6A45A;
+    --bad:#E4877F;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101312;
+  --surface:#171B1A;
+  --surface-2:#1E2322;
+  --ink:#E9ECEA;
+  --ink-2:#B4BBB8;
+  --ink-3:#7C8583;
+  --rule:#2C3231;
+  --rule-2:#222726;
+  --accent:#63C1B8;
+  --ok:#72C08D;
+  --warn:#D6A45A;
+  --bad:#E4877F;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+
+/* ---------- chrome ---------- */
+
+.progress{
+  position:fixed; inset:0 auto auto 0; height:2px; width:0;
+  background:var(--accent); z-index:40;
+  transition:width .18s ease;
+}
+
+.stage{
+  height:calc(100vh - var(--bar));
+  display:grid; place-items:center;
+  padding:2.2vmin;
+}
+
+.bar{
+  height:var(--bar);
+  display:flex; align-items:center; gap:1.5rem;
+  padding:0 clamp(.75rem,2vw,1.5rem);
+  border-top:1px solid var(--rule);
+  background:var(--ground);
+  font-family:var(--mono);
+  font-size:.72rem; letter-spacing:.04em;
+  color:var(--ink-3);
+}
+.bar .sect{
+  text-transform:uppercase; letter-spacing:.14em;
+  color:var(--ink-2); white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis;
+}
+.bar .spacer{flex:1}
+.bar .keys{display:flex; gap:.85rem; white-space:nowrap}
+.bar .keys b{color:var(--ink-2); font-weight:500}
+.bar .count{font-variant-numeric:tabular-nums; color:var(--ink-2); white-space:nowrap}
+
+/* la barre ne doit jamais pousser sa propre hauteur */
+.bar{overflow:hidden}
+.bar .sect{flex:0 1 auto; min-width:0}
+@media (max-width:900px){ .bar .keys{display:none} }
+@media (max-width:560px){ .bar .sect{display:none} }
+
+.nav{display:flex; gap:.35rem}
+.nav button, .bar .tgl{
+  font:inherit; color:var(--ink-2);
+  background:transparent; border:1px solid var(--rule);
+  border-radius:2px; padding:.24rem .58rem; cursor:pointer;
+  line-height:1.1;
+}
+.nav button:hover, .bar .tgl:hover{border-color:var(--ink-3); color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* ---------- la scène 16:9 ---------- */
+
+.slide{
+  container-type:size;
+  width:min(100%, calc((100vh - var(--bar) - 4.4vmin) * 16 / 9));
+  aspect-ratio:16/9;
+  background:var(--surface);
+  border:1px solid var(--rule);
+  position:relative;
+  display:none;
+  overflow:hidden;
+}
+.slide.is-current{display:block}
+
+/* dvh en amélioration progressive : sans @supports, un calc() invalide
+   ferait tomber toute la déclaration sur les moteurs sans dvh. */
+@supports (height: 100dvh){
+  .stage{height:calc(100dvh - var(--bar))}
+  .slide{width:min(100%, calc((100dvh - var(--bar) - 4.4vmin) * 16 / 9))}
+  body.overview .stage{min-height:calc(100dvh - var(--bar))}
+}
+
+.pad{
+  position:absolute; inset:0;
+  padding:5cqw 5.6cqw 4cqw;
+  display:flex; flex-direction:column;
+}
+
+/* eyebrow */
+.eyebrow{
+  display:flex; align-items:baseline; gap:1.2cqw;
+  font-family:var(--mono); font-size:1.05cqw;
+  text-transform:uppercase; letter-spacing:.16em;
+  color:var(--ink-3);
+}
+.eyebrow .n{
+  margin-left:auto; letter-spacing:.08em;
+  font-variant-numeric:tabular-nums; color:var(--ink-3);
+}
+
+/* titre */
+h1,h2{margin:0; font-weight:600; letter-spacing:-.022em; text-wrap:balance}
+h2{
+  font-size:3.3cqw; line-height:1.1;
+  margin-top:2.4cqw; padding-bottom:1.9cqw;
+  border-bottom:1px solid var(--rule);
+  max-width:46cqw;
+}
+.slide.wide h2{max-width:64cqw}
+
+/* corps */
+.body{flex:1 0 auto; display:flex; flex-direction:column; padding-top:2.6cqw}
+.lead{
+  font-size:1.85cqw; line-height:1.45; color:var(--ink-2);
+  max-width:52cqw; margin:0;
+}
+
+/* listes à filets */
+ul.bul{list-style:none; margin:0; padding:0; max-width:66cqw}
+ul.bul li{
+  --pt:1.02cqw;
+  font-size:1.62cqw; line-height:1.4; color:var(--ink-2);
+  padding:var(--pt) 0 var(--pt) 2.2cqw; position:relative;
+  border-bottom:1px solid var(--rule-2);
+}
+ul.bul li:first-child{--pt:0}
+ul.bul li:last-child{border-bottom:0}
+ul.bul li::before{
+  content:""; position:absolute; left:0; top:calc(var(--pt) + 1.1cqw);
+  width:.9cqw; height:1px; background:var(--ink-3);
+}
+ul.bul li b{color:var(--ink); font-weight:600}
+
+/* rangées terme / définition */
+.rows{display:grid; gap:0; margin:0; max-width:70cqw}
+.row{
+  display:grid; grid-template-columns:14cqw 1fr; gap:2.4cqw;
+  padding:1.15cqw 0; border-bottom:1px solid var(--rule-2);
+  align-items:baseline;
+}
+.row:last-child{border-bottom:0}
+.row dt{
+  font-family:var(--mono); font-size:1.18cqw; font-weight:500;
+  text-transform:uppercase; letter-spacing:.09em; color:var(--ink);
+}
+.row dd{margin:0; font-size:1.58cqw; line-height:1.38; color:var(--ink-2)}
+.row.q dd{color:var(--ink); font-weight:500}
+
+/* séquences réellement ordonnées */
+ol.seq{list-style:none; counter-reset:s; margin:0; padding:0; max-width:68cqw}
+ol.seq li{
+  counter-increment:s; position:relative;
+  padding:1.05cqw 0 1.05cqw 4cqw;
+  border-bottom:1px solid var(--rule-2);
+  font-size:1.58cqw; line-height:1.38; color:var(--ink-2);
+}
+ol.seq li:last-child{border-bottom:0}
+ol.seq li::before{
+  content:counter(s); position:absolute; left:0; top:1.05cqw;
+  font-family:var(--mono); font-size:1.18cqw; color:var(--ink-3);
+  font-variant-numeric:tabular-nums;
+}
+ol.seq li b{color:var(--ink); font-weight:600}
+
+/* deux colonnes */
+.cols2{display:grid; grid-template-columns:1fr 1fr; gap:0 4.4cqw}
+
+/* tableaux */
+.tw{overflow-x:auto; max-width:100%}
+table.data{
+  width:100%; border-collapse:collapse;
+  font-size:1.36cqw; font-variant-numeric:tabular-nums;
+}
+table.data th{
+  text-align:left; font-family:var(--mono); font-weight:500;
+  font-size:1.02cqw; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--ink-3); padding:0 1.6cqw .85cqw 0;
+  border-bottom:1px solid var(--rule);
+  vertical-align:bottom;
+}
+table.data td{
+  padding:1.02cqw 1.6cqw 1.02cqw 0;
+  border-bottom:1px solid var(--rule-2);
+  color:var(--ink-2); line-height:1.32; vertical-align:top;
+}
+table.data tr:last-child td{border-bottom:0}
+table.data th:last-child, table.data td:last-child{padding-right:0}
+table.data .k{
+  color:var(--ink); font-weight:600;
+  font-family:var(--mono); font-size:1.24cqw; letter-spacing:-.01em;
+}
+table.data .num{font-family:var(--mono); font-size:1.3cqw; color:var(--ink)}
+table.data .ok{color:var(--ok); font-weight:600}
+table.data .warn{color:var(--warn); font-weight:600}
+table.data .bad{color:var(--bad); font-weight:600}
+.slide.dense table.data{font-size:1.24cqw}
+.slide.dense table.data td{padding-top:.82cqw; padding-bottom:.82cqw}
+.slide.dense table.data .k{font-size:1.14cqw}
+
+/* verdicts cut / keep / iterate */
+.verdicts{display:grid; grid-template-columns:repeat(3,1fr); gap:2.6cqw; max-width:72cqw}
+.verdict{border-top:2px solid var(--rule); padding-top:1.5cqw}
+.verdict.cut{border-color:var(--bad)}
+.verdict.keep{border-color:var(--ok)}
+.verdict.iter{border-color:var(--warn)}
+.verdict h3{
+  margin:0 0 .9cqw; font-family:var(--mono); font-weight:600;
+  font-size:1.3cqw; text-transform:uppercase; letter-spacing:.11em;
+}
+.verdict.cut h3{color:var(--bad)}
+.verdict.keep h3{color:var(--ok)}
+.verdict.iter h3{color:var(--warn)}
+.verdict p{margin:0 0 .8cqw; font-size:1.4cqw; line-height:1.36; color:var(--ink-2)}
+.verdict p:last-child{margin-bottom:0}
+.verdict .cond{font-family:var(--mono); font-size:1.16cqw; color:var(--ink-3)}
+
+/* formule */
+.formula{
+  font-family:var(--mono); font-size:2.15cqw; line-height:1.3;
+  color:var(--ink); padding:1.9cqw 2.2cqw; margin:0 0 2.2cqw;
+  background:var(--surface-2); border-left:2px solid var(--accent);
+  max-width:62cqw; letter-spacing:-.01em;
+}
+.formula small{display:block; margin-top:.9cqw; font-size:1.12cqw; color:var(--ink-3); letter-spacing:.02em}
+
+/* citation */
+blockquote.pull{
+  margin:0; font-size:2.5cqw; line-height:1.28; font-weight:500;
+  letter-spacing:-.015em; color:var(--ink); max-width:54cqw;
+}
+blockquote.pull + p{margin:1.9cqw 0 0; font-size:1.5cqw; color:var(--ink-3)}
+
+/* ligne « ce que tu retiens » */
+.take{
+  margin:auto 0 0; padding-top:1.7cqw;
+  border-top:1px solid var(--rule);
+  font-size:1.5cqw; line-height:1.38; color:var(--accent);
+  max-width:62cqw; font-weight:500;
+}
+.take span{
+  font-family:var(--mono); font-size:1.02cqw; font-weight:500;
+  text-transform:uppercase; letter-spacing:.14em;
+  color:var(--ink-3); display:block; margin-bottom:.7cqw;
+}
+
+/* densité verticale renforcée : slides portant un bloc de contenu en plus */
+.slide.tight .body{padding-top:2cqw}
+.slide.tight h2{margin-top:2.1cqw; padding-bottom:1.6cqw}
+.slide.tight .lead{font-size:1.55cqw}
+.slide.tight ol.seq li{padding-top:.8cqw; padding-bottom:.8cqw}
+.slide.tight .formula{font-size:1.72cqw; padding:1.35cqw 1.7cqw; margin-bottom:1.5cqw}
+.slide.tight .formula small{margin-top:.7cqw; font-size:1.05cqw}
+.slide.tight ul.bul li{--pt:.74cqw}
+.slide.tight ul.bul li:first-child{--pt:0}
+.slide.tight .row{padding:.8cqw 0}
+.slide.tight .take{padding-top:1.15cqw}
+
+/* pied de slide */
+.foot{
+  display:flex; gap:1.4cqw; align-items:baseline;
+  margin-top:auto; padding-top:2cqw;
+  font-family:var(--mono); font-size:1cqw;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
+}
+
+/* ---------- slide de titre ---------- */
+.slide.title .pad{justify-content:center}
+.slide.title h1{font-size:6.4cqw; line-height:1.02; max-width:60cqw}
+.slide.title .sub{
+  margin:2.6cqw 0 0; font-size:1.95cqw; color:var(--ink-2);
+  max-width:48cqw; line-height:1.4;
+}
+.slide.title .meta{
+  margin-top:5cqw; padding-top:1.8cqw; border-top:1px solid var(--rule);
+  display:flex; gap:3cqw; flex-wrap:wrap;
+  font-family:var(--mono); font-size:1.12cqw;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
+}
+.slide.title .meta b{color:var(--ink-2); font-weight:500}
+
+/* ---------- mode sommaire ---------- */
+body.overview{overflow:auto}
+body.overview .stage{
+  height:auto; min-height:calc(100vh - var(--bar));
+  display:grid; place-items:start stretch; align-content:start;
+  grid-template-columns:repeat(auto-fill, minmax(230px,1fr));
+  gap:1.1rem; padding:1.6rem clamp(.9rem,2.4vw,2rem) 3rem;
+}
+body.overview .slide{
+  display:block; width:100%; cursor:pointer;
+  transition:border-color .12s ease;
+}
+body.overview .slide:hover{border-color:var(--ink-3)}
+body.overview .slide.is-current{box-shadow:0 0 0 2px var(--accent)}
+body.overview .slide .take, body.overview .slide .foot{opacity:.55}
+body.overview .bar{position:fixed; inset:auto 0 0 0}
+
+/* ---------- impression / PDF ---------- */
+@page{size:landscape; margin:0}
+@media print{
+  body{overflow:visible; background:#fff}
+  .bar,.progress{display:none !important}
+  .stage{display:block; height:auto; padding:0}
+  .slide{
+    display:block !important; width:100%; border:0;
+    break-after:page; page-break-after:always; background:#fff;
+  }
+  .slide:last-child{break-after:auto; page-break-after:auto}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important; animation:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="stage" id="stage">
+
+<!-- 1 ─────────────────────────────────────────────── -->
+<section class="slide title">
+  <div class="pad">
+    <h1>Social&nbsp;Ads 2026</h1>
+    <p class="sub">Diagnostiquer une campagne, dimensionner un test, et comprendre pourquoi la créa est devenue le ciblage.</p>
+    <div class="meta">
+      <span><b>S94</b> · Challenge 2</span>
+      <span>Matinée · 3 h</span>
+      <span>Atelier Creative Strategy l'après-midi</span>
+    </div>
+  </div>
+</section>
+
+<!-- 2 ─────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Ouverture">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>À la fin de la matinée, tu sais faire cinq choses</h2>
+    <div class="body">
+      <ol class="seq">
+        <li><b>Lire une campagne en 60 secondes</b> — cinq KPI, et la question à laquelle chacun répond.</li>
+        <li><b>Dimensionner un test</b> — budget plancher, durée, volume minimum, seuil de décision.</li>
+        <li><b>Trancher</b> — cut, keep ou iterate, avec un chiffre à l'appui et non un avis.</li>
+        <li><b>Écrire un hook qui cible</b> — parce que le ciblage s'écrit, il ne se coche plus.</li>
+        <li><b>Construire une matrice angle × persona × format</b> couvrant TOF, MOF et BOF.</li>
+      </ol>
+      <p class="take"><span>Cet après-midi</span>Tu appliques les cinq à l'entreprise partenaire de ton groupe.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 3 ─────────────────────────────────────────────── -->
+<section class="slide" data-sect="Cadrage">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Les Ads distribuent. Elles ne persuadent pas.</h2>
+    <div class="body">
+      <ul class="bul">
+        <li>Une pub <b>amplifie</b> une promesse. Elle ne la crée pas.</li>
+        <li>Une mauvaise offre reste une mauvaise offre avec 10 000 € derrière.</li>
+        <li>Une landing page faible plafonne toute la campagne, quel que soit le budget.</li>
+        <li>Le budget accélère ce qui existe déjà — <b>dans les deux sens</b>.</li>
+      </ul>
+      <p class="take"><span>Ce que tu retiens</span>Avant de payer la distribution, vérifie l'offre et la page. Sinon tu paies pour accélérer un échec.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 4 ─────────────────────────────────────────────── -->
+<section class="slide" data-sect="Cadrage">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Le rejet ne vient pas de la pub, mais du hors-contexte</h2>
+    <div class="body">
+      <blockquote class="pull">« People don't hate ads. They hate irrelevant interruptions. »</blockquote>
+      <ul class="bul" style="margin-top:2.6cqw">
+        <li>Le rejet naît du <b>hors-cible</b>, du <b>hors-contexte</b>, du <b>hors-timing</b>.</li>
+        <li>La pertinence n'est pas une politesse : c'est un levier de coût.</li>
+        <li>Plus tu es pertinent, plus l'algorithme te distribue, plus ton CPM baisse.</li>
+      </ul>
+      <p class="take"><span>Ce que tu retiens</span>L'objectif n'est pas la visibilité. C'est la pertinence — la visibilité en est la conséquence.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 5 ─────────────────────────────────────────────── -->
+<section class="slide" data-sect="Cadrage">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Quatre alignements : People, Message, Place, Time</h2>
+    <div class="body">
+      <dl class="rows">
+        <div class="row"><dt>People</dt><dd>Le bon profil — persona explicite et signaux comportementaux.</dd></div>
+        <div class="row"><dt>Message</dt><dd>Angle, promesse, preuve, appel à l'action. Dans cet ordre.</dd></div>
+        <div class="row"><dt>Place</dt><dd>Plateforme, format, contexte de consommation du feed.</dd></div>
+        <div class="row"><dt>Time</dt><dd>Moment de problème (social) ou moment d'intention (search).</dd></div>
+      </dl>
+      <p class="take"><span>Ce que tu retiens</span>En acquisition froide, tu joues surtout People + Message. En conversion, les quatre doivent s'aligner ou rien ne convertit.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 6 ─────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Cadrage">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Le canal dépend du niveau d'intention, pas de ta préférence</h2>
+    <div class="body">
+      <div class="tw">
+      <table class="data">
+        <thead><tr><th>Situation de marché</th><th>Comportement de la cible</th><th>Canal</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Problème connu<br>Solution connue</td><td>Elle cherche activement</td><td class="num">Search</td></tr>
+          <tr><td class="k">Problème connu<br>Solution nouvelle</td><td>Elle compare les approches</td><td class="num">Social + Search</td></tr>
+          <tr><td class="k">Problème latent</td><td>Elle ne cherche rien — il faut éduquer</td><td class="num">Social</td></tr>
+          <tr><td class="k">Problème à créer</td><td>Elle ignore la catégorie</td><td class="num">Branding · budget · répétition</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="take"><span>Pour le challenge</span>Pose-toi une seule question : est-ce que ma cible tape déjà une requête ? Si oui, Search. Sinon, Social — et il faudra éduquer avant de vendre.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 7 ─────────────────────────────────────────────── -->
+<section class="slide wide dense" data-sect="Cadrage">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Plus l'intention est forte, plus l'enchère est chère</h2>
+    <div class="body">
+      <div class="tw">
+      <table class="data">
+        <thead><tr><th>Plateforme</th><th>Intention</th><th>Ce que tu y fais</th><th>CPM · ordre de grandeur</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Google Search</td><td>Forte</td><td>Capter une demande qui existe déjà</td><td class="num">se lit en CPC : 0,50–4 €</td></tr>
+          <tr><td class="k">YouTube</td><td>Moyenne</td><td>Éduquer, puis retargeter</td><td class="num">8–20 €</td></tr>
+          <tr><td class="k">Meta</td><td>Faible</td><td>Scaler par la créa et la répétition</td><td class="num">6–15 €</td></tr>
+          <tr><td class="k">TikTok</td><td>Faible</td><td>Capter par le divertissement</td><td class="num">4–10 €</td></tr>
+          <tr><td class="k">LinkedIn</td><td>Moyenne (ciblage pro)</td><td>B2B, ticket élevé, cycle long</td><td class="num">25–60 €</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="take"><span>Précaution</span>Ordres de grandeur France 2026, à recalibrer sur ton propre compte dès les 14 premiers jours. Ils servent à savoir de quel côté tu es, pas à te juger.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 8 ─────────────────────────────────────────────── -->
+<section class="slide" data-sect="Cadrage">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Moins de signal, donc plus de poids sur la créa</h2>
+    <div class="body">
+      <ol class="seq">
+        <li>Consentement et restrictions iOS : le <b>tracking site est partiel</b>.</li>
+        <li>Les audiences de remarketing site sont donc <b>incomplètes</b>.</li>
+        <li>L'algorithme compense en apprenant sur ce qu'il voit encore : <b>la créa</b> et le comportement dans l'app.</li>
+        <li>Donc ce que tu contrôles se déplace : <b>du réglage vers le message</b>.</li>
+      </ol>
+      <p class="take"><span>À faire quand même</span>CAPI côté serveur et UTM normalisés — exactement ce qu'on a posé en semaine tracking. Sans ça tu pilotes à l'aveugle.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 9 ─────────────────────────────────────────────── -->
+<section class="slide" data-sect="Cadrage">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Les signaux on-platform sont plus fiables que ton pixel</h2>
+    <div class="body">
+      <dl class="rows">
+        <div class="row"><dt>Vues vidéo</dt><dd>25 %, 50 %, 75 % — le signal le plus sous-utilisé, et le plus qualifiant.</dd></div>
+        <div class="row"><dt>Engagements</dt><dd>Interactions avec la page, le compte, les publications.</dd></div>
+        <div class="row"><dt>Formulaires</dt><dd>Formulaire instantané ouvert mais non soumis : intention explicite.</dd></div>
+        <div class="row"><dt>Followers</dt><dd>Audience déjà exposée à ta marque, à coût d'accès plus faible.</dd></div>
+      </dl>
+      <p class="take"><span>Pourquoi ça marche</span>La donnée ne quitte jamais la plateforme, donc rien ne se perd. Schéma pratique : une vidéo TOF, puis retargeting des vues à 50 % en BOF.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 10 ────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Lire une campagne">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Trois niveaux, mais un seul fait la performance</h2>
+    <div class="body">
+      <dl class="rows">
+        <div class="row"><dt>Campaign</dt><dd>Définit l'<b>objectif</b> : ventes, prospects, trafic, notoriété.</dd></div>
+        <div class="row"><dt>Adset</dt><dd>Définit l'<b>optimisation</b> : audience, placements, budget, événement, attribution.</dd></div>
+        <div class="row"><dt>Ad</dt><dd>Définit la <b>performance réelle</b> : hook, créa, message, appel à l'action.</dd></div>
+      </dl>
+      <p class="lead" style="margin-top:2.4cqw">Erreur la plus fréquente : passer 80 % du temps sur l'adset — là où la variance est la plus faible.</p>
+      <p class="take"><span>Ce que tu retiens</span>En 2026, l'écart entre une campagne rentable et une campagne morte se joue au niveau Ad.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 11 ────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Lire une campagne">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Cinq KPI, cinq questions</h2>
+    <div class="body">
+      <dl class="rows">
+        <div class="row q"><dt>CPM</dt><dd>Combien coûte l'accès à cette audience ?</dd></div>
+        <div class="row q"><dt>CTR sortant</dt><dd>Est-ce que le hook fonctionne ?</dd></div>
+        <div class="row q"><dt>CPC</dt><dd>Créa et audience sont-elles efficaces ensemble ?</dd></div>
+        <div class="row q"><dt>CPL / CPA</dt><dd>Combien coûte un résultat ?</dd></div>
+        <div class="row q"><dt>Taux de qualification</dt><dd>Est-ce que ce résultat vaut quelque chose ?</dd></div>
+      </dl>
+      <p class="take"><span>Le cinquième</span>C'est celui que la plupart des campagnes ignorent — et c'est exactement l'objectif du challenge : des leads qualifiés, pas des leads.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 12 ────────────────────────────────────────────── -->
+<section class="slide wide dense" data-sect="Lire une campagne">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Des repères pour savoir de quel côté tu es</h2>
+    <div class="body">
+      <div class="tw">
+      <table class="data">
+        <thead><tr><th>Indicateur</th><th>Lead gen B2C</th><th>Lead gen B2B</th><th>E-commerce</th></tr></thead>
+        <tbody>
+          <tr><td class="k">CPM</td><td class="num">6–15 €</td><td class="num">20–50 €</td><td class="num">8–20 €</td></tr>
+          <tr><td class="k">CTR sortant</td><td class="num">1,0–2,0 %</td><td class="num">0,6–1,2 %</td><td class="num">1,0–2,0 %</td></tr>
+          <tr><td class="k">CPC sortant</td><td class="num">0,40–1,20 €</td><td class="num">1,50–5 €</td><td class="num">0,50–1,50 €</td></tr>
+          <tr><td class="k">Conversion LP</td><td class="num">8–20 %</td><td class="num">2–6 %</td><td class="num">1–3 %</td></tr>
+          <tr><td class="k">Coût / résultat</td><td class="num">3–15 €</td><td class="num">40–150 €</td><td class="num">ROAS ≥ 1 / marge</td></tr>
+          <tr><td class="k">Qualification</td><td class="num">25–50 %</td><td class="num">20–40 %</td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="take"><span>Comment s'en servir</span>Meta Feed et Reels, France, ordres de grandeur. Un chiffre hors fourchette n'est pas une faute : c'est une question à instruire avec la slide suivante.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 13 ────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Lire une campagne">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Deux ratios vidéo suffisent</h2>
+    <div class="body">
+      <div class="tw">
+      <table class="data">
+        <thead><tr><th>Ratio</th><th>Calcul</th><th>Ce qu'il mesure</th><th>Repère</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Hook rate</td><td class="num">vues 3 s ÷ impressions</td><td>Ta capacité à retenir en 1 à 3 secondes</td><td><span class="warn">20–30 % correct</span> · <span class="ok">&gt; 35 % bon</span></td></tr>
+          <tr><td class="k">Hold rate</td><td class="num">vues 15 s ÷ vues 3 s</td><td>La tenue du corps de la vidéo</td><td><span class="ok">&gt; 10 %</span></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="lead" style="margin-top:2.6cqw">Un hook rate élevé ne suffit pas. Un bon hook attire <b>et filtre</b> : il fait fuir ceux qui ne sont pas concernés.</p>
+      <p class="take"><span>Test de vérité</span>Si le hook rate monte mais que la qualification baisse, tu attires les mauvaises personnes plus efficacement.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 14 ────────────────────────────────────────────── -->
+<section class="slide wide dense" data-sect="Lire une campagne">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Diagnostic : si tu vois X, alors tu changes Y</h2>
+    <div class="body">
+      <div class="tw">
+      <table class="data">
+        <thead><tr><th>Symptôme</th><th>Lecture</th><th>Ce que tu changes</th></tr></thead>
+        <tbody>
+          <tr><td class="k bad">CPM &gt; 2 × ta référence</td><td>Audience trop étroite, ou créa qui génère des masquages</td><td>Élargir l'audience, changer le visuel</td></tr>
+          <tr><td class="k bad">CTR &lt; 0,6 %</td><td>Le hook ne fonctionne pas</td><td>Trois nouveaux hooks, même offre</td></tr>
+          <tr><td class="k warn">CTR bon, CPL mauvais</td><td>Rupture entre la pub et la page</td><td>Message match et vitesse de la LP</td></tr>
+          <tr><td class="k warn">CPL bon, leads non qualifiés</td><td>Le hook attire les mauvaises personnes</td><td>Ajouter un filtre dans le hook : prix, cible, prérequis</td></tr>
+          <tr><td class="k warn">Tout est bon, ça ne scale pas</td><td>Le concept est trop niche</td><td>Un nouvel angle — pas un budget plus gros</td></tr>
+          <tr><td class="k warn">ROAS correct, MER faible</td><td>Dépendance aux Ads, pas de rétention</td><td>Ce n'est plus un problème d'Ads</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="take"><span>MER</span>Marketing Efficiency Ratio = chiffre d'affaires total ÷ dépense publicitaire totale. Il dit ce que le ROAS par campagne cache.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 15 ────────────────────────────────────────────── -->
+<section class="slide wide tight" data-sect="Lire une campagne">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Un test se dimensionne avant de se lancer</h2>
+    <div class="body">
+      <p class="formula">budget/jour ≈ 50 × coût par résultat visé ÷ 7
+        <small>50 conversions par semaine et par adset : le seuil de sortie de phase d'apprentissage</small></p>
+      <ul class="bul">
+        <li>Résultat visé à 20 € → environ <b>140 €/jour</b> sur un seul adset pour apprendre proprement.</li>
+        <li>Tu n'as pas ce budget ? <b>Optimise sur un événement plus fréquent</b> : vue de page, clic sortant, lead simple.</li>
+        <li>Durée minimale : <b>4 à 7 jours</b>. Tu ne touches à rien avant.</li>
+        <li>Volume minimum par créa avant de juger : <b>≈ 1 000 impressions et 50 clics</b>.</li>
+      </ul>
+      <p class="take"><span>Pour le challenge</span>Avec un budget serré : un adset, trois à quatre créas, un événement fréquent. Fragmenter le budget, c'est n'apprendre nulle part.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 16 ────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Lire une campagne">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Trancher : cut, keep ou iterate</h2>
+    <div class="body">
+      <div class="verdicts">
+        <div class="verdict cut">
+          <h3>Cut</h3>
+          <p class="cond">volume atteint + KPI sous le seuil</p>
+          <p>Tu coupes la créa, pas l'angle. Note pourquoi : c'est ce qui a de la valeur.</p>
+        </div>
+        <div class="verdict keep">
+          <h3>Keep</h3>
+          <p class="cond">volume atteint + KPI au-dessus</p>
+          <p>Tu laisses tourner et tu déclines l'angle en nouvelles variantes.</p>
+        </div>
+        <div class="verdict iter">
+          <h3>Iterate</h3>
+          <p class="cond">hook rate bon + suite mauvaise</p>
+          <p>Tu gardes les trois premières secondes et tu réécris tout le reste.</p>
+        </div>
+      </div>
+      <p class="take"><span>Règle non négociable</span>Une seule variable change entre deux versions. Sinon tu obtiens un résultat sans savoir ce qui l'a produit.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 17 ────────────────────────────────────────────── -->
+<section class="slide" data-sect="La créa fait le ciblage">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Le targeting ne suffit plus</h2>
+    <div class="body">
+      <ul class="bul">
+        <li>Meta et TikTok sont des <b>moteurs de prédiction</b>, plus des filtres d'audience.</li>
+        <li>Les centres d'intérêt sont bruités, redondants, et se recouvrent largement.</li>
+        <li>L'algorithme apprend surtout sur la créa, le texte, et le comportement après le clic.</li>
+        <li>Audience large + bonne créa <b>bat</b> audience étroite + créa moyenne.</li>
+      </ul>
+      <p class="take"><span>Ce que tu retiens</span>Le réglage d'audience n'est plus un levier de performance. C'est devenu une contrainte de départ.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 18 ────────────────────────────────────────────── -->
+<section class="slide" data-sect="La créa fait le ciblage">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>La créa fait le ciblage</h2>
+    <div class="body">
+      <ol class="seq">
+        <li>Le hook est le <b>premier filtre</b> : il décide qui s'arrête de scroller.</li>
+        <li>Hook hors-sujet → mauvais signal → l'algorithme te livre la mauvaise audience.</li>
+        <li>Hook précis → audience qualifiée → coût par résultat qualifié plus bas.</li>
+      </ol>
+      <p class="lead" style="margin-top:2.4cqw">« Tu as la peau sèche&nbsp;? » et « Ta peau tire après chaque douche&nbsp;? » ne ciblent pas les mêmes personnes. Aucune case ne fait cette différence.</p>
+      <p class="take"><span>Ce que tu retiens</span>Ton ciblage s'écrit. Il ne se coche plus.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 19 ────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Chercher">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>La recherche précède la production</h2>
+    <div class="body">
+      <ol class="seq">
+        <li><b>Le produit</b> — promesse réelle, différenciation défendable, preuves disponibles.</li>
+        <li><b>L'audience</b> — douleurs, désirs, objections, et le vocabulaire exact employé.</li>
+        <li><b>Les concurrents</b> — relever des patterns, jamais copier une exécution.</li>
+        <li><b>Le compte</b> — les winners passées et, surtout, les flops.</li>
+      </ol>
+      <p class="take"><span>Ce que tu retiens</span>Ce qui a floppé est aussi instructif que ce qui marche : ça élimine des angles avant de les payer.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 20 ────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Chercher">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Trois bibliothèques publiques, légalement consultables</h2>
+    <div class="body">
+      <div class="tw">
+      <table class="data">
+        <thead><tr><th>Bibliothèque</th><th>Couverture</th><th>Adresse</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Meta Ads Library</td><td>Facebook, Instagram</td><td class="num">facebook.com/ads/library</td></tr>
+          <tr><td class="k">TikTok Creative Center</td><td>TikTok</td><td class="num">ads.tiktok.com/business/creativecenter</td></tr>
+          <tr><td class="k">Google Ads Transparency</td><td>Search, Display, YouTube</td><td class="num">adstransparency.google.com</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="lead" style="margin-top:2.6cqw">Ce que tu relèves : l'angle, la structure du hook, l'offre, le format. Pas le montage.</p>
+      <p class="take"><span>Le signal le plus fiable</span>Une pub active depuis des mois et déclinée en variantes. Personne ne paie longtemps pour une pub qui perd.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 21 ────────────────────────────────────────────── -->
+<section class="slide" data-sect="Chercher">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Les commentaires sont ta meilleure source d'angles</h2>
+    <div class="body">
+      <ul class="bul">
+        <li>Lis les commentaires des pubs qui tournent depuis des mois.</li>
+        <li>Une <b>objection récurrente</b> devient un hook.</li>
+        <li>Une <b>question répétée</b> devient une headline.</li>
+        <li>Format qui marche : le commentaire affiché à l'écran, et la réponse du fondateur.</li>
+      </ul>
+      <p class="take"><span>Ce que tu retiens</span>Le vocabulaire des commentaires est celui de ta cible. Copie-le littéralement — n'améliore pas la formulation.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 22 ────────────────────────────────────────────── -->
+<section class="slide" data-sect="Produire">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Une winner est un concept, pas une vidéo</h2>
+    <div class="body">
+      <ul class="bul">
+        <li>Le métier relie insight client, angle, format et lecture des chiffres.</li>
+        <li>La boucle : <b>produire → tester → itérer → capitaliser</b>.</li>
+        <li>Ce qui se capitalise, ce ne sont pas les vidéos : c'est la bibliothèque d'angles validés.</li>
+      </ul>
+      <p class="take"><span>Test de vérité</span>Si tu ne peux pas décliner ta pub en cinq variantes crédibles, tu n'as pas de concept. Tu as eu de la chance.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 23 ────────────────────────────────────────────── -->
+<section class="slide wide dense" data-sect="Produire">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Le niveau de conscience détermine le hook</h2>
+    <div class="body">
+      <div class="tw">
+      <table class="data">
+        <thead><tr><th>Niveau</th><th>Où en est la personne</th><th>Rôle du hook</th><th>Étage</th></tr></thead>
+        <tbody>
+          <tr><td class="k">1 · Inconsciente</td><td>Ne sait pas qu'elle a un problème</td><td>Révéler le problème</td><td class="num">TOF</td></tr>
+          <tr><td class="k">2 · Problème</td><td>Souffre, ignore les solutions</td><td>Nommer la douleur précisément</td><td class="num">TOF</td></tr>
+          <tr><td class="k">3 · Solutions</td><td>Compare les approches</td><td>Expliquer ton mécanisme</td><td class="num">MOF</td></tr>
+          <tr><td class="k">4 · Produit</td><td>Te connaît, hésite</td><td>Preuve, comparaison, objection levée</td><td class="num">MOF / BOF</td></tr>
+          <tr><td class="k">5 · Très consciente</td><td>Prête, attend une raison d'agir</td><td>Offre, garantie, urgence</td><td class="num">BOF</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="take"><span>Erreur classique</span>Servir une offre et une remise à une audience de niveau 1. Elle ne sait même pas encore qu'elle a le problème.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads · d'après E. Schwartz</span></div>
+  </div>
+</section>
+
+<!-- 24 ────────────────────────────────────────────── -->
+<section class="slide wide tight" data-sect="Produire">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>La matrice : angle × persona × format</h2>
+    <div class="body">
+      <dl class="rows">
+        <div class="row"><dt>Angle</dt><dd>Le message dominant : douleur, désir, preuve, ou objection levée.</dd></div>
+        <div class="row"><dt>Persona</dt><dd>Qui parle. Détermine la crédibilité et l'identification.</dd></div>
+        <div class="row"><dt>Format</dt><dd>Statique, UGC, freestyle, carousel, micro-trottoir, founder.</dd></div>
+      </dl>
+      <p class="formula" style="margin-top:2.6cqw">3 angles × 2 personas × 2 formats = 12 concepts
+        <small>tu en produis 6, tu en testes 4, tu en gardes 1 — et tu déclines celui-là</small></p>
+      <p class="take"><span>Règle d'itération</span>Une seule variable bouge à la fois. C'est la seule façon de savoir laquelle a produit le résultat.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 25 ────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Produire">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Funnel créatif : lead gen B2B</h2>
+    <div class="body">
+      <dl class="rows">
+        <div class="row"><dt>TOF · niv. 2</dt><dd>« Tu passes encore trois heures par semaine à faire ça à la main&nbsp;? »</dd></div>
+        <div class="row"><dt>MOF · niv. 3</dt><dd>« Voici le process complet en dix minutes, écran partagé. »</dd></div>
+        <div class="row"><dt>BOF · niv. 4-5</dt><dd>« Démo de vingt minutes : tu repars avec ton cas déjà configuré. »</dd></div>
+      </dl>
+      <p class="take"><span>La structure ne change jamais</span>Hook → preuve → conversion. Ce qui change, c'est le niveau de conscience auquel tu t'adresses.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 26 ────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Produire">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Funnel créatif : e-commerce</h2>
+    <div class="body">
+      <dl class="rows">
+        <div class="row"><dt>TOF · niv. 1</dt><dd>« Ta peau tire après la douche&nbsp;? Ce n'est pas normal. »</dd></div>
+        <div class="row"><dt>MOF · niv. 2-3</dt><dd>« Pourquoi ça arrive — et la preuve visuelle à quatorze jours. »</dd></div>
+        <div class="row"><dt>BOF · niv. 5</dt><dd>« −20 % aujourd'hui, satisfait ou remboursé. »</dd></div>
+      </dl>
+      <p class="take"><span>Pourquoi couvrir les trois</span>Sans TOF tu ne renouvelles pas l'audience et ton CPM grimpe. Sans BOF tu ne convertis pas ceux que tu as chauffés.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 27 ────────────────────────────────────────────── -->
+<section class="slide wide dense" data-sect="Produire">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Formats qui performent en 2026</h2>
+    <div class="body">
+      <div class="tw">
+      <table class="data">
+        <thead><tr><th>Format</th><th>Ce qu'il apporte</th><th>Quand l'utiliser</th></tr></thead>
+        <tbody>
+          <tr><td class="k">UGC facecam</td><td>Proximité, effet recommandation</td><td>MOF — mais saturé : il faut un angle très fort</td></tr>
+          <tr><td class="k">Freestyle / ugly ad</td><td>Crédibilité organique</td><td>TOF — tester vite et pour presque rien</td></tr>
+          <tr><td class="k">Founder ad</td><td>Autorité et confiance</td><td>B2B, offres à ticket élevé</td></tr>
+          <tr><td class="k">Commentaire + réponse</td><td>Lève une objection nommée</td><td>MOF et BOF</td></tr>
+          <tr><td class="k">Comparaison</td><td>Clarifie le choix</td><td>MOF, marché encombré</td></tr>
+          <tr><td class="k">Avant / après</td><td>Preuve visuelle immédiate</td><td>BOF, si le résultat se voit</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="take"><span>Ce que tu retiens</span>Aucun format ne sauve un angle faible. Le format ne fait que l'exécution.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 28 ────────────────────────────────────────────── -->
+<section class="slide wide" data-sect="Produire">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Le hook et la landing page disent la même chose</h2>
+    <div class="body">
+      <ul class="bul">
+        <li>La promesse du hook doit être <b>la première ligne de la page</b>.</li>
+        <li>Même chiffre, même vocabulaire, même visuel. Pas une reformulation.</li>
+        <li>Test : masque la pub. La headline répond-elle exactement au hook&nbsp;?</li>
+        <li>Trois ruptures fréquentes : promesse changée, visuel différent, effort demandé plus grand qu'annoncé.</li>
+      </ul>
+      <p class="take"><span>Ça se lit dans les chiffres</span>CTR bon + coût par lead mauvais = rupture entre la pub et la page. Neuf fois sur dix, ce n'est pas la campagne qu'il faut corriger.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 29 ────────────────────────────────────────────── -->
+<section class="slide" data-sect="Clôture">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>L'IA rend le contenu moyen invisible</h2>
+    <div class="body">
+      <ul class="bul">
+        <li>Produire en masse ne coûte plus rien — donc ne différencie plus rien.</li>
+        <li>Ce qui devient rare, donc premium : <b>l'insight client</b>, l'angle, la preuve, la vitesse d'itération.</li>
+        <li>L'IA est excellente pour décliner. Elle ne trouve pas l'insight à ta place.</li>
+      </ul>
+      <p class="take"><span>Ton avantage</span>L'accès au client réel, et la capacité à tester vite. Ni l'un ni l'autre ne se génère.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 30 ────────────────────────────────────────────── -->
+<section class="slide wide dense" data-sect="Clôture">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Les dix règles</h2>
+    <div class="body">
+      <div class="cols2">
+        <ol class="seq">
+          <li>Les Ads amplifient une offre. Elles ne la remplacent pas.</li>
+          <li>La créa fait le ciblage.</li>
+          <li>La recherche précède la production.</li>
+          <li>Une winner est un concept, pas une vidéo.</li>
+          <li>Scaler, c'est itérer des angles — pas seulement augmenter le budget.</li>
+        </ol>
+        <ol class="seq" start="6" style="counter-reset:s 5">
+          <li>Un test se dimensionne avant de se lancer.</li>
+          <li>Un hook rate élevé ne suffit pas : il doit filtrer.</li>
+          <li>Un funnel incomplet plafonne.</li>
+          <li>Le hook et la landing page disent la même chose.</li>
+          <li>Le KPI final, c'est le lead qualifié.</li>
+        </ol>
+      </div>
+      <p class="take"><span>S'il ne devait en rester qu'une</span>La règle 2. Tout le reste en découle.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 31 ────────────────────────────────────────────── -->
+<section class="slide wide dense" data-sect="Clôture">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Atelier : ce que ton groupe produit cet après-midi</h2>
+    <div class="body">
+      <ol class="seq">
+        <li><b>Persona</b> — douleurs, désirs, objections, et le vocabulaire relevé mot pour mot.</li>
+        <li><b>Trois angles</b> — un par niveau de conscience visé.</li>
+        <li><b>Matrice</b> angle × persona × format — 12 concepts, 4 priorisés et justifiés.</li>
+        <li><b>Scripts</b> — 4 hooks et 4 headlines, chacun rattaché à un angle.</li>
+        <li><b>Plan de test</b> — budget/jour, événement optimisé, durée, seuil de décision.</li>
+        <li><b>Analyse du jeu de KPI fourni</b> — cut, keep ou iterate, ligne par ligne.</li>
+      </ol>
+      <p class="take"><span>Critère d'évaluation</span>Chaque décision doit citer un chiffre et un seuil. Pas d'avis — des seuils.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+<!-- 32 ────────────────────────────────────────────── -->
+<section class="slide" data-sect="Annexe">
+  <div class="pad">
+    <div class="eyebrow"><span class="s"></span><span class="n"></span></div>
+    <h2>Annexe : audience collaboration sur Meta</h2>
+    <div class="body">
+      <ul class="bul">
+        <li>Certaines audiences peuvent être partagées entre deux Business Managers.</li>
+        <li>Cas d'usage : co-marketing entre offres complémentaires — coach sportif × nutritionniste.</li>
+        <li>Intérêt : mutualiser la donnée pour sortir plus vite de la phase d'apprentissage.</li>
+        <li>Précautions : base légale RGPD, accord écrit, cohérence de marque.</li>
+      </ul>
+      <p class="take"><span>À sa juste place</span>Ce n'est jamais ton premier levier. Range-le après la créa, le funnel et la page.</p>
+    </div>
+    <div class="foot"><span>S94 · Challenge 2 · Social Ads</span></div>
+  </div>
+</section>
+
+</div><!-- /stage -->
+
+<div class="bar">
+  <span class="sect" id="barSect">Social Ads 2026</span>
+  <span class="count"><b id="barNum">1</b> / <span id="barTot">32</span></span>
+  <span class="spacer"></span>
+  <span class="keys">
+    <span><b>← →</b> naviguer</span>
+    <span><b>O</b> sommaire</span>
+    <span><b>F</b> plein écran</span>
+    <span><b>P</b> imprimer</span>
+  </span>
+  <span class="nav">
+    <button type="button" id="btnPrev" aria-label="Slide précédente">←</button>
+    <button type="button" id="btnNext" aria-label="Slide suivante">→</button>
+  </span>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var total  = slides.length;
+  var i      = 0;
+
+  var barSect = document.getElementById("barSect");
+  var barNum  = document.getElementById("barNum");
+  var barTot  = document.getElementById("barTot");
+  var prog    = document.getElementById("progress");
+
+  barTot.textContent = total;
+
+  /* numérotation et section injectées : pas de numéro écrit à la main */
+  slides.forEach(function(s, idx){
+    var sect = s.getAttribute("data-sect") || "";
+    var eS = s.querySelector(".eyebrow .s");
+    var eN = s.querySelector(".eyebrow .n");
+    if (eS) eS.textContent = sect;
+    if (eN) eN.textContent = String(idx + 1).padStart(2, "0") + " / " + total;
+    s.setAttribute("aria-roledescription", "slide");
+    s.setAttribute("aria-label", (idx + 1) + " sur " + total);
+  });
+
+  function render(){
+    slides.forEach(function(s, idx){
+      s.classList.toggle("is-current", idx === i);
+    });
+    var cur = slides[i];
+    barSect.textContent = cur.getAttribute("data-sect") || "Social Ads 2026";
+    barNum.textContent = i + 1;
+    prog.style.width = ((i + 1) / total * 100) + "%";
+  }
+
+  function go(n, push){
+    i = Math.max(0, Math.min(total - 1, n));
+    render();
+    var h = "#" + (i + 1);
+    if (push !== false && location.hash !== h){
+      history.replaceState(null, "", h);
+    }
+    if (!document.body.classList.contains("overview")){
+      document.getElementById("stage").scrollTop = 0;
+    }
+  }
+
+  function overview(on){
+    var body = document.body;
+    var want = (on === undefined) ? !body.classList.contains("overview") : !!on;
+    body.classList.toggle("overview", want);
+    if (want){
+      requestAnimationFrame(function(){
+        slides[i].scrollIntoView({block:"center", behavior:"auto"});
+      });
+    }
+  }
+
+  function fullscreen(){
+    if (document.fullscreenElement){
+      document.exitFullscreen();
+    } else if (document.documentElement.requestFullscreen){
+      document.documentElement.requestFullscreen();
+    }
+  }
+
+  document.addEventListener("keydown", function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key;
+    var ov = document.body.classList.contains("overview");
+
+    if (k === "ArrowRight" || k === "PageDown" || k === " " || k === "Enter"){
+      if (ov && (k === " " || k === "Enter")){ overview(false); }
+      else { go(i + 1); }
+      e.preventDefault();
+    } else if (k === "ArrowLeft" || k === "PageUp" || k === "Backspace"){
+      go(i - 1); e.preventDefault();
+    } else if (k === "ArrowDown"){ go(i + 1); e.preventDefault(); }
+      else if (k === "ArrowUp"){ go(i - 1); e.preventDefault(); }
+      else if (k === "Home"){ go(0); e.preventDefault(); }
+      else if (k === "End"){ go(total - 1); e.preventDefault(); }
+      else if (k === "o" || k === "O"){ overview(); e.preventDefault(); }
+      else if (k === "Escape"){ if (ov) { overview(false); e.preventDefault(); } }
+      else if (k === "f" || k === "F"){ fullscreen(); e.preventDefault(); }
+      else if (k === "p" || k === "P"){ window.print(); e.preventDefault(); }
+  });
+
+  document.getElementById("btnNext").addEventListener("click", function(){ go(i + 1); });
+  document.getElementById("btnPrev").addEventListener("click", function(){ go(i - 1); });
+
+  slides.forEach(function(s, idx){
+    s.addEventListener("click", function(){
+      if (document.body.classList.contains("overview")){
+        go(idx);
+        overview(false);
+      }
+    });
+  });
+
+  window.addEventListener("hashchange", function(){
+    var n = parseInt(location.hash.replace("#",""), 10);
+    if (!isNaN(n)) go(n - 1, false);
+  });
+
+  var start = parseInt(location.hash.replace("#",""), 10);
+  go(isNaN(start) ? 0 : start - 1, false);
+})();
+</script>
+</body>
+</html>

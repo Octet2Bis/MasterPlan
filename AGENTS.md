@@ -5,7 +5,7 @@ Ces règles s'appliquent avec un caractère d'obligation absolue et sans excepti
 
 ---
 
-## 🏛️ Les 6 Commandements Inviolables d'Architecture
+## 🏛️ Les 8 Commandements Inviolables d'Architecture
 
 ### 1. Plafond Monolithique Strict (< 250 Lignes par Fichier)
 - **Interdiction formelle** de créer ou d'étendre un fichier de code (`.js`, `.ts`, `.swift`, `.py`) au-delà de **250 lignes**.
@@ -22,8 +22,8 @@ Ces règles s'appliquent avec un caractère d'obligation absolue et sans excepti
 
 ### 3. Quality Gate Déterministe Obligatoire (Zéro "Done" sans Test)
 - L'agent a l'interdiction formelle de déclarer une tâche terminée, fonctionnelle ou résolue sans avoir exécuté au préalable le script de test automatisé approprié :
-  - En Dev Web & Intégrité Apps : `node 03_Developpement_App/toolbox/test_code_integrity.js`
-  - En Topologie Système : `node 03_Developpement_App/toolbox/dag_validator.js`
+  - En Dev Web & Intégrité Apps : `node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js`
+  - En Topologie Système : `node 03_Developpement_App_and_Design/toolbox/dag_validator.js`
   - En GTM & Linters : `python 01_GTM_Growth/toolbox/tests/test_quality_gates.py`
 - Si le Quality Gate échoue ou renvoie une seule erreur, la réponse de l'agent doit se concentrer exclusivement sur la résolution du test bloqué.
 
@@ -31,17 +31,38 @@ Ces règles s'appliquent avec un caractère d'obligation absolue et sans excepti
 - L'agent doit toujours agir en tenant compte du **pilier actif** déterminé par le positionnement du curseur ou de la mission :
   - **Pilier 01 (`01_GTM_Growth`)** : Mode Growth & Acquisition. Zéro modification de code bas niveau.
   - **Pilier 02 (`02_Assistant_Personnel`)** : Mode Ingestion & Second Cerveau. Zéro bruit marketing.
-  - **Pilier 03 (`03_Developpement_App`)** : Mode Ingénierie & Swift/Web. Zéro distraction externe.
+  - **Pilier 03 (`03_Developpement_App_and_Design`)** : Mode Ingénierie & Swift/Web. Zéro distraction externe.
   - **`master_router.md`** : Mode Tour de Contrôle / Arbitrage Stratégique Global.
-- Pour les tâches de compilation massive ou de scraping lourd, l'agent doit déléguer le travail à un sous-agent éphémère pour ne pas saturer le fil principal.
 
-### 5. Intégrité Visuelle et Non-Régression (ui-ux-pro-max)
-- L'esthétique de l'application Aevum doit rigoureusement respecter l'identité **Transit Signalétique / Dark Charcoal / Swiss Craft** définie dans `ui_visual_anti_slop.md`.
-- Interdiction d'introduire des palettes génériques, des composants désalignés ou des états d'erreur console silencieux.
+### 5. Standard Product-to-Pixel & 4 États d'Interface (Méthode Fiona)
+- Toute interface développée doit obligatoirement cartographier et implémenter ses **4 états d'UI** :
+  1. `Empty State` (État initial / vide)
+  2. `Loading State` (État de chargement / attente)
+  3. `Success / Nominal State` (Affichage nominal des données)
+  4. `Error State` (État d'erreur actionnable et explicite)
+- Développement **Mock-First** obligatoire : les composants sont validés visuellement avec leurs fixtures dans un bac à sable *avant* toute logique backend.
 
 ### 6. Protocole des Causes Racines (RCA) & Immunisation Systémique (Poka-Yoke)
-- **Déclenchement Automatique :** Dès qu'une anomalie, un bug, un échec de CI ou une divergence de données est détecté, l'agent a l'interdiction formelle de se limiter à un correctif cosmétique ou un "patch de surface".
-- **Le Triptyque d'Exécution Obligatoire :**
-  1. **Analyse Causale Profonde (Les 5 Pourquoi) :** Remonter la chaîne d'exécution jusqu'à identifier la faille structurelle d'origine (ex: dépendance implicite au répertoire d'exécution, absence de packaging, duplication manuelle de données, import circulaire).
-  2. **Immunisation Déterministe (Poka-Yoke) :** Concevoir et intégrer un garde-fou automatisé qui rend cette classe d'erreur techniquement impossible à reproduire (ex: test de parité SHA-256, packaging standardisé, linter de schéma, règle de CI bloquante).
-  3. **Traçabilité Transparente :** Expliquer clairement à l'utilisateur la cause racine identifiée et la parade systémique mise en place pour immuniser le code pour l'avenir.
+- **Déclenchement Automatique :** Dès qu'une anomalie, un bug ou un échec de CI est détecté, l'agent s'interdit les correctifs cosmétiques de surface.
+- **Triptyque d'Exécution :** Analyse causale profonde (5 Pourquoi) $\rightarrow$ Garde-fou automatisé Poka-Yoke $\rightarrow$ Traçabilité transparente.
+
+### 7. Vérification Documentaire Primaire (Firecrawl Developer Index)
+- L'agent utilise le **Firecrawl Developer Index** (70M+ READMEs, issues, PRs mergées, docs techniques) pour valider la documentation officielle avant d'utiliser une API ou librairie non invoquée récemment.
+
+### 8. Devoir de Contrepoids Critique & Posture CTO Sobriété
+- **Zéro Complaisance & Zéro Superlatifs :** L'agent s'interdit la flatterie ou l'adoption passive d'idées.
+- **Évaluation Froidement Réaliste :** Toute ressource, méthode ou librairie partagée doit être soupesée avec recul (analyse de maturité, coûts cachés, risques de dérive de syntaxe, alternatives plus légères).
+- **Extraction Sélective :** L'agent extrait uniquement les principes essentiels et rejette l'empilement d'outils superflus.
+
+### 9. Mode Réflexif & Cadrage Itératif (Interdiction de Précipitation)
+- **Sanctuaire de Réflexion :** Lors des phases d'échange, d'alignement stratégique ou d'analyse architecturale, l'agent a l'interdiction de se précipiter pour générer du code, des scripts ou des livrables non demandés.
+- **Évaluation de la Valeur Réelle :** L'agent se concentre sur l'examen rigoureux des hypothèses, l'évaluation de la plus-value réelle du système et l'itération conceptuelle avant toute exécution technique.
+
+---
+
+## 🚪 Le Protocole des Portes (Gatekeeping Product-to-Pixel)
+1. **Porte 0 (Brief, Anti-Scope & Archétype)** : Fiche `BRIEF.md` validée (Sélection obligatoire de l'archétype selon `ui_archetype_matrix.md`, 5 questions éliminatoires, no-gos stricts).
+2. **Porte 1 (PRD Comportemental & Données Pures)** : `PRD.md` (User Stories Gherkin, contrat des 5 états UI selon `ui_design_heuristics.md`) + fixtures réalistes dans `data/*.json`. Interdiction de coder du HTML/CSS/Swift à cette étape.
+3. **Porte 2 (Design Freeze & Tokens)** : Tokens Swiss Craft / Dark Charcoal scellés dans `tokens.css` ou `Theme.swift` + `DESIGN_CONTRACT.md`.
+4. **Porte 3 (Spécimen UI Mock-First)** : Vues et interactions maîtresses validées en bac à sable avec fixtures, avant raccordement backend.
+5. **Porte 4 (Quality Gate & Product DoD)** : Validation sans faille par `node 03_Developpement_App_and_Design/toolbox/gatekeeper.js --check` et `test_code_integrity.js`.

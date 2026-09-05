@@ -1,6 +1,6 @@
 ---
 name: apple-appstore-publisher
-description: Standard de conformité, packaging et publication pour l'App Store Apple. Gère le Privacy Manifest (PrivacyInfo.xcprivacy), la justification d'entitlements FamilyControls, les règles HealthKit et l'App Store Optimization (ASO). À utiliser dans 03_Developpement_App/ et 01_GTM_Growth/.
+description: Standard de conformité, packaging et publication pour l'App Store Apple. Gère le Privacy Manifest (PrivacyInfo.xcprivacy), la justification d'entitlements FamilyControls, les règles HealthKit et l'App Store Optimization (ASO). À utiliser dans 03_Developpement_App_and_Design/ et 01_GTM_Growth/.
 ---
 
 # 🍏 Apple App Store Publisher & Compliance

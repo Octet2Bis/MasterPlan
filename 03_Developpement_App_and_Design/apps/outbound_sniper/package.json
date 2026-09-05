@@ -1,0 +1,15 @@
+{
+  "name": "outbound-sniper-studio",
+  "version": "1.0.0",
+  "description": "Application autonome d'outbound sniper, vérification DNS et tracking d'emails (Google Workspace).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node engine/sniper_core_engine.js"
+  },
+  "keywords": ["outbound", "cold-email", "sniper", "tracking", "email-verifier"],
+  "author": "Antoine Lecerf",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

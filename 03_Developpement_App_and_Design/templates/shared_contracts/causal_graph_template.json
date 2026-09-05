@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "name": "Generic Causal Graph Template",
+  "description": "Schéma type pour graphes orientés acycliques déterministes d'intervention",
+  "nodes": [
+    { "id": "trig_01", "type": "trigger", "label": "Déclencheur d'Entrée" },
+    { "id": "metric_01", "type": "metric", "label": "Métrique Dégradée" },
+    { "id": "proto_01", "type": "protocol", "label": "Protocole d'Intervention" },
+    { "id": "outcome_01", "type": "outcome", "label": "Résultat Restauré" }
+  ],
+  "edges": [
+    { "from": "trig_01", "to": "metric_01", "relation": "degrades", "weight": 0.9 },
+    { "from": "proto_01", "to": "metric_01", "relation": "restores", "weight": 0.95 },
+    { "from": "proto_01", "to": "outcome_01", "relation": "produces", "weight": 1.0 }
+  ]
+}

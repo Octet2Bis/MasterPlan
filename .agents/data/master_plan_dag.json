@@ -6,47 +6,47 @@
     {
       "id": "aevum_specs",
       "label": "Aevum Architecture & Screen Time API Specs",
-      "pillar": "03_Developpement_App",
+      "pillar": "03_Developpement_App_and_Design",
       "type": "spec",
-      "file": "03_Developpement_App/Ressources/Knowledge/apple_screentime_api_spec.md",
+      "file": "03_Developpement_App_and_Design/apps/aevum_ios/Documentation/apple_screentime_api_spec.md",
       "status": "DONE",
-      "quality_gate": "node 03_Developpement_App/toolbox/test_code_integrity.js"
+      "quality_gate": "node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js"
     },
     {
       "id": "aevum_simulator",
       "label": "Aevum Web Simulator (Dual Theme & Protocols)",
-      "pillar": "03_Developpement_App",
+      "pillar": "03_Developpement_App_and_Design",
       "type": "simulator",
-      "file": "03_Developpement_App/apps/aevum_ios/web_preview/index.html",
+      "file": "03_Developpement_App_and_Design/apps/aevum_ios/web_preview/index.html",
       "status": "ACTIVE",
-      "quality_gate": "node 03_Developpement_App/toolbox/test_code_integrity.js"
+      "quality_gate": "node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js"
     },
     {
       "id": "aevum_ios_native",
       "label": "Aevum iOS Native Swift v2.0",
-      "pillar": "03_Developpement_App",
+      "pillar": "03_Developpement_App_and_Design",
       "type": "app",
-      "file": "03_Developpement_App/apps/aevum_ios/AevumApp/App/AevumApp.swift",
+      "file": "03_Developpement_App_and_Design/apps/aevum_ios/AevumApp/App/AevumApp.swift",
       "status": "DONE",
-      "quality_gate": "node 03_Developpement_App/toolbox/test_code_integrity.js"
+      "quality_gate": "node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js"
     },
     {
       "id": "aevum_aso",
       "label": "Aevum App Store Connect Metadata & Keywords",
-      "pillar": "03_Developpement_App",
+      "pillar": "03_Developpement_App_and_Design",
       "type": "marketing",
-      "file": "03_Developpement_App/apps/aevum_ios/APP_STORE_METADATA.md",
+      "file": "03_Developpement_App_and_Design/apps/aevum_ios/APP_STORE_METADATA.md",
       "status": "READY",
-      "quality_gate": "node 03_Developpement_App/toolbox/harness_graph_router.js 'aso'"
+      "quality_gate": "node 03_Developpement_App_and_Design/toolbox/harness_graph_router.js 'aso'"
     },
     {
       "id": "aevum_deployment",
       "label": "Aevum Mac/Xcode Packaging & TestFlight Guide",
-      "pillar": "03_Developpement_App",
+      "pillar": "03_Developpement_App_and_Design",
       "type": "deployment",
-      "file": "03_Developpement_App/apps/aevum_ios/README_XCODE_MAC.md",
+      "file": "03_Developpement_App_and_Design/apps/aevum_ios/README_XCODE_MAC.md",
       "status": "READY",
-      "quality_gate": "node 03_Developpement_App/toolbox/test_code_integrity.js"
+      "quality_gate": "node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js"
     },
     {
       "id": "career_matcher",
@@ -55,19 +55,43 @@
       "type": "tool",
       "file": "02_Assistant_Personnel/04_Productivite_Admin/career_ops/job_matcher.py",
       "status": "ACTIVE",
-      "quality_gate": "node 03_Developpement_App/toolbox/harness_graph_router.js 'career'"
+      "quality_gate": "node 03_Developpement_App_and_Design/toolbox/harness_graph_router.js 'career'"
     },
     {
       "id": "intent_router",
       "label": "Agentic Intent Graph Router",
       "pillar": "00_Orchestration",
       "type": "router",
-      "file": "03_Developpement_App/toolbox/harness_graph_router.js",
+      "file": "03_Developpement_App_and_Design/toolbox/harness_graph_router.js",
       "status": "ACTIVE",
-      "quality_gate": "node 03_Developpement_App/toolbox/harness_graph_router.js --list-nodes"
+      "quality_gate": "node 03_Developpement_App_and_Design/toolbox/harness_graph_router.js --list-nodes"
+    },
+    {
+      "id": "gatekeeper_protocol",
+      "label": "Protocole des 4 Portes (Gatekeeping Dev & Open Design MCP)",
+      "pillar": "03_Developpement_App_and_Design",
+      "type": "governance",
+      "file": "03_Developpement_App_and_Design/01_Core_Standards/protocol_4_portes_gatekeeping.md",
+      "status": "DONE",
+      "quality_gate": "node 03_Developpement_App_and_Design/toolbox/gatekeeper.js --check"
+    },
+    {
+      "id": "master_plan_cockpit",
+      "label": "Master Plan Local Cockpit (4 Onglets & Live Render)",
+      "pillar": "03_Developpement_App_and_Design",
+      "type": "dashboard",
+      "file": "03_Developpement_App_and_Design/toolbox/cockpit/server.js",
+      "status": "ACTIVE",
+      "quality_gate": "node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js"
     }
   ],
   "edges": [
+    {
+      "from": "gatekeeper_protocol",
+      "to": "aevum_simulator",
+      "relation": "governs",
+      "required_status": "DONE"
+    },
     {
       "from": "aevum_specs",
       "to": "aevum_simulator",

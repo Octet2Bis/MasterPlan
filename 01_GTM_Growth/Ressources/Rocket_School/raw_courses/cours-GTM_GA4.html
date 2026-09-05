@@ -1,0 +1,1808 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f4f6f1">
+  <title>Google Tag Manager — Instrumenter un funnel d’acquisition</title>
+  <style>
+    :root {
+      --paper: #f4f6f1;
+      --paper-2: #e9eee8;
+      --ink: #10231f;
+      --muted: #5f6f69;
+      --line: rgba(16, 35, 31, .16);
+      --accent: #087a68;
+      --accent-dark: #045849;
+      --accent-soft: #d8ece6;
+      --blue: #295fd6;
+      --blue-soft: #e1e9fb;
+      --amber: #d88918;
+      --amber-soft: #f8ead2;
+      --danger: #a33a34;
+      --danger-soft: #f3ddda;
+      --white: #ffffff;
+      --chrome-h: 54px;
+      --nav-h: 70px;
+      --radius: 18px;
+      --shadow: 0 18px 50px rgba(16, 35, 31, .12);
+      --title: clamp(2rem, 5.3vw, 4.9rem);
+      --h2: clamp(1.65rem, 3.5vw, 3.4rem);
+      --h3: clamp(1rem, 1.45vw, 1.28rem);
+      --body: clamp(.95rem, 1.3vw, 1.22rem);
+      --small: clamp(.72rem, .92vw, .88rem);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+    }
+
+    body { min-height: 100dvh; }
+
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    a { color: var(--accent-dark); text-underline-offset: 3px; }
+
+    :focus-visible {
+      outline: 3px solid rgba(41, 95, 214, .42);
+      outline-offset: 3px;
+    }
+
+    .progress-track {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 4px;
+      z-index: 80;
+      background: rgba(16, 35, 31, .08);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .28s ease;
+    }
+
+    .topbar {
+      position: fixed;
+      inset: 4px 0 auto 0;
+      height: var(--chrome-h);
+      z-index: 70;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 clamp(.7rem, 2vw, 1.5rem);
+      border-bottom: 1px solid var(--line);
+      background: rgba(244, 246, 241, .94);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: .65rem;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      flex: 0 0 auto;
+      width: 27px;
+      height: 27px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      color: var(--white);
+      font-size: .75rem;
+      letter-spacing: -.03em;
+    }
+
+    .brand-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .section-label {
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 750;
+      letter-spacing: .06em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .top-actions {
+      justify-self: end;
+      display: flex;
+      gap: .45rem;
+    }
+
+    .icon-btn, .nav-btn, .text-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .58);
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .icon-btn:hover, .nav-btn:hover, .text-btn:hover {
+      background: var(--white);
+      border-color: rgba(16, 35, 31, .3);
+    }
+
+    .icon-btn:active, .nav-btn:active, .text-btn:active { transform: translateY(1px); }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .deck {
+      position: fixed;
+      inset: calc(var(--chrome-h) + 4px) 0 var(--nav-h) 0;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(16, 35, 31, .28) transparent;
+      background: var(--paper);
+    }
+
+    .slide.active {
+      display: block;
+      animation: slide-in .28s ease both;
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide__inner {
+      width: min(100%, 1440px);
+      min-height: 100%;
+      margin: 0 auto;
+      padding: clamp(1.35rem, 4.4vmin, 3.7rem) clamp(1.25rem, 6.2vw, 6.8rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: clamp(1rem, 2.4vmin, 1.8rem);
+    }
+
+    .slide--ink, .slide--accent {
+      color: var(--white);
+    }
+
+    .slide--ink { background: var(--ink); }
+    .slide--accent { background: var(--accent-dark); }
+    .slide--blue { background: var(--blue-soft); }
+    .slide--amber { background: var(--amber-soft); }
+
+    .slide--ink .eyebrow, .slide--accent .eyebrow,
+    .slide--ink .muted, .slide--accent .muted { color: rgba(255, 255, 255, .72); }
+    .slide--ink .rule, .slide--accent .rule { background: rgba(255, 255, 255, .18); }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--accent-dark);
+      font-size: var(--small);
+      line-height: 1.2;
+      font-weight: 850;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p, ul, ol, blockquote { margin-top: 0; }
+    h1, h2 { letter-spacing: -.045em; text-wrap: balance; }
+    h1 { margin-bottom: 0; font-size: var(--title); line-height: .98; max-width: 13ch; }
+    h2 { margin-bottom: 0; font-size: var(--h2); line-height: 1.03; max-width: 20ch; }
+    h3 { margin-bottom: .45rem; font-size: var(--h3); line-height: 1.2; }
+    p, li { font-size: var(--body); line-height: 1.45; }
+    p { margin-bottom: 0; }
+    ul, ol { margin-bottom: 0; padding-left: 1.25em; }
+    li + li { margin-top: .45rem; }
+    strong { font-weight: 800; }
+    code, .mono {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: .92em;
+    }
+
+    .lead {
+      max-width: 64ch;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.65vw, 1.48rem);
+      line-height: 1.48;
+    }
+
+    .slide--ink .lead, .slide--accent .lead { color: rgba(255, 255, 255, .78); }
+    .muted { color: var(--muted); }
+    .tiny { font-size: var(--small); line-height: 1.4; }
+    .rule { width: 100%; height: 1px; background: var(--line); }
+
+    .hero-kicker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      align-items: center;
+      font-size: .86rem;
+      font-weight: 750;
+    }
+
+    .hero-kicker span {
+      padding: .5rem .72rem;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+    }
+
+    .hero-line {
+      width: min(160px, 28vw);
+      height: 7px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38c7aa 0 60%, #efb34e 60% 82%, #7b9cf0 82%);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: clamp(1.2rem, 5vw, 5rem);
+      align-items: center;
+    }
+
+    .split--wide { grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr); }
+    .stack { display: grid; gap: clamp(.75rem, 1.7vmin, 1.15rem); }
+
+    .panel {
+      padding: clamp(1rem, 2vw, 1.55rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.58);
+    }
+
+    .panel--solid { background: var(--white); box-shadow: var(--shadow); }
+    .panel--green { background: var(--accent-soft); }
+    .panel--blue { background: var(--blue-soft); }
+    .panel--amber { background: var(--amber-soft); }
+    .panel--danger { background: var(--danger-soft); }
+
+    .callout {
+      padding-left: 1.1rem;
+      border-left: 5px solid var(--accent);
+      font-size: clamp(1.1rem, 2.2vw, 1.75rem);
+      line-height: 1.36;
+      font-weight: 720;
+      max-width: 44ch;
+    }
+
+    .big-number {
+      display: inline-block;
+      font-size: clamp(4.2rem, 12vw, 10.5rem);
+      line-height: .8;
+      font-weight: 900;
+      letter-spacing: -.08em;
+      color: var(--accent);
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      gap: .75rem;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 2rem;
+      margin: 0;
+    }
+
+    .checklist li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: .02rem;
+      width: 1.35rem;
+      height: 1.35rem;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: .78rem;
+      font-weight: 900;
+    }
+
+    .numbered {
+      list-style: none;
+      padding: 0;
+      counter-reset: item;
+      display: grid;
+      gap: .78rem;
+    }
+
+    .numbered li {
+      counter-increment: item;
+      position: relative;
+      min-height: 2rem;
+      padding-left: 2.75rem;
+      margin: 0;
+    }
+
+    .numbered li::before {
+      content: counter(item, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: -.05rem;
+      color: var(--accent-dark);
+      font-size: .78rem;
+      line-height: 1.8rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+
+    .chain {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: stretch;
+      gap: .75rem;
+    }
+
+    .chain__item {
+      position: relative;
+      min-height: 132px;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.64);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: .7rem;
+    }
+
+    .chain__item:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      right: -.78rem;
+      top: 50%;
+      transform: translate(50%, -50%);
+      width: 1.5rem;
+      height: 1.5rem;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--ink);
+      color: white;
+      font-weight: 900;
+    }
+
+    .chain__item b { font-size: clamp(1rem, 1.7vw, 1.35rem); line-height: 1.1; }
+    .chain__item small { color: var(--muted); font-size: .82rem; line-height: 1.35; }
+
+    .triad {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(.75rem, 2vw, 1.4rem);
+    }
+
+    .triad__item {
+      min-height: 225px;
+      padding: clamp(1rem, 2.4vw, 1.8rem);
+      border-top: 7px solid var(--accent);
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .triad__item:nth-child(2) { border-top-color: var(--blue); }
+    .triad__item:nth-child(3) { border-top-color: var(--amber); }
+    .triad__letter { font-size: clamp(2.8rem, 6vw, 5.4rem); line-height: .9; font-weight: 900; letter-spacing: -.06em; }
+
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(.8rem, 2.6vw, 2rem);
+    }
+
+    .compare > article {
+      padding: clamp(1.1rem, 2.6vw, 2rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.68);
+    }
+
+    .compare .label {
+      display: inline-block;
+      margin-bottom: .75rem;
+      color: var(--accent-dark);
+      font-size: .76rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .formula {
+      padding: clamp(1rem, 2.5vw, 2rem);
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: var(--white);
+      font-size: clamp(1.2rem, 2.8vw, 2.35rem);
+      line-height: 1.25;
+      font-weight: 760;
+      letter-spacing: -.025em;
+      text-align: center;
+    }
+
+    .codebox {
+      overflow-wrap: anywhere;
+      padding: clamp(1rem, 2.3vw, 1.65rem);
+      border: 1px solid rgba(16, 35, 31, .2);
+      border-radius: 14px;
+      background: #142a25;
+      color: #eaf4f0;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: clamp(.76rem, 1.15vw, 1rem);
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .token-source { color: #7fe0ca; }
+    .token-medium { color: #93b1ff; }
+    .token-campaign { color: #ffc977; }
+    .token-content { color: #f2a8a1; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.55);
+    }
+
+    table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    th, td { padding: .78rem .9rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: clamp(.78rem, 1vw, .95rem); line-height: 1.35; }
+    th { background: rgba(16,35,31,.06); color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+
+    .funnel {
+      display: grid;
+      gap: .5rem;
+      width: min(680px, 100%);
+      margin-inline: auto;
+    }
+
+    .funnel__row {
+      width: var(--w);
+      margin-inline: auto;
+      padding: .72rem 1rem;
+      border-radius: 10px;
+      background: var(--c);
+      color: var(--white);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .8rem;
+      font-size: clamp(.82rem, 1.2vw, 1rem);
+      font-weight: 760;
+    }
+
+    .funnel__row small { opacity: .76; font-weight: 550; }
+
+    .ladder { display: grid; gap: .6rem; }
+    .ladder__step {
+      width: var(--w);
+      min-width: min(100%, 300px);
+      padding: .8rem 1rem;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+    }
+    .ladder__step b { display: block; margin-bottom: .2rem; }
+    .ladder__step small { color: var(--muted); line-height: 1.35; }
+
+    .mini-browser {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .mini-browser__bar {
+      display: flex;
+      gap: .4rem;
+      padding: .72rem 1rem;
+      border-bottom: 1px solid var(--line);
+      background: #eef1ed;
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #b4bdb8; }
+    .mini-browser__body { padding: clamp(1rem, 3vw, 2.2rem); }
+
+    .event-line {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: .85rem;
+      align-items: center;
+      padding: .8rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .event-line:last-child { border-bottom: 0; }
+    .event-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); }
+    .event-status { color: var(--accent-dark); font-size: .75rem; font-weight: 900; text-transform: uppercase; }
+
+    .utm-builder {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .75rem;
+    }
+
+    .field { display: grid; gap: .32rem; }
+    .field--wide { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: .72rem; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+    .field input {
+      width: 100%;
+      min-height: 43px;
+      padding: .7rem .8rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.88);
+      color: var(--ink);
+    }
+
+    .builder-output {
+      min-height: 58px;
+      padding: .8rem;
+      border: 1px dashed rgba(16,35,31,.28);
+      border-radius: 10px;
+      background: rgba(255,255,255,.52);
+      overflow-wrap: anywhere;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+
+    .text-btn {
+      min-height: 42px;
+      padding: .65rem 1rem;
+      border-radius: 10px;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .text-btn--primary { background: var(--ink); color: white; border-color: var(--ink); }
+    .text-btn--primary:hover { background: #1d3a33; border-color: #1d3a33; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .46rem .68rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      font-size: .76rem;
+      font-weight: 850;
+    }
+
+    .status-pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+    .nav {
+      position: fixed;
+      inset: auto 0 0 0;
+      height: var(--nav-h);
+      z-index: 70;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: .55rem max(clamp(.75rem, 2vw, 1.5rem), env(safe-area-inset-right)) max(.55rem, env(safe-area-inset-bottom)) max(clamp(.75rem, 2vw, 1.5rem), env(safe-area-inset-left));
+      border-top: 1px solid var(--line);
+      background: rgba(244, 246, 241, .95);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-btn {
+      min-width: 47px;
+      height: 42px;
+      padding: 0 .9rem;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .45rem;
+      font-weight: 850;
+    }
+
+    .nav-btn[disabled] { opacity: .32; cursor: not-allowed; }
+    #prevBtn { justify-self: start; }
+    #nextBtn { justify-self: end; background: var(--ink); color: var(--white); border-color: var(--ink); }
+    #nextBtn:hover { background: #1d3a33; }
+
+    .counter { font-size: .85rem; font-weight: 850; letter-spacing: .06em; }
+    .counter .muted { font-weight: 650; }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 88;
+      display: none;
+      background: rgba(16, 35, 31, .36);
+      backdrop-filter: blur(3px);
+    }
+
+    .drawer-backdrop.open { display: block; }
+
+    .drawer {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 90;
+      width: min(440px, 90vw);
+      transform: translateX(-102%);
+      transition: transform .24s ease;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      background: #fbfcfa;
+      box-shadow: var(--shadow);
+    }
+
+    .drawer.open { transform: translateX(0); }
+
+    .drawer__head {
+      min-height: 70px;
+      padding: 1rem 1.1rem;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .drawer__head h2 { font-size: 1.25rem; letter-spacing: -.02em; }
+    .drawer__list { overflow-y: auto; padding: .6rem; }
+
+    .drawer__item {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 2.2rem 1fr;
+      gap: .65rem;
+      align-items: start;
+      padding: .7rem .75rem;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .drawer__item:hover { background: var(--paper-2); }
+    .drawer__item.active { background: var(--accent-soft); color: var(--accent-dark); }
+    .drawer__num { color: var(--muted); font-size: .72rem; font-weight: 850; padding-top: .12rem; }
+    .drawer__title { font-size: .86rem; line-height: 1.28; font-weight: 750; }
+    .drawer__section { display: block; margin-top: .18rem; color: var(--muted); font-size: .66rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+
+    dialog {
+      width: min(620px, calc(100vw - 2rem));
+      max-height: calc(100dvh - 2rem);
+      padding: 0;
+      border: 0;
+      border-radius: 20px;
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 0 24px 80px rgba(16,35,31,.25);
+    }
+
+    dialog::backdrop { background: rgba(16, 35, 31, .46); backdrop-filter: blur(3px); }
+    .dialog__head { padding: 1rem 1.1rem; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+    .dialog__head h2 { font-size: 1.25rem; }
+    .dialog__body { padding: 1.2rem; overflow-y: auto; }
+    .shortcuts { display: grid; grid-template-columns: auto 1fr; gap: .7rem 1rem; align-items: center; }
+    kbd { min-width: 2.2rem; padding: .3rem .48rem; border: 1px solid var(--line); border-bottom-width: 3px; border-radius: 7px; background: var(--paper); font-size: .78rem; font-weight: 800; text-align: center; }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0,0,0,0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    @media (max-width: 900px) {
+      .split, .split--wide { grid-template-columns: 1fr; gap: 1.25rem; }
+      .triad { grid-template-columns: 1fr; }
+      .triad__item { min-height: 0; display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start; }
+      .triad__item > div:last-child { min-width: 0; }
+      .chain { grid-template-columns: 1fr; }
+      .chain__item { min-height: 0; }
+      .chain__item:not(:last-child)::after { right: auto; left: 50%; top: auto; bottom: -.78rem; transform: translate(-50%, 50%) rotate(90deg); }
+      .slide__inner { justify-content: flex-start; }
+      h1 { max-width: 15ch; }
+      h2 { max-width: 24ch; }
+    }
+
+    @media (max-width: 680px) {
+      :root { --chrome-h: 50px; --nav-h: 64px; }
+      .brand-label { display: none; }
+      .section-label { max-width: 54vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .top-actions .help-btn { display: none; }
+      .slide__inner { padding: 1.15rem 1rem 1.6rem; gap: .95rem; }
+      .compare, .utm-builder { grid-template-columns: 1fr; }
+      .field--wide { grid-column: auto; }
+      .panel { padding: .9rem; }
+      .formula { padding: 1rem; }
+      .nav-btn .nav-label { display: none; }
+      .funnel__row { width: 100% !important; }
+      .ladder__step { width: 100% !important; }
+      .slide--builder .slide__inner,
+      .slide--preflight .slide__inner { padding-top: .82rem; padding-bottom: 1rem; gap: .68rem; }
+      .slide--builder h2,
+      .slide--preflight h2 { font-size: clamp(1.42rem, 6.3vw, 1.7rem); }
+      .slide--builder .lead { font-size: .92rem; line-height: 1.35; }
+      .slide--builder .panel { padding: .72rem; }
+      .slide--builder .stack,
+      .slide--builder .utm-builder { gap: .42rem; }
+      .slide--builder .field { gap: .15rem; }
+      .slide--builder .field input { min-height: 36px; padding: .45rem .62rem; }
+      .slide--builder .builder-output { min-height: 42px; padding: .5rem .62rem; font-size: .69rem; }
+      .slide--builder .text-btn { min-height: 37px; padding: .5rem .8rem; }
+      .slide--preflight .compare { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+      .slide--preflight .compare > article { padding: .65rem; }
+      .slide--preflight .label { margin-bottom: .35rem; font-size: .61rem; letter-spacing: .07em; }
+      .slide--preflight .checklist { gap: .34rem; }
+      .slide--preflight .checklist li { padding-left: 1.45rem; font-size: .78rem; line-height: 1.28; }
+      .slide--preflight .checklist li::before { width: 1.05rem; height: 1.05rem; font-size: .61rem; }
+    }
+
+    @media (max-height: 760px) and (min-width: 901px) {
+      .slide__inner { padding-top: 1.35rem; padding-bottom: 1.35rem; gap: .95rem; }
+      .panel, .compare > article { padding: .9rem 1.15rem; }
+      .formula { padding: .72rem 1.15rem; }
+      .stack { gap: .68rem; }
+    }
+
+    @media (max-height: 640px) and (min-width: 700px) {
+      :root { --chrome-h: 46px; --nav-h: 58px; --body: clamp(.82rem, 1.2vw, 1.02rem); --h2: clamp(1.45rem, 3vw, 2.6rem); }
+      .slide__inner { padding-top: 1rem; padding-bottom: 1rem; gap: .75rem; }
+      .panel { padding: .8rem 1rem; }
+      .triad__item { min-height: 170px; padding: 1rem; }
+      .chain__item { min-height: 105px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+
+    @media print {
+      @page { size: 16in 9in; margin: 0; }
+      html, body { overflow: visible; height: auto; background: white; }
+      .topbar, .nav, .progress-track, .drawer, .drawer-backdrop, dialog { display: none !important; }
+      .deck { position: static; overflow: visible; }
+      .slide, .slide.active {
+        position: relative;
+        display: block !important;
+        width: 16in;
+        height: 9in;
+        overflow: hidden;
+        break-after: page;
+        animation: none;
+      }
+      .slide__inner { width: 100%; height: 100%; min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">GTM</span><span class="brand-label">Challenge 2 · Acquisition</span></div>
+    <div class="section-label" id="sectionLabel">Ouverture</div>
+    <div class="top-actions">
+      <button class="icon-btn help-btn" id="helpBtn" type="button" aria-label="Afficher l’aide clavier" title="Aide (?)">?</button>
+      <button class="icon-btn" id="fullscreenBtn" type="button" aria-label="Passer en plein écran" title="Plein écran (F)">⛶</button>
+      <button class="icon-btn" id="menuBtn" type="button" aria-label="Ouvrir le sommaire" aria-expanded="false" aria-controls="drawer" title="Sommaire (M)">☰</button>
+    </div>
+  </header>
+
+  <main class="deck" id="deck" aria-label="Cours Google Tag Manager">
+
+    <section class="slide slide--ink active" data-section="Ouverture" data-title="Mesurer avant d’optimiser" aria-hidden="false">
+      <div class="slide__inner">
+        <p class="eyebrow">Bachelor L3 · Challenge 2</p>
+        <h1 tabindex="-1">Mesurer avant d’optimiser</h1>
+        <p class="lead">Google Tag Manager pour relier une campagne Lemlist, une landing page Dorik et un résultat business fiable.</p>
+        <div class="hero-line" aria-hidden="true"></div>
+        <div class="hero-kicker" aria-label="Thèmes du cours">
+          <span>UTM cohérents</span><span>GA4 via GTM</span><span>Événements</span><span>Consentement</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Ouverture" data-title="La mission du jour" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">La mission</p>
+            <h2 tabindex="-1">Rendre votre funnel observable de bout en bout</h2>
+          </div>
+          <ul class="checklist">
+            <li>Identifier correctement chaque visite issue de Lemlist.</li>
+            <li>Déployer GA4 sans modifier le site à chaque nouveau besoin.</li>
+            <li>Mesurer les interactions utiles et la vraie conversion.</li>
+            <li>Prouver que les données remontent avant de les analyser.</li>
+            <li>Respecter le choix de consentement des visiteurs.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide slide--blue" data-section="Ouverture" data-title="La chaîne de mesure" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Le fil rouge</p>
+        <h2 tabindex="-1">Une donnée utile garde le lien avec le business</h2>
+        <div class="chain" aria-label="Chaîne de mesure de la source au résultat business">
+          <div class="chain__item"><b>Source</b><small>Lemlist + UTM</small></div>
+          <div class="chain__item"><b>Visite</b><small>Session GA4</small></div>
+          <div class="chain__item"><b>Comportement</b><small>Pages, clics, scroll</small></div>
+          <div class="chain__item"><b>Conversion</b><small>Lead réellement créé</small></div>
+          <div class="chain__item"><b>Résultat</b><small>Lead qualifié, RDV, vente</small></div>
+        </div>
+        <p class="callout">GTM ne “fait” pas l’analyse : il fiabilise les preuves qui la rendent possible.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Ouverture" data-title="Le cas fil rouge" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split split--wide">
+          <div>
+            <p class="eyebrow">Cas fil rouge</p>
+            <h2 tabindex="-1">Un prospect clique dans Lemlist et remplit le formulaire Dorik</h2>
+          </div>
+          <div class="mini-browser" aria-label="Scénario de campagne">
+            <div class="mini-browser__bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <div class="mini-browser__body stack">
+              <div class="event-line"><span class="event-dot"></span><div><strong>Email cliqué</strong><div class="tiny muted">URL avec UTM</div></div><span class="event-status">Acquis</span></div>
+              <div class="event-line"><span class="event-dot"></span><div><strong>Landing consultée</strong><div class="tiny muted">page_view dans GA4</div></div><span class="event-status">Visité</span></div>
+              <div class="event-line"><span class="event-dot"></span><div><strong>Formulaire réussi</strong><div class="tiny muted">generate_lead</div></div><span class="event-status">Converti</span></div>
+              <div class="event-line"><span class="event-dot"></span><div><strong>Lead qualifié</strong><div class="tiny muted">CRM / suivi commercial</div></div><span class="event-status">Business</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide slide--accent" data-section="Plan de mesure" data-title="Commencer par les questions" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Plan de mesure</p>
+        <h2 tabindex="-1">Commencez par les décisions, pas par les balises</h2>
+        <div class="compare">
+          <article>
+            <span class="label">Question business</span>
+            <p>Quelle campagne attire les prospects les plus pertinents ?</p>
+          </article>
+          <article>
+            <span class="label">Preuves nécessaires</span>
+            <p>Source, campagne, visite, formulaire réussi, puis qualité du lead.</p>
+          </article>
+        </div>
+        <p class="lead">Chaque balise doit répondre à une question que l’équipe utilisera réellement.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Plan de mesure" data-title="Les cinq colonnes du plan" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Plan de mesure</p>
+        <h2 tabindex="-1">Un plan simple tient en cinq colonnes</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Objectif</th><th>Action observable</th><th>Événement</th><th>Paramètres</th><th>Critère de succès</th></tr></thead>
+            <tbody>
+              <tr><td>Générer des leads</td><td>Confirmation après envoi</td><td><code>generate_lead</code></td><td><code>form_name</code>, <code>lead_type</code></td><td>1 événement par lead créé</td></tr>
+              <tr><td>Comprendre l’intérêt</td><td>Clic CTA principal</td><td><code>cta_click</code></td><td><code>cta_text</code>, <code>cta_location</code></td><td>Taux clic → lead</td></tr>
+              <tr><td>Attribuer la campagne</td><td>Arrivée avec UTM</td><td><code>session_start</code></td><td>source, medium, campaign</td><td>Lemlist / email visible</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tiny muted">Le CRM ou le suivi commercial reste nécessaire pour relier le lead au rendez-vous et à la vente.</p>
+      </div>
+    </section>
+
+    <section class="slide slide--amber" data-section="Plan de mesure" data-title="Distinguer KPI et événement" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">Deux niveaux</p>
+            <h2 tabindex="-1">Un événement est une trace. Un KPI est un calcul.</h2>
+          </div>
+          <div class="stack">
+            <div class="panel panel--solid"><h3>Trace collectée</h3><p><code>generate_lead</code> s’est produit à 14:32.</p></div>
+            <div class="formula">Taux de conversion = leads ÷ sessions × 100</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide slide--ink" data-section="Fondamentaux GTM" data-title="Le rôle de GTM" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Fondamentaux</p>
+        <h2 tabindex="-1">GTM est la régie qui décide quoi envoyer, quand et avec quelles données</h2>
+        <div class="compare">
+          <article style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)">
+            <span class="label" style="color:#7fe0ca">GTM</span>
+            <p>Configure et déclenche des balises de mesure.</p>
+          </article>
+          <article style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)">
+            <span class="label" style="color:#93b1ff">GA4</span>
+            <p>Reçoit, organise et analyse les événements.</p>
+          </article>
+        </div>
+        <p class="lead">Installer GTM ne suffit pas : un conteneur vide ne mesure rien.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Fondamentaux GTM" data-title="Balise, déclencheur, variable" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Le trio GTM</p>
+        <h2 tabindex="-1">Toute recette combine une balise, un déclencheur et des variables</h2>
+        <div class="triad">
+          <article class="triad__item"><div class="triad__letter">B</div><div><h3>Balise</h3><p class="muted">Ce qui est envoyé.</p><p><strong>Ex.</strong> événement GA4 <code>generate_lead</code></p></div></article>
+          <article class="triad__item"><div class="triad__letter">D</div><div><h3>Déclencheur</h3><p class="muted">Le moment où cela part.</p><p><strong>Ex.</strong> page de confirmation visible</p></div></article>
+          <article class="triad__item"><div class="triad__letter">V</div><div><h3>Variable</h3><p class="muted">La valeur qui précise le contexte.</p><p><strong>Ex.</strong> <code>form_name = demo</code></p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Fondamentaux GTM" data-title="Compte et conteneur" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">Organisation</p>
+            <h2 tabindex="-1">Un site possède un conteneur, pas un conteneur par page</h2>
+          </div>
+          <ol class="numbered">
+            <li><strong>Compte</strong> : l’organisation propriétaire.</li>
+            <li><strong>Conteneur Web</strong> : le site ou domaine mesuré.</li>
+            <li><strong>Espace de travail</strong> : les changements en préparation.</li>
+            <li><strong>Version publiée</strong> : l’état réellement en production.</li>
+          </ol>
+        </div>
+        <div class="panel panel--green"><strong>Gouvernance :</strong> l’entreprise partenaire reste propriétaire et invite l’équipe avec les droits nécessaires.</div>
+      </div>
+    </section>
+
+    <section class="slide slide--blue" data-section="Acquisition & UTM" data-title="Le rôle des UTM" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Acquisition</p>
+        <h2 tabindex="-1">Les UTM transportent l’identité de la campagne jusqu’à GA4</h2>
+        <div class="codebox">https://votre-landing.fr/
+?<span class="token-source">utm_source=lemlist</span>
+&amp;<span class="token-medium">utm_medium=email</span>
+&amp;<span class="token-campaign">utm_campaign=challenge2_prospection</span>
+&amp;<span class="token-content">utm_content=email1_cta</span></div>
+        <p class="lead">Sans convention commune, une même campagne se fragmente en plusieurs lignes et devient difficile à comparer.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Acquisition & UTM" data-title="La grammaire UTM" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">UTM</p>
+        <h2 tabindex="-1">Source, medium et campaign forment le socle</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Paramètre</th><th>Question</th><th>Exemple Lemlist</th></tr></thead>
+            <tbody>
+              <tr><td><code>utm_source</code></td><td>D’où vient la visite ?</td><td><code>lemlist</code></td></tr>
+              <tr><td><code>utm_medium</code></td><td>Par quel canal ?</td><td><code>email</code></td></tr>
+              <tr><td><code>utm_campaign</code></td><td>Quelle initiative ?</td><td><code>challenge2_prospection</code></td></tr>
+              <tr><td><code>utm_content</code></td><td>Quelle variante / quel CTA ?</td><td><code>email1_cta_principal</code></td></tr>
+              <tr><td><code>utm_term</code></td><td>Quel mot-clé payant ?</td><td>inutile ici</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide slide--amber" data-section="Acquisition & UTM" data-title="La convention de nommage" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">Convention d’équipe</p>
+            <h2 tabindex="-1">La cohérence vaut plus que la sophistication</h2>
+          </div>
+          <div class="stack">
+            <div class="panel panel--solid"><strong>À faire</strong><p class="muted">minuscules · sans accents · sans espaces · séparateur unique · noms stables</p></div>
+            <div class="panel panel--danger"><strong>À éviter</strong><p class="muted"><code>Email</code>, <code>emailing</code>, <code>e-mail</code> pour désigner le même canal</p></div>
+            <div class="panel"><strong>Jamais dans l’URL</strong><p class="muted">email, nom, téléphone ou toute donnée personnelle du prospect</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide slide--builder" data-section="Acquisition & UTM" data-title="Construire le lien Lemlist" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split split--wide">
+          <div>
+            <p class="eyebrow">Mini-outil local</p>
+            <h2 tabindex="-1">Construisez votre URL de campagne</h2>
+            <p class="lead">Modifiez les champs, copiez le résultat, puis collez-le dans le CTA Lemlist.</p>
+          </div>
+          <div class="panel panel--solid stack">
+            <div class="utm-builder" id="utmBuilder">
+              <div class="field field--wide"><label for="utmBase">URL de destination</label><input id="utmBase" value="https://votre-landing.fr/" inputmode="url"></div>
+              <div class="field"><label for="utmSource">utm_source</label><input id="utmSource" value="lemlist"></div>
+              <div class="field"><label for="utmMedium">utm_medium</label><input id="utmMedium" value="email"></div>
+              <div class="field"><label for="utmCampaign">utm_campaign</label><input id="utmCampaign" value="challenge2_prospection"></div>
+              <div class="field"><label for="utmContent">utm_content</label><input id="utmContent" value="email1_cta_principal"></div>
+            </div>
+            <output class="builder-output" id="utmOutput" aria-live="polite"></output>
+            <div><button class="text-btn text-btn--primary" id="copyUtmBtn" type="button">Copier l’URL</button> <span class="tiny muted" id="copyStatus" aria-live="polite"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Acquisition & UTM" data-title="Recetter les UTM" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Contrôle qualité</p>
+        <h2 tabindex="-1">Testez le lien comme un prospect avant l’envoi</h2>
+        <ol class="numbered">
+          <li>Cliquez le lien depuis un email de test.</li>
+          <li>Vérifiez que la landing s’ouvre, sans erreur ni redirection cassée.</li>
+          <li>Contrôlez que les UTM restent visibles après la redirection Lemlist.</li>
+          <li>Ouvrez GA4 Temps réel / DebugView et retrouvez la source attendue.</li>
+          <li>Notez la convention dans un fichier partagé par toute l’équipe.</li>
+        </ol>
+        <div class="panel panel--amber"><strong>Piège :</strong> une URL correcte en apparence peut perdre ses paramètres lors d’une redirection.</div>
+      </div>
+    </section>
+
+    <section class="slide slide--accent" data-section="Installation" data-title="Installer GTM sur Dorik" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Dorik</p>
+        <h2 tabindex="-1">Utilisez l’intégration native avant d’injecter du code</h2>
+        <div class="compare">
+          <article style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)">
+            <span class="label" style="color:#7fe0ca">Chemin Dorik</span>
+            <ol>
+              <li>Copier l’ID <code>GTM-XXXXXXX</code>.</li>
+              <li>Site Settings → Integrations.</li>
+              <li>Coller l’ID Google Tag Manager.</li>
+              <li>Publier le site.</li>
+            </ol>
+          </article>
+          <article style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)">
+            <span class="label" style="color:#ffc977">À vérifier</span>
+            <ul>
+              <li>Domaine personnalisé connecté.</li>
+              <li>Bon site et bon conteneur.</li>
+              <li>Une seule installation de GTM.</li>
+              <li>Site republié après modification.</li>
+            </ul>
+          </article>
+        </div>
+        <p class="tiny" style="color:rgba(255,255,255,.7)">Sur un autre CMS : cherchez l’intégration GTM officielle ou les champs prévus pour les deux extraits du conteneur.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Installation" data-title="Déployer le Google tag" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">Première balise</p>
+            <h2 tabindex="-1">GA4 commence par un Google tag sur toutes les pages</h2>
+          </div>
+          <ol class="numbered">
+            <li>Dans GA4, récupérer l’ID du flux Web <code>G-XXXXXXXXXX</code>.</li>
+            <li>Dans GTM, créer une balise <strong>Google tag</strong>.</li>
+            <li>Renseigner l’ID, idéalement via une variable constante.</li>
+            <li>Déclencheur : <strong>Initialization — All Pages</strong> pour charger le Google tag avant les autres balises.</li>
+            <li>Nommer clairement : <code>GA4 — Google tag — All Pages</code>.</li>
+          </ol>
+        </div>
+        <div class="panel panel--green"><strong>Règle :</strong> ne pas installer GA4 une deuxième fois directement dans Dorik si GTM le déploie déjà.</div>
+      </div>
+    </section>
+
+    <section class="slide slide--blue" data-section="Installation" data-title="Prévisualiser avant de publier" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Mode Preview</p>
+        <h2 tabindex="-1">Prévisualiser = tester le brouillon sans l’imposer aux visiteurs</h2>
+        <div class="mini-browser">
+          <div class="mini-browser__bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="mini-browser__body split">
+            <div class="stack"><span class="status-pill">Connected</span><h3>Tag Assistant</h3><p class="muted">Affiche les événements, les balises déclenchées et celles qui ne le sont pas.</p></div>
+            <ol class="numbered">
+              <li>Cliquer <strong>Preview</strong> dans GTM.</li>
+              <li>Saisir l’URL publique en <code>https://</code>.</li>
+              <li>Effectuer le scénario complet.</li>
+              <li>Lire la cause du déclenchement.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Installation" data-title="La triple preuve" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Recette</p>
+        <h2 tabindex="-1">Une mesure est prête quand trois preuves concordent</h2>
+        <div class="triad">
+          <article class="triad__item"><div class="triad__letter">1</div><div><h3>Tag Assistant</h3><p>La balise s’est déclenchée au bon moment et une seule fois.</p></div></article>
+          <article class="triad__item"><div class="triad__letter">2</div><div><h3>GA4 DebugView</h3><p>L’événement et ses paramètres sont reçus.</p></div></article>
+          <article class="triad__item"><div class="triad__letter">3</div><div><h3>Rapport</h3><p>La donnée apparaît ensuite dans GA4 avec la bonne attribution.</p></div></article>
+        </div>
+        <p class="tiny muted">Les rapports standards peuvent demander du temps ; DebugView et Temps réel servent à la validation immédiate.</p>
+      </div>
+    </section>
+
+    <section class="slide slide--ink" data-section="Événements" data-title="Penser en événements" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Modèle GA4</p>
+        <h2 tabindex="-1">Dans GA4, toute interaction utile devient un événement contextualisé</h2>
+        <div class="codebox"><span class="token-source">generate_lead</span> {
+  <span class="token-medium">form_name</span>: "contact_demo",
+  <span class="token-campaign">lead_type</span>: "demande_demo",
+  <span class="token-content">page_location</span>: "…"
+}</div>
+        <p class="lead">Le nom dit <em>ce qui s’est passé</em>. Les paramètres précisent <em>où, comment et dans quel contexte</em>.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Événements" data-title="La mesure améliorée" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">GA4</p>
+            <h2 tabindex="-1">La mesure améliorée couvre le standard, pas votre définition du succès</h2>
+          </div>
+          <div class="compare">
+            <article><span class="label">Automatique</span><p>Pages vues, scroll, clics sortants, recherche interne, certaines interactions formulaire.</p></article>
+            <article><span class="label">À concevoir</span><p>CTA métier, formulaire réellement réussi, type de lead, étape du funnel.</p></article>
+          </div>
+        </div>
+        <div class="panel panel--amber"><strong>Décision :</strong> utilisez l’automatique pour explorer ; instrumentez explicitement la conversion métier.</div>
+      </div>
+    </section>
+
+    <section class="slide slide--amber" data-section="Événements" data-title="Nommer les événements" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Taxonomie</p>
+        <h2 tabindex="-1">Un bon nom reste clair six mois plus tard</h2>
+        <div class="compare">
+          <article class="panel--solid"><span class="label">Préférer</span><ul class="checklist"><li><code>generate_lead</code></li><li><code>cta_click</code></li><li><code>phone_click</code></li></ul></article>
+          <article class="panel--danger"><span class="label" style="color:var(--danger)">Éviter</span><ul><li><code>click1</code></li><li><code>bouton_bleu</code></li><li><code>conversion_finale_v2</code></li></ul></article>
+        </div>
+        <p class="lead">Réutilisez d’abord les événements recommandés par GA4 ; créez un nom personnalisé seulement si le besoin n’est pas couvert.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Événements" data-title="Mesurer la vraie conversion" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split split--wide">
+          <div>
+            <p class="eyebrow">Fiabilité</p>
+            <h2 tabindex="-1">Le meilleur signal est le plus proche du succès réel</h2>
+          </div>
+          <div class="ladder" aria-label="Échelle de fiabilité d’une conversion">
+            <div class="ladder__step" style="--w:100%;--bg:var(--danger-soft)"><b>1 · Clic sur “Envoyer”</b><small>Faible : erreurs et abandons comptés.</small></div>
+            <div class="ladder__step" style="--w:88%;--bg:var(--amber-soft)"><b>2 · Form submit détecté</b><small>Moyen : le CMS peut intercepter l’envoi.</small></div>
+            <div class="ladder__step" style="--w:76%;--bg:var(--blue-soft)"><b>3 · Message de succès visible</b><small>Bon : preuve côté interface.</small></div>
+            <div class="ladder__step" style="--w:64%;--bg:var(--accent-soft)"><b>4 · Page de confirmation</b><small>Très bon : URL unique et testable.</small></div>
+            <div class="ladder__step" style="--w:52%;--bg:#c8e3d9"><b>5 · Événement dataLayer après succès</b><small>Excellent : preuve structurée et stable.</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide slide--blue" data-section="Événements" data-title="Recette : clic CTA" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Recette simple</p>
+        <h2 tabindex="-1">Mesurer un clic CTA demande une condition précise</h2>
+        <div class="compare">
+          <article>
+            <span class="label">Déclencheur</span>
+            <p><strong>Click — Just Links</strong></p>
+            <p class="muted">Some Link Clicks : <code>Click URL contains /contact</code> ou <code>Click ID equals cta-demo</code></p>
+          </article>
+          <article>
+            <span class="label">Balise GA4</span>
+            <p><strong>Event name :</strong> <code>cta_click</code></p>
+            <p class="muted"><code>cta_text</code>, <code>cta_location</code>, <code>link_url</code></p>
+          </article>
+        </div>
+        <div class="panel"><strong>Demandez un point d’ancrage stable :</strong> un ID, une classe dédiée ou un attribut <code>data-track</code>, plutôt qu’un texte susceptible de changer.</div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Événements" data-title="Recette : succès formulaire" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Recette conversion</p>
+        <h2 tabindex="-1">Déclenchez <code>generate_lead</code> après confirmation</h2>
+        <div class="compare">
+          <article><span class="label">Si URL unique</span><p>Page View avec <code>Page Path equals /merci</code>.</p><p class="tiny muted">Empêcher l’accès direct ou dédupliquer si nécessaire.</p></article>
+          <article><span class="label">Si message dynamique</span><p>Element Visibility sur un sélecteur CSS stable du message de succès.</p><p class="tiny muted">Observer une apparition, une fois par page.</p></article>
+        </div>
+        <div class="panel panel--green"><strong>Test négatif :</strong> provoquez une erreur de formulaire. L’événement ne doit pas partir.</div>
+      </div>
+    </section>
+
+    <section class="slide slide--ink" data-section="Événements" data-title="Quand le DOM ne suffit plus" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">dataLayer</p>
+            <h2 tabindex="-1">Quand l’interface est fragile, le site peut annoncer explicitement le succès</h2>
+            <p class="lead">Le dataLayer est une zone structurée que le site alimente et que GTM peut écouter.</p>
+          </div>
+          <div class="codebox">window.dataLayer = window.dataLayer || [];
+dataLayer.push({
+  event: <span class="token-source">'lead_generated'</span>,
+  form_name: <span class="token-medium">'contact_demo'</span>,
+  lead_type: <span class="token-campaign">'demande_demo'</span>
+});</div>
+        </div>
+        <p class="tiny" style="color:rgba(255,255,255,.7)">À demander au développeur ou à intégrer via les capacités du CMS. Ne jamais pousser de données personnelles en clair vers les outils analytics.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Événements" data-title="Choisir les paramètres" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Contexte</p>
+        <h2 tabindex="-1">Collectez seulement ce qui répond à une future question</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Question future</th><th>Paramètre</th><th>Valeur possible</th></tr></thead>
+            <tbody>
+              <tr><td>Quel formulaire convertit ?</td><td><code>form_name</code></td><td><code>contact_demo</code></td></tr>
+              <tr><td>Quel emplacement déclenche le clic ?</td><td><code>cta_location</code></td><td><code>hero</code></td></tr>
+              <tr><td>Quel besoin exprime le lead ?</td><td><code>lead_type</code></td><td><code>demande_demo</code></td></tr>
+              <tr><td>Quelle valeur théorique ?</td><td><code>value</code> + <code>currency</code></td><td><code>25</code> + <code>EUR</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tiny muted">Un paramètre personnalisé doit être déclaré comme dimension personnalisée dans GA4 pour être facilement exploité dans les rapports.</p>
+      </div>
+    </section>
+
+    <section class="slide slide--accent" data-section="Événements" data-title="Événement clé" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">GA4</p>
+        <h2 tabindex="-1">Un événement clé signale une action importante pour le business</h2>
+        <div class="split">
+          <div class="big-number" aria-hidden="true">★</div>
+          <ol class="numbered">
+            <li>Recevoir ou créer l’événement <code>generate_lead</code>.</li>
+            <li>Dans Admin → Events, le marquer comme <strong>événement clé</strong>.</li>
+            <li>Choisir la méthode de comptage adaptée.</li>
+            <li>Si nécessaire, créer ensuite une conversion Google Ads basée sur cet événement clé.</li>
+          </ol>
+        </div>
+        <p class="tiny" style="color:rgba(255,255,255,.72)">Le marquage n’est pas rétroactif : il agit à partir de sa création.</p>
+      </div>
+    </section>
+
+    <section class="slide slide--blue" data-section="Recette & QA" data-title="La matrice de test" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Recette</p>
+        <h2 tabindex="-1">Testez le positif, le négatif et la répétition</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Scénario</th><th>Résultat attendu</th><th>Tag Assistant</th><th>GA4</th></tr></thead>
+            <tbody>
+              <tr><td>Formulaire valide</td><td>1 lead</td><td>Balise fired 1×</td><td><code>generate_lead</code> reçu</td></tr>
+              <tr><td>Champ obligatoire vide</td><td>0 lead</td><td>Balise non déclenchée</td><td>Aucun événement</td></tr>
+              <tr><td>Double clic</td><td>1 lead</td><td>Pas de doublon</td><td>1 événement</td></tr>
+              <tr><td>Accès direct à /merci</td><td>Selon règle</td><td>Risque identifié</td><td>Pas de faux lead</td></tr>
+              <tr><td>Refus du consentement</td><td>Choix respecté</td><td>Balises conformes</td><td>Comportement attendu</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Recette & QA" data-title="Diagnostiquer sans deviner" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">Dépannage</p>
+            <h2 tabindex="-1">Lisez la chaîne dans l’ordre pour localiser la panne</h2>
+          </div>
+          <ol class="numbered">
+            <li><strong>Le conteneur charge-t-il ?</strong> Bon ID GTM, site publié, pas de blocage.</li>
+            <li><strong>Le déclencheur voit-il l’action ?</strong> Bon événement, bon sélecteur, bonnes conditions.</li>
+            <li><strong>La balise part-elle ?</strong> Consentement, exceptions, configuration.</li>
+            <li><strong>GA4 reçoit-il ?</strong> Bon ID <code>G-</code>, DebugView, paramètres valides.</li>
+            <li><strong>Le rapport classe-t-il bien ?</strong> UTM, délai, portée de dimension.</li>
+          </ol>
+        </div>
+        <div class="panel panel--danger"><strong>Doublon fréquent :</strong> GA4 ou Hotjar installé à la fois dans le CMS et dans GTM.</div>
+      </div>
+    </section>
+
+    <section class="slide slide--amber" data-section="Recette & QA" data-title="Publier proprement" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Mise en production</p>
+        <h2 tabindex="-1">Une publication doit pouvoir être comprise et annulée</h2>
+        <div class="compare">
+          <article class="panel--solid"><span class="label">Avant Submit</span><ul class="checklist"><li>Preview validé</li><li>Tests négatifs effectués</li><li>Consentement vérifié</li><li>Pas de balise en double</li></ul></article>
+          <article><span class="label">Nom de version</span><p><code>2026-08 — GA4 + generate_lead</code></p><p class="muted">Description : objectif, balises ajoutées, pages concernées, personne ayant testé.</p></article>
+        </div>
+        <p class="lead">GTM conserve des versions : publiez petit, documentez, puis revenez en arrière si nécessaire.</p>
+      </div>
+    </section>
+
+    <section class="slide slide--ink" data-section="Consentement" data-title="Le consentement fait partie du tracking" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Privacy by design</p>
+        <h2 tabindex="-1">Un bandeau n’est utile que si les balises respectent réellement le choix</h2>
+        <div class="chain" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+          <div class="chain__item" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)"><b>Informer</b><small style="color:rgba(255,255,255,.65)">Finalités claires</small></div>
+          <div class="chain__item" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)"><b>Choisir</b><small style="color:rgba(255,255,255,.65)">Accepter / refuser</small></div>
+          <div class="chain__item" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)"><b>Transmettre</b><small style="color:rgba(255,255,255,.65)">CMP → GTM</small></div>
+          <div class="chain__item" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)"><b>Appliquer</b><small style="color:rgba(255,255,255,.65)">Balises autorisées</small></div>
+        </div>
+        <p class="lead">La configuration technique suit la politique de l’entreprise et les recommandations de sa CMP ; ce cours ne remplace pas un avis juridique.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Consentement" data-title="Mode basique ou avancé" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Consent Mode</p>
+        <h2 tabindex="-1">Basique et avancé n’envoient pas les mêmes signaux avant accord</h2>
+        <div class="compare">
+          <article>
+            <span class="label">Mode basique</span>
+            <h3>Les balises Google sont bloquées avant interaction.</h3>
+            <p class="muted">Aucune donnée n’est envoyée à Google tant que le visiteur n’a pas consenti.</p>
+          </article>
+          <article>
+            <span class="label">Mode avancé</span>
+            <h3>Les balises Google chargent avec un état refusé.</h3>
+            <p class="muted">Elles peuvent envoyer des mesures sans cookies pour la modélisation, puis s’adaptent au choix.</p>
+          </article>
+        </div>
+        <div class="panel panel--amber"><strong>Pour le Challenge 2 :</strong> appliquez le mode défini par l’entreprise partenaire ou sa CMP ; n’improvisez pas ce choix.</div>
+      </div>
+    </section>
+
+    <section class="slide slide--blue" data-section="Consentement" data-title="La séquence de consentement" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Ordre d’exécution</p>
+        <h2 tabindex="-1">L’état par défaut doit exister avant les balises de mesure</h2>
+        <ol class="numbered">
+          <li><strong>Consent Initialization :</strong> la CMP définit les états par défaut.</li>
+          <li><strong>Initialization / Page View :</strong> les balises appliquent ces états.</li>
+          <li><strong>Choix du visiteur :</strong> la CMP met à jour le consentement sur la même page.</li>
+          <li><strong>GTM :</strong> les balises avec contrôles intégrés ou exigences additionnelles réagissent.</li>
+          <li><strong>Recette :</strong> tester “tout refuser”, “tout accepter” et changement de choix.</li>
+        </ol>
+        <div class="codebox"><span class="token-source">analytics_storage</span> · <span class="token-medium">ad_storage</span> · <span class="token-campaign">ad_user_data</span> · <span class="token-content">ad_personalization</span></div>
+      </div>
+    </section>
+
+    <section class="slide slide--accent" data-section="Hotjar" data-title="Ajouter Hotjar avec intention" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">Option comportementale</p>
+            <h2 tabindex="-1">Hotjar répond à “comment”, pas à “combien”</h2>
+            <p class="lead">Heatmaps et enregistrements aident à comprendre les frictions observées dans le funnel.</p>
+          </div>
+          <ol class="numbered">
+            <li>Créer le site Hotjar et récupérer le Site ID.</li>
+            <li>Ajouter la balise <strong>Hotjar Tracking Code</strong> dans GTM.</li>
+            <li>Déclencher sur Page View / All Pages, avec la règle de consentement requise.</li>
+            <li>Preview, publier, puis vérifier dans Hotjar.</li>
+            <li>S’assurer qu’un seul code Hotjar charge par page.</li>
+          </ol>
+        </div>
+        <p class="tiny" style="color:rgba(255,255,255,.72)">Ne collectez pas “au cas où”. Définissez d’abord la question : où les visiteurs hésitent-ils, abandonnent-ils ou cliquent-ils ?</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Analyse" data-title="Lire le funnel dans GA4" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Analyse</p>
+        <h2 tabindex="-1">L’analyse suit le même ordre que l’expérience du prospect</h2>
+        <div class="funnel" aria-label="Funnel d’analyse GA4">
+          <div class="funnel__row" style="--w:100%;--c:#295fd6"><span>Sessions Lemlist / email</span><small>Acquisition</small></div>
+          <div class="funnel__row" style="--w:86%;--c:#276f94"><span>Landing engagée</span><small>Engagement</small></div>
+          <div class="funnel__row" style="--w:70%;--c:#087a68"><span>Clic CTA</span><small>Événement</small></div>
+          <div class="funnel__row" style="--w:54%;--c:#05604f"><span>generate_lead</span><small>Événement clé</small></div>
+          <div class="funnel__row" style="--w:40%;--c:#173c34"><span>Lead qualifié</span><small>CRM</small></div>
+        </div>
+        <p class="lead">Comparez les campagnes sur le même périmètre et documentez les ruptures entre GA4 et le suivi commercial.</p>
+      </div>
+    </section>
+
+    <section class="slide slide--amber" data-section="Analyse" data-title="Calculer les KPI utiles" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">KPI d’acquisition</p>
+        <h2 tabindex="-1">Trois calculs suffisent pour commencer à décider</h2>
+        <div class="stack">
+          <div class="formula">Taux CTA = clics CTA ÷ sessions landing × 100</div>
+          <div class="formula">Taux lead = leads ÷ sessions landing × 100</div>
+          <div class="formula">Coût par lead = dépenses campagne ÷ leads</div>
+        </div>
+        <p class="lead">Ajoutez ensuite le taux de qualification : leads qualifiés ÷ leads. C’est lui qui rapproche le marketing du résultat business.</p>
+      </div>
+    </section>
+
+    <section class="slide slide--ink" data-section="Atelier Challenge 2" data-title="Atelier : instrumenter le funnel" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Travail en groupe</p>
+        <h2 tabindex="-1">Votre mission : livrer un funnel testable par une autre équipe</h2>
+        <div class="compare">
+          <article style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)"><span class="label" style="color:#7fe0ca">1 · Concevoir</span><p>Plan de mesure, convention UTM, événements et paramètres.</p></article>
+          <article style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)"><span class="label" style="color:#93b1ff">2 · Installer</span><p>GTM sur Dorik, Google tag GA4, puis interactions prioritaires.</p></article>
+          <article style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)"><span class="label" style="color:#ffc977">3 · Recetter</span><p>Tests positifs, négatifs, UTM, consentement et absence de doublons.</p></article>
+          <article style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)"><span class="label" style="color:#f2a8a1">4 · Transmettre</span><p>Version publiée, preuves et limites connues.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Atelier Challenge 2" data-title="Les livrables du groupe" aria-hidden="true">
+      <div class="slide__inner">
+        <div class="split">
+          <div>
+            <p class="eyebrow">Definition of done</p>
+            <h2 tabindex="-1">Le travail est fini quand il est vérifiable</h2>
+          </div>
+          <ul class="checklist">
+            <li>Tableau du plan de mesure.</li>
+            <li>Convention UTM et URL Lemlist finale.</li>
+            <li>Capture Tag Assistant du scénario réussi.</li>
+            <li>Capture GA4 DebugView avec paramètres.</li>
+            <li>Preuve de test négatif sans faux événement.</li>
+            <li>Nom et description de la version GTM publiée.</li>
+            <li>Limites, dépendances et prochaine amélioration.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide slide--blue slide--preflight" data-section="Synthèse" data-title="La checklist avant envoi" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Avant de lancer la campagne</p>
+        <h2 tabindex="-1">Ne lancez que ce que vous savez vérifier</h2>
+        <div class="compare">
+          <article><span class="label">Acquisition</span><ul class="checklist"><li>UTM complets et cohérents</li><li>Redirection testée</li><li>Source / medium visibles dans GA4</li></ul></article>
+          <article><span class="label">Mesure</span><ul class="checklist"><li>GTM chargé une seule fois</li><li>GA4 reçu dans DebugView</li><li>Conversion déclenchée après succès</li></ul></article>
+          <article><span class="label">Qualité</span><ul class="checklist"><li>Test négatif réussi</li><li>Pas de doublon</li><li>Version documentée</li></ul></article>
+          <article><span class="label">Consentement</span><ul class="checklist"><li>Refus respecté</li><li>Accord respecté</li><li>Changement de choix testé</li></ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide slide--accent" data-section="Synthèse" data-title="Le critère final" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Le critère final</p>
+        <h1 tabindex="-1">Vous savez expliquer chaque nombre</h1>
+        <p class="lead">D’où vient-il ? Quelle action représente-t-il ? Quand part-il ? Qu’est-ce qui pourrait le fausser ? Et quelle décision permet-il de prendre ?</p>
+        <div class="hero-line" aria-hidden="true"></div>
+        <p class="callout">Quand ces réponses sont claires, votre funnel devient pilotable.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-section="Ressources" data-title="Ressources officielles" aria-hidden="true">
+      <div class="slide__inner">
+        <p class="eyebrow">Pour aller plus loin</p>
+        <h2 tabindex="-1">Gardez les sources officielles à portée de main</h2>
+        <div class="stack">
+          <div class="panel"><h3>Google</h3><p class="tiny"><a href="https://support.google.com/tagmanager/answer/12811173" target="_blank" rel="noreferrer">Guide Google Tag Manager</a> · <a href="https://support.google.com/tagmanager/answer/6107056" target="_blank" rel="noreferrer">Preview et debug</a> · <a href="https://support.google.com/analytics/answer/10917952" target="_blank" rel="noreferrer">URL builders et UTM</a> · <a href="https://developers.google.com/analytics/devguides/collection/ga4/reference/events" target="_blank" rel="noreferrer">Événements GA4 recommandés</a></p></div>
+          <div class="panel"><h3>Consentement</h3><p class="tiny"><a href="https://developers.google.com/tag-platform/security/concepts/consent-mode" target="_blank" rel="noreferrer">Vue d’ensemble Consent Mode</a> · <a href="https://developers.google.com/tag-platform/security/guides/consent" target="_blank" rel="noreferrer">Mise en œuvre sur un site</a></p></div>
+          <div class="panel"><h3>CMS et comportement</h3><p class="tiny"><a href="https://help.dorik.com/en/article/google-tag-manager-integration-aeia3k/" target="_blank" rel="noreferrer">Intégration GTM dans Dorik</a> · <a href="https://help.hotjar.com/hc/en-us/articles/36820058585873-Install-the-Tracking-Code-with-Google-Tag-Manager" target="_blank" rel="noreferrer">Installer Hotjar via GTM</a></p></div>
+        </div>
+        <p class="tiny muted">Interfaces et libellés évoluent : cherchez la fonction décrite, pas seulement le texte exact d’un bouton.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="nav" aria-label="Navigation entre les slides">
+    <button class="nav-btn" id="prevBtn" type="button"><span aria-hidden="true">←</span><span class="nav-label">Précédente</span></button>
+    <div class="counter" aria-live="polite"><span id="currentNum">01</span> <span class="muted">/</span> <span id="totalNum">00</span></div>
+    <button class="nav-btn" id="nextBtn" type="button"><span class="nav-label">Suivante</span><span aria-hidden="true">→</span></button>
+  </nav>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer" aria-label="Sommaire" aria-hidden="true">
+    <div class="drawer__head"><h2>Sommaire</h2><button class="icon-btn" id="closeDrawerBtn" type="button" aria-label="Fermer le sommaire">×</button></div>
+    <div class="drawer__list" id="drawerList"></div>
+  </aside>
+
+  <dialog id="helpDialog">
+    <div class="dialog__head"><h2>Navigation</h2><button class="icon-btn" id="closeHelpBtn" type="button" aria-label="Fermer l’aide">×</button></div>
+    <div class="dialog__body">
+      <div class="shortcuts">
+        <kbd>→</kbd><span>Slide suivante</span>
+        <kbd>←</kbd><span>Slide précédente</span>
+        <kbd>Espace</kbd><span>Slide suivante</span>
+        <kbd>Home</kbd><span>Première slide</span>
+        <kbd>End</kbd><span>Dernière slide</span>
+        <kbd>M</kbd><span>Ouvrir / fermer le sommaire</span>
+        <kbd>F</kbd><span>Activer / quitter le plein écran</span>
+        <kbd>?</kbd><span>Afficher cette aide</span>
+        <kbd>Échap</kbd><span>Fermer une fenêtre</span>
+      </div>
+      <p class="tiny muted" style="margin-top:1.2rem">Sur écran tactile, balayez horizontalement. Si une slide est plus haute que l’écran, faites-la défiler verticalement.</p>
+    </div>
+  </dialog>
+
+  <div class="sr-only" id="slideAnnouncer" aria-live="assertive" aria-atomic="true"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const progressBar = document.getElementById('progressBar');
+      const currentNum = document.getElementById('currentNum');
+      const totalNum = document.getElementById('totalNum');
+      const sectionLabel = document.getElementById('sectionLabel');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const menuBtn = document.getElementById('menuBtn');
+      const fullscreenBtn = document.getElementById('fullscreenBtn');
+      const helpBtn = document.getElementById('helpBtn');
+      const drawer = document.getElementById('drawer');
+      const drawerList = document.getElementById('drawerList');
+      const drawerBackdrop = document.getElementById('drawerBackdrop');
+      const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+      const helpDialog = document.getElementById('helpDialog');
+      const closeHelpBtn = document.getElementById('closeHelpBtn');
+      const slideAnnouncer = document.getElementById('slideAnnouncer');
+      let current = 0;
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      const pad = (number) => String(number).padStart(2, '0');
+      const clamp = (number, min, max) => Math.min(Math.max(number, min), max);
+      const isEditable = (target) => target instanceof HTMLElement && (target.matches('input, textarea, select, button, [contenteditable="true"]') || Boolean(target.closest('input, textarea, select, button, [contenteditable="true"]')));
+      const isTypingTarget = (target) => target instanceof HTMLElement && (target.matches('input, textarea, select, [contenteditable="true"]') || Boolean(target.closest('input, textarea, select, [contenteditable="true"]')));
+
+      function indexFromHash() {
+        const match = location.hash.match(/^#s-(\d+)$/);
+        if (!match) return null;
+        return clamp(Number(match[1]) - 1, 0, slides.length - 1);
+      }
+
+      function buildDrawer() {
+        slides.forEach((slide, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'drawer__item';
+          button.dataset.index = String(index);
+          button.innerHTML = `<span class="drawer__num">${pad(index + 1)}</span><span><span class="drawer__title">${slide.dataset.title || `Slide ${index + 1}`}</span><span class="drawer__section">${slide.dataset.section || ''}</span></span>`;
+          button.addEventListener('click', () => {
+            showSlide(index, true);
+            closeDrawer();
+          });
+          drawerList.appendChild(button);
+        });
+      }
+
+      function showSlide(index, updateHash = true) {
+        current = clamp(index, 0, slides.length - 1);
+        slides.forEach((slide, i) => {
+          const active = i === current;
+          slide.classList.toggle('active', active);
+          slide.setAttribute('aria-hidden', String(!active));
+          if (active) slide.scrollTop = 0;
+        });
+
+        const slide = slides[current];
+        const title = slide.dataset.title || `Slide ${current + 1}`;
+        const section = slide.dataset.section || '';
+        currentNum.textContent = pad(current + 1);
+        totalNum.textContent = pad(slides.length);
+        sectionLabel.textContent = section;
+        progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === slides.length - 1;
+        nextBtn.setAttribute('aria-label', current === slides.length - 1 ? 'Fin de la présentation' : 'Slide suivante');
+        document.title = `${pad(current + 1)} · ${title} — GTM`;
+        slideAnnouncer.textContent = `Slide ${current + 1} sur ${slides.length}. ${title}`;
+
+        Array.from(drawerList.children).forEach((item, i) => {
+          item.classList.toggle('active', i === current);
+          if (i === current) item.setAttribute('aria-current', 'page');
+          else item.removeAttribute('aria-current');
+        });
+
+        if (updateHash) history.replaceState(null, '', `#s-${current + 1}`);
+        try { localStorage.setItem('gtm-course-slide', String(current)); } catch (_) {}
+      }
+
+      function openDrawer() {
+        drawer.classList.add('open');
+        drawerBackdrop.classList.add('open');
+        drawer.setAttribute('aria-hidden', 'false');
+        menuBtn.setAttribute('aria-expanded', 'true');
+        const active = drawerList.querySelector('.active');
+        if (active) active.scrollIntoView({ block: 'center' });
+        closeDrawerBtn.focus();
+      }
+
+      function closeDrawer() {
+        drawer.classList.remove('open');
+        drawerBackdrop.classList.remove('open');
+        drawer.setAttribute('aria-hidden', 'true');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      }
+
+      function toggleDrawer() {
+        if (drawer.classList.contains('open')) closeDrawer(); else openDrawer();
+      }
+
+      async function toggleFullscreen() {
+        try {
+          if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+          else await document.exitFullscreen();
+        } catch (_) {
+          slideAnnouncer.textContent = 'Le plein écran n’est pas disponible dans ce navigateur.';
+        }
+      }
+
+      function updateFullscreenLabel() {
+        const active = Boolean(document.fullscreenElement);
+        fullscreenBtn.setAttribute('aria-label', active ? 'Quitter le plein écran' : 'Passer en plein écran');
+        fullscreenBtn.title = active ? 'Quitter le plein écran (F)' : 'Plein écran (F)';
+      }
+
+      function sanitizeUtm(value) {
+        return value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
+      }
+
+      function buildUtm() {
+        const baseInput = document.getElementById('utmBase');
+        const output = document.getElementById('utmOutput');
+        let base = baseInput.value.trim();
+        if (!/^https?:\/\//i.test(base)) base = `https://${base}`;
+        try {
+          const url = new URL(base);
+          const values = {
+            utm_source: sanitizeUtm(document.getElementById('utmSource').value),
+            utm_medium: sanitizeUtm(document.getElementById('utmMedium').value),
+            utm_campaign: sanitizeUtm(document.getElementById('utmCampaign').value),
+            utm_content: sanitizeUtm(document.getElementById('utmContent').value)
+          };
+          Object.entries(values).forEach(([key, value]) => value ? url.searchParams.set(key, value) : url.searchParams.delete(key));
+          output.value = url.toString();
+          output.textContent = url.toString();
+          output.dataset.valid = 'true';
+        } catch (_) {
+          output.value = '';
+          output.textContent = 'URL invalide : vérifiez le domaine.';
+          output.dataset.valid = 'false';
+        }
+      }
+
+      async function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+      }
+
+      buildDrawer();
+      totalNum.textContent = pad(slides.length);
+      document.querySelectorAll('#utmBuilder input').forEach(input => input.addEventListener('input', buildUtm));
+      buildUtm();
+
+      document.getElementById('copyUtmBtn').addEventListener('click', async () => {
+        const output = document.getElementById('utmOutput');
+        const status = document.getElementById('copyStatus');
+        if (output.dataset.valid !== 'true') { status.textContent = 'Corrigez d’abord l’URL.'; return; }
+        try {
+          await copyText(output.value || output.textContent);
+          status.textContent = 'URL copiée.';
+        } catch (_) {
+          status.textContent = 'Copie impossible : sélectionnez l’URL manuellement.';
+        }
+        window.setTimeout(() => { status.textContent = ''; }, 2600);
+      });
+
+      prevBtn.addEventListener('click', () => showSlide(current - 1));
+      nextBtn.addEventListener('click', () => showSlide(current + 1));
+      menuBtn.addEventListener('click', toggleDrawer);
+      closeDrawerBtn.addEventListener('click', closeDrawer);
+      drawerBackdrop.addEventListener('click', closeDrawer);
+      fullscreenBtn.addEventListener('click', toggleFullscreen);
+      helpBtn.addEventListener('click', () => helpDialog.showModal());
+      closeHelpBtn.addEventListener('click', () => helpDialog.close());
+      document.addEventListener('fullscreenchange', updateFullscreenLabel);
+
+      document.addEventListener('keydown', (event) => {
+        if (isTypingTarget(event.target)) return;
+        const key = event.key;
+        if (key === 'Escape') {
+          if (drawer.classList.contains('open')) { closeDrawer(); event.preventDefault(); }
+          return;
+        }
+        if (helpDialog.open) return;
+        if (key === ' ' && event.target instanceof HTMLElement && event.target.closest('button')) {
+          const focusedButton = event.target.closest('button');
+          if (focusedButton === nextBtn) { showSlide(current + 1); event.preventDefault(); }
+          else if (focusedButton === prevBtn) { showSlide(current - 1); event.preventDefault(); }
+          return;
+        }
+        if (key === 'ArrowRight' || key === 'PageDown' || key === ' ') { if (drawer.classList.contains('open')) closeDrawer(); showSlide(current + 1); event.preventDefault(); }
+        else if (key === 'ArrowLeft' || key === 'PageUp') { if (drawer.classList.contains('open')) closeDrawer(); showSlide(current - 1); event.preventDefault(); }
+        else if (key === 'Home') { showSlide(0); event.preventDefault(); }
+        else if (key === 'End') { showSlide(slides.length - 1); event.preventDefault(); }
+        else if (key.toLowerCase() === 'm') { toggleDrawer(); event.preventDefault(); }
+        else if (key.toLowerCase() === 'f') { toggleFullscreen(); event.preventDefault(); }
+        else if (key === '?') { helpDialog.showModal(); event.preventDefault(); }
+      });
+
+      document.getElementById('deck').addEventListener('touchstart', (event) => {
+        if (event.touches.length !== 1 || isEditable(event.target)) return;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+      }, { passive: true });
+
+      document.getElementById('deck').addEventListener('touchend', (event) => {
+        if (!touchStartX || event.changedTouches.length !== 1 || isEditable(event.target)) return;
+        const dx = event.changedTouches[0].clientX - touchStartX;
+        const dy = event.changedTouches[0].clientY - touchStartY;
+        touchStartX = 0;
+        touchStartY = 0;
+        if (Math.abs(dx) > 52 && Math.abs(dx) > Math.abs(dy) * 1.25) showSlide(current + (dx < 0 ? 1 : -1));
+      }, { passive: true });
+
+      window.addEventListener('hashchange', () => {
+        const hashIndex = indexFromHash();
+        if (hashIndex !== null && hashIndex !== current) showSlide(hashIndex, false);
+      });
+
+      let initial = indexFromHash();
+      if (initial === null) {
+        try {
+          const stored = Number(localStorage.getItem('gtm-course-slide'));
+          if (Number.isInteger(stored)) initial = clamp(stored, 0, slides.length - 1);
+        } catch (_) {}
+      }
+      showSlide(initial ?? 0, true);
+      updateFullscreenLabel();
+    })();
+  </script>
+</body>
+</html>

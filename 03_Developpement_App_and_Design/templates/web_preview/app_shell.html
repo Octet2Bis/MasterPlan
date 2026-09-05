@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swiss Craft App Shell — Master Plan</title>
+  <link rel="stylesheet" href="./swiss_craft_tokens.css">
+  <style>
+    .shell-container {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-4);
+      gap: var(--space-4);
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell-container">
+    <header class="header-bar">
+      <div>
+        <span class="badge-status">SYSTÈME EN LIGNE</span>
+        <h1 class="hero-title" id="app-title">Application Shell</h1>
+      </div>
+      <div id="status-indicator" style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-main);"></div>
+    </header>
+
+    <main style="display: flex; flex-direction: column; gap: var(--space-4);">
+      <section id="section-main-bento" class="bento-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+          <div>
+            <span class="badge-status">COMPOSANT BENTO</span>
+            <h2 style="font-size: 1.125rem; font-weight: 700;">État Opérationnel</h2>
+          </div>
+          <span id="counter-display" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-main);">0</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: var(--space-4);">
+          Architecture unidirectionnelle réactive inspirée de TCA et Point-Free.
+        </p>
+        <div style="display: flex; gap: var(--space-3);">
+          <button id="btn-decrement" class="btn-primary" style="background: var(--surface-2); color: var(--text-primary);">Décrémenter</button>
+          <button id="btn-increment" class="btn-primary">Incrémenter</button>
+        </div>
+      </section>
+
+      <section id="section-telemetry" class="bento-card">
+        <span class="badge-status">TÉLÉMÉTRIE DÉTERMINISTE</span>
+        <h3 style="font-size: 0.95rem; font-weight: 600; margin-top: var(--space-1);">Journal des Actions</h3>
+        <pre id="action-log" style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted); margin-top: var(--space-2); max-height: 100px; overflow-y: auto;">Prêt.</pre>
+      </section>
+    </main>
+  </div>
+
+  <script src="./store_unidirectional.js"></script>
+  <script src="./audio_synth_engine.js"></script>
+  <script>
+    const audio = new WebAudioSynthEngine();
+    function rootReducer(state = { count: 0 }, action) {
+      switch (action.type) {
+        case 'INCREMENT': return { ...state, count: state.count + 1 };
+        case 'DECREMENT': return { ...state, count: Math.max(0, state.count - 1) };
+        default: return state;
+      }
+    }
+    const store = createStore(rootReducer, { count: 0 });
+    store.subscribe((state, action) => {
+      document.getElementById('counter-display').textContent = state.count;
+      document.getElementById('action-log').textContent = `[${new Date().toLocaleTimeString()}] ${action.type} -> count: ${state.count}\n` + document.getElementById('action-log').textContent;
+    });
+    document.getElementById('btn-increment').addEventListener('click', () => { audio.playClick(); store.dispatch({ type: 'INCREMENT' }); });
+    document.getElementById('btn-decrement').addEventListener('click', () => { audio.playClick(); store.dispatch({ type: 'DECREMENT' }); });
+  </script>
+</body>
+</html>

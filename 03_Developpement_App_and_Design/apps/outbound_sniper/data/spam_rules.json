@@ -1,0 +1,44 @@
+{
+  "spam_words_fr": [
+    "gratuit", "100% gratuit", "gagner de l'argent", "revenu garanti", "sans engagement",
+    "offre exceptionnelle", "urgent", "promotion", "promo", "remise speciale",
+    "cliquez ici", "cliquer ici", "devenez riche", "credit facile", "sans frais",
+    "meilleur prix", "felicitations", "vous avez gagne", "offre limitee", "opportunite unique",
+    "argent facile", "solution magique", "devenez libre", "cash", "prix casse", "satisfait ou rembourse"
+  ],
+  "opt_out_patterns": [
+    "ne souhaitez plus", "desabonner", "desinscription", "repondez stop", "repondre stop",
+    "retirer de votre liste", "ne plus recevoir", "pas interesse", "opt-out"
+  ],
+  "penalties": {
+    "missing_opt_out": 25,
+    "spam_word": 10,
+    "excessive_links": 15,
+    "all_caps_subject": 20,
+    "excessive_punctuation": 10,
+    "too_short": 10,
+    "too_long": 10
+  },
+  "spintax_presets": [
+    {
+      "category": "Salutations",
+      "syntax": "{Bonjour {{prenom}}|Hello {{prenom}}|Ravi de vous contacter, {{prenom}}|Bonjour à vous, {{prenom}}}"
+    },
+    {
+      "category": "Accroche / Contextualisation",
+      "syntax": "{En observant les actions de {{entreprise}}|Suite aux récentes initiatives de {{entreprise}}|En analysant les enjeux actuels chez {{entreprise}}|J'ai récemment découvert le projet mené chez {{entreprise}}}"
+    },
+    {
+      "category": "Proposition de Valeur",
+      "syntax": "{nous avons modélisé une approche méthodique|nous avons conçu un protocole déterministe|notre méthode permet de structurer la démarche|nous accompagnons les organisations sur ce levier clé}"
+    },
+    {
+      "category": "Call-To-Action (0 Friction)",
+      "syntax": "{Seriez-vous ouvert à un rapide échange de 10 min cette semaine ?|Auriez-vous un créneau de 5 à 10 minutes d'ici vendredi ?|Seriez-vous contre un court appel de découverte ?|Un court échange vous semblerait-il opportun ?}"
+    },
+    {
+      "category": "Formule de Clôture",
+      "syntax": "{Bien à vous,|Bien cordialement,|Excellente journée à vous,|Très bonne semaine,}"
+    }
+  ]
+}

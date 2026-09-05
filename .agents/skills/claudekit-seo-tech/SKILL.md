@@ -1,6 +1,6 @@
 ---
 name: claudekit-seo-tech
-description: Audite et implémente les fondamentaux du SEO technique pour les moteurs de recherche (Googlebot) : balises canoniques, OpenGraph, Twitter Cards, robots.txt, Core Web Vitals et sitemaps XML. À utiliser dans 02_Acquisition_and_AEO/ et 03_Developpement_App/.
+description: Audite et implémente les fondamentaux du SEO technique pour les moteurs de recherche (Googlebot) : balises canoniques, OpenGraph, Twitter Cards, robots.txt, Core Web Vitals et sitemaps XML. À utiliser dans 02_Acquisition_and_AEO/ et 03_Developpement_App_and_Design/.
 ---
 
 # 🛠️ ClaudeKit — SEO Technique & Audit d'Indexabilité

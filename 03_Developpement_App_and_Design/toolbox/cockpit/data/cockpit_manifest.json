@@ -1,0 +1,249 @@
+{
+  "name": "Master Plan Local Cockpit",
+  "version": "1.0.0",
+  "default_tab": "gtm",
+  "tabs": [
+    {
+      "id": "gtm",
+      "number": "01",
+      "title": "GTM & Growth",
+      "icon": "📈",
+      "pillar": "01_GTM_Growth",
+      "color": "var(--accent-gtm)",
+      "description": "Stratégies d'acquisition B2B/B2C, AEO/GEO, Tracking DataLayer, Attribution et Pipelines Outbound.",
+      "agent_profile": {
+        "name": "Growth Lead AI",
+        "role": "Spécialiste Acquisition, Copywriting Haute Conversion & AEO",
+        "avatar": "📈",
+        "system_prompt": "Tu es le Lead Growth & Acquisition du Master Plan."
+      },
+      "projects": [
+        {
+          "id": "strategy_positioning",
+          "name": "Stratégie, ICP & Positionnement",
+          "category": "01_Strategy_and_Positioning",
+          "status": "ACTIVE",
+          "target_files": [
+            "01_GTM_Growth/01_Strategy_and_Positioning/_instructions.md",
+            "01_GTM_Growth/01_Strategy_and_Positioning/data/icp_framework.json"
+          ],
+          "live_preview": {
+            "type": "markdown",
+            "title": "Cadrage Stratégique & Matrice ICP",
+            "endpoint": "/api/live/strategy"
+          },
+          "actions": ["Consulter ICP & Personas", "Auditer Proposition de Valeur"]
+        },
+        {
+          "id": "aeo_auditor",
+          "name": "AEO Semantic Graph Auditor",
+          "category": "02_Acquisition_and_AEO",
+          "status": "ACTIVE",
+          "target_files": [
+            "01_GTM_Growth/toolbox/core/aeo_graph_auditor.js",
+            "01_GTM_Growth/02_Acquisition_and_AEO/_instructions.md"
+          ],
+          "live_preview": {
+            "type": "html_snippet",
+            "title": "Graphe Sémantique Schema.org & Citations IA",
+            "endpoint": "/api/live/aeo"
+          },
+          "actions": ["Auditer Schéma JSON-LD", "Tester Citations IA Perplexity"]
+        },
+        {
+          "id": "buying_committee",
+          "name": "B2B Buying Committee Engine",
+          "category": "04_Outbound_and_CRM",
+          "status": "ACTIVE",
+          "target_files": [
+            "01_GTM_Growth/toolbox/core/buying_committee_engine.js",
+            "01_GTM_Growth/04_Outbound_and_CRM/_instructions.md"
+          ],
+          "live_preview": {
+            "type": "markdown",
+            "title": "Comité d'Achat B2B Décisionnel",
+            "endpoint": "/api/live/buying_committee"
+          },
+          "actions": ["Générer Angle d'Accroche", "Auditer Délivrabilité DNS"]
+        },
+        {
+          "id": "landing_page_cro",
+          "name": "Landing Page Wireframing & CRO",
+          "category": "03_Experimentation",
+          "status": "ACTIVE",
+          "target_files": [
+            "01_GTM_Growth/03_Experimentation/_instructions.md"
+          ],
+          "live_preview": {
+            "type": "html_snippet",
+            "title": "Aperçu Grille Heuristique CRO Swiss Craft",
+            "endpoint": "/api/live/landing"
+          },
+          "actions": ["Audit Heuristique CRO", "Générer Variantes A/B"]
+        },
+        {
+          "id": "activation_hook",
+          "name": "Boucles d'Activation & Hook Model",
+          "category": "05_Activation_and_CSM",
+          "status": "ACTIVE",
+          "target_files": [
+            "01_GTM_Growth/05_Activation_and_CSM/_instructions.md"
+          ],
+          "live_preview": {
+            "type": "markdown",
+            "title": "Séquences d'Onboarding & Time-To-Value < 60s",
+            "endpoint": "/api/live/activation"
+          },
+          "actions": ["Simuler Séquence J0-J7", "Calibrer Déclencheurs Habitudes"]
+        },
+        {
+          "id": "gtm_toolbox",
+          "name": "Toolbox GTM, Waterfall 0€ & Linters",
+          "category": "toolbox",
+          "status": "ACTIVE",
+          "target_files": [
+            "01_GTM_Growth/toolbox/core/firecrawl_gtm_adapter.js",
+            "01_GTM_Growth/toolbox/master_health_check.py"
+          ],
+          "live_preview": {
+            "type": "markdown",
+            "title": "Linters de Conformité & Waterfall d'Enrichissement",
+            "endpoint": "/api/live/gtm_toolbox"
+          },
+          "actions": ["Lancer Linters GTM", "Vérifier Waterfall Quotas"]
+        }
+      ]
+    },
+    {
+      "id": "assistant",
+      "number": "02",
+      "title": "Assistant Personnel",
+      "icon": "💼",
+      "pillar": "02_Assistant_Personnel",
+      "color": "var(--accent-assistant)",
+      "description": "Career Ops 100% remote, scoring d'opportunités ATS, veille active et démons Telegram tri-canaux.",
+      "agent_profile": {
+        "name": "Personal Strategist AI",
+        "role": "Agent d'Opérations Carrière, Veille IA & Second Cerveau",
+        "avatar": "💼",
+        "system_prompt": "Tu es l'Assistant Stratégique Personnel et Second Cerveau du Master Plan."
+      },
+      "projects": [
+        {
+          "id": "career_ops",
+          "name": "Radar Opportunités Gold ATS",
+          "category": "04_Productivite_Admin",
+          "status": "ACTIVE",
+          "target_files": [
+            "02_Assistant_Personnel/04_Productivite_Admin/career_ops/job_matcher.py",
+            "02_Assistant_Personnel/Workspace/career/pending_gold_jobs.json"
+          ],
+          "live_preview": {
+            "type": "iframe",
+            "title": "Dashboard Entreprises 100% Remote Vérifiées",
+            "endpoint": "/api/live/companies_dashboard"
+          },
+          "actions": ["Scorer Nouvelles Offres", "Générer Dossier Candidature"]
+        },
+        {
+          "id": "telegram_tribot",
+          "name": "Service Telegram Tri-Canal",
+          "category": "02_Automatisation",
+          "status": "ACTIVE",
+          "target_files": [
+            "02_Assistant_Personnel/02_Automatisation/telegram_bots_service.js",
+            "02_Assistant_Personnel/Workspace/research_graph.json"
+          ],
+          "live_preview": {
+            "type": "markdown",
+            "title": "Statut des Canaux Pro / Perso / Interpretor",
+            "endpoint": "/api/live/telegram_status"
+          },
+          "actions": ["Vérifier Santé Démons", "Consulter Ingestion Récente"]
+        }
+      ]
+    },
+    {
+      "id": "dev",
+      "number": "03",
+      "title": "Développement d'Apps",
+      "icon": "📱",
+      "pillar": "03_Developpement_App_and_Design",
+      "color": "var(--accent-dev)",
+      "description": "Ingénierie mobile iOS native (SwiftUI/TCA), simulateur web interactif, protocoles de longévité et Quality Gates.",
+      "agent_profile": {
+        "name": "Lead Software Architect",
+        "role": "Architecte iOS Swift, Web Preview & Sécurité Strix",
+        "avatar": "📱",
+        "system_prompt": "Tu es l'Architecte Logiciel Senior du Master Plan."
+      },
+      "projects": [
+        {
+          "id": "aevum_app",
+          "name": "Aevum (Positive Friction & Longevity App)",
+          "category": "apps/aevum_ios",
+          "status": "ACTIVE",
+          "target_files": [
+            "03_Developpement_App_and_Design/apps/aevum_ios/AevumApp/App/AevumApp.swift",
+            "03_Developpement_App_and_Design/apps/aevum_ios/web_preview/index.html"
+          ],
+          "live_preview": {
+            "type": "iframe",
+            "title": "Simulateur Interactif Aevum (Live Runtime)",
+            "endpoint": "/apps/aevum_ios/web_preview/index.html"
+          },
+          "actions": ["Lancer Simulateur Aevum", "Tester Intégrité Code", "Synchroniser Datasets"]
+        },
+        {
+          "id": "gatekeeper_protocol",
+          "name": "Protocole des 4 Portes (Gatekeeping Dev)",
+          "category": "01_Core_Standards",
+          "status": "DONE",
+          "target_files": [
+            "03_Developpement_App_and_Design/01_Core_Standards/protocol_4_portes_gatekeeping.md",
+            "03_Developpement_App_and_Design/toolbox/gatekeeper.js"
+          ],
+          "live_preview": {
+            "type": "markdown",
+            "title": "Sas des 4 Portes d'Ingénierie",
+            "endpoint": "/api/live/gatekeeper"
+          },
+          "actions": ["Vérifier Conformité 4 Portes", "Scaffolder Nouvelle App"]
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "number": "04",
+      "title": "Tour de Contrôle",
+      "icon": "🌌",
+      "pillar": "00_Orchestration",
+      "color": "var(--accent-control)",
+      "description": "Méta-gouvernance du Master Plan, Intent Graph Router, audit du DAG central et arbitrage architectural global.",
+      "agent_profile": {
+        "name": "Master Router CTO",
+        "role": "Directeur Technique & Orchestrateur Central Antigravity",
+        "avatar": "🌌",
+        "system_prompt": "Tu es le Directeur Technique (CTO) et Architecte Principal du Master Plan."
+      },
+      "projects": [
+        {
+          "id": "master_dag",
+          "name": "DAG Central des Dépendances & Statuts",
+          "category": "Topologie Système",
+          "status": "ACTIVE",
+          "target_files": [
+            "master_router.md",
+            ".agents/data/master_plan_dag.json"
+          ],
+          "live_preview": {
+            "type": "iframe",
+            "title": "Architecture Runtime Map (Archify)",
+            "endpoint": "/api/live/archify"
+          },
+          "actions": ["Valider Topologie DAG", "Lancer Health Check Global", "Recharger Intent Graph"]
+        }
+      ]
+    }
+  ]
+}

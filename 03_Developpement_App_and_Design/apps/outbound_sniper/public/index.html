@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campagnes Outbound — Studio Multi-Campagnes & Tracking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Header Supérieur Épuré avec Sélecteur Expéditeur & Score Délivrabilité -->
+    <header class="app-header">
+      <div class="brand">
+        <span class="badge-brand">SNIPER</span>
+        <h1>Campagnes Outbound</h1>
+        <div id="sender-selector-container" style="display:flex; align-items:center; gap:8px;">
+          <select id="select-sender" class="select-input" style="font-size:12px; height:32px; padding:2px 8px;" aria-label="Compte expéditeur"></select>
+        </div>
+        <button type="button" class="tab-pill tab-pill-green" id="header-score-badge" style="cursor:pointer; display:none;" title="Cliquer pour inspecter le score de délivrabilité">
+          🛡️ Délivrabilité : <strong>--/100</strong>
+        </button>
+        <button type="button" class="tab-pill tab-pill-purple" id="header-hunter-badge" style="cursor:pointer; display:none;" title="Cliquer pour voir les quotas Hunter.io">
+          🎯 Hunter : <strong id="header-hunter-credits">--</strong>
+        </button>
+      </div>
+      <div class="header-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="header-quota">Quota journalier : <strong>0 / 28 emails</strong> (Max 30/j)</span>
+        <button class="btn btn-ghost btn-sm" id="btn-open-profile" title="Configurer le compte expéditeur et le serveur Cloud">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Mon Profil / SMTP</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 1. VUE HOMEPAGE (Création & Liste des Campagnes) -->
+    <div id="view-home">
+      <div class="home-hero">
+        <div>
+          <h2>Vos Campagnes de Prospection</h2>
+          <p class="section-desc">Chaque campagne dispose de sa propre audience isolée, de son modèle et de sa séquence d'envoi.</p>
+        </div>
+        <button class="btn btn-primary" id="btn-create-campaign-home">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Nouvelle Campagne</span>
+        </button>
+      </div>
+
+      <div class="campaigns-grid" id="campaigns-grid-container"></div>
+    </div>
+
+    <!-- 2. VUE WORKSPACE CAMPAGNE (Workflow 5 Étapes Chronologiques en Sidebar) -->
+    <div id="view-workspace" class="workspace-layout" style="display:none;">
+      <!-- Sidebar de Navigation Chronologique -->
+      <aside class="workspace-sidebar" aria-label="Navigation chronologique de la campagne">
+        <div class="sidebar-header">
+          <div class="nav-breadcrumb" id="nav-breadcrumb-back">
+            <button class="btn-breadcrumb" id="btn-back-home" title="Retourner au tableau de bord des campagnes">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              <span>Retour Campagnes</span>
+            </button>
+          </div>
+          <div class="sidebar-campaign-meta">
+            <span class="sidebar-pill">Campagne active</span>
+            <h2 id="active-campaign-title" class="sidebar-campaign-name">Campagne</h2>
+          </div>
+        </div>
+
+        <!-- Étapes Chronologiques 1 à 5 -->
+        <nav class="sidebar-steps-nav" role="tablist" aria-label="Étapes de la campagne">
+          <div class="sidebar-nav-header">PARCOURS D'EXPÉDITION</div>
+
+          <button class="tab-btn sidebar-step-btn active" role="tab" aria-selected="true" data-target="panel-contacts" id="tab-contacts">
+            <div class="step-btn-content">
+              <span class="step-badge">1</span>
+              <div class="step-text-col">
+                <span class="step-name">Contacts & Import</span>
+                <span class="step-subtitle">Ciblage & hygiène DNS</span>
+              </div>
+            </div>
+            <span class="tab-pill" id="tab-count-contacts">0</span>
+          </button>
+
+          <button class="tab-btn sidebar-step-btn" role="tab" aria-selected="false" data-target="panel-messages" id="tab-messages">
+            <div class="step-btn-content">
+              <span class="step-badge">2</span>
+              <div class="step-text-col">
+                <span class="step-name">Modèles & Message</span>
+                <span class="step-subtitle">Spintax & personnalisation</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="tab-btn sidebar-step-btn" role="tab" aria-selected="false" data-target="panel-score-checker" id="tab-score-checker">
+            <div class="step-btn-content">
+              <span class="step-badge">3</span>
+              <div class="step-text-col">
+                <span class="step-name">Score Anti-Spam</span>
+                <span class="step-subtitle">Audit heuristique IA</span>
+              </div>
+            </div>
+            <span class="tab-pill tab-pill-green" id="tab-score-pill">100/100</span>
+          </button>
+
+          <button class="tab-btn sidebar-step-btn" role="tab" aria-selected="false" data-target="panel-dispatch" id="tab-dispatch">
+            <div class="step-btn-content">
+              <span class="step-badge">4</span>
+              <div class="step-text-col">
+                <span class="step-name">Envoi & Sécurité</span>
+                <span class="step-subtitle">Cadence & mode furtif</span>
+              </div>
+            </div>
+            <span class="tab-pill tab-pill-amber" id="tab-status-badge">28/j max</span>
+          </button>
+
+          <button class="tab-btn sidebar-step-btn" role="tab" aria-selected="false" data-target="panel-performance" id="tab-performance">
+            <div class="step-btn-content">
+              <span class="step-badge">5</span>
+              <div class="step-text-col">
+                <span class="step-name">Performances</span>
+                <span class="step-subtitle">Ouvertures, clics & CTR</span>
+              </div>
+            </div>
+            <span class="tab-pill tab-pill-green" id="tab-stat-ctr">0% CTR</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-status-box">
+            <span class="status-indicator"></span>
+            <div class="sidebar-status-text">
+              <strong>Zéro-Spam Garanti</strong>
+              <small class="text-secondary">DMARC/SPF/DKIM vérifiés</small>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Conteneur Principal des Panneaux (Viewport 100vh sans scroll global) -->
+      <main class="workspace-main tabs-content-container">
+        <!-- Onglet 1 : Contacts & Délivrabilité -->
+        <section class="tab-panel active" id="panel-contacts" role="tabpanel">
+          <div class="panel-card contacts-panel-card">
+            <div class="card-header">
+              <div>
+                <h2>Contacts cibles de la campagne</h2>
+                <p class="section-desc">Audience isolée et sécurisée. Triage automatique et vérification DNS avant tout envoi.</p>
+              </div>
+              <div class="header-actions">
+                <button class="btn btn-ghost btn-sm" id="btn-import-trigger" title="Importer un nouveau fichier CSV">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Importer CSV</span>
+                </button>
+                <input type="file" id="file-input" accept=".csv, .xlsx, .xls" style="display:none;" aria-label="Fichier source">
+                <button class="btn btn-ghost btn-sm" id="btn-apply-clean" title="Purger les invalides et ne garder que les certifiés">
+                  <span>✨ Garder vérifiés</span>
+                </button>
+                <button class="btn btn-ghost btn-sm" id="btn-export-clean" title="Télécharger la liste nettoyée">
+                  <span>Export Clean</span>
+                </button>
+                <button class="btn btn-ghost btn-sm text-error" id="btn-clear-contacts" title="Purger la liste">
+                  <span>Vider</span>
+                </button>
+                <button class="btn btn-primary btn-sm" id="btn-verify">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span id="btn-verify-text">Valider la délivrabilité</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Barre de Triage & Filtrage en Paquets -->
+            <div class="triage-pills-bar">
+              <div class="triage-filters" role="group" aria-label="Filtres de délivrabilité">
+                <button type="button" class="triage-pill active" data-filter="ALL" id="triage-filter-all" onclick="window.SniperUIContacts && window.SniperUIContacts.setFilter('ALL')">
+                  <span>Tous</span>
+                  <span class="badge" id="filter-count-all">0</span>
+                </button>
+                <button type="button" class="triage-pill triage-pill-deliverable" data-filter="DELIVERABLE" id="triage-filter-deliverable" onclick="window.SniperUIContacts && window.SniperUIContacts.setFilter('DELIVERABLE')">
+                  <span>🟢 Délivrables</span>
+                  <span class="badge" id="filter-count-deliverable">0</span>
+                </button>
+                <button type="button" class="triage-pill triage-pill-risky" data-filter="RISKY" id="triage-filter-risky" onclick="window.SniperUIContacts && window.SniperUIContacts.setFilter('RISKY')">
+                  <span>🟡 Risqués</span>
+                  <span class="badge" id="filter-count-risky">0</span>
+                </button>
+                <button type="button" class="triage-pill triage-pill-invalid" data-filter="INVALID" id="triage-filter-invalid" onclick="window.SniperUIContacts && window.SniperUIContacts.setFilter('INVALID')">
+                  <span>🔴 Non délivrables</span>
+                  <span class="badge" id="filter-count-invalid">0</span>
+                </button>
+              </div>
+              <div class="triage-bar-meta">
+                <span class="text-secondary" style="font-size:12px;">Filtrage déterministe anti-rebond</span>
+              </div>
+            </div>
+
+            <!-- Dropzone Complète (quand 0 contact) -->
+            <div id="contacts-dropzone-full">
+              <div class="dropzone" id="dropzone" role="button" tabindex="0">
+                <p class="dropzone-title">Glissez votre fichier de contacts CSV / Excel</p>
+                <small class="text-muted">Colonnes supportées : Email, Prénom, Nom, Entreprise, Rôle</small>
+              </div>
+            </div>
+
+            <!-- Dropzone Compacte (quand contacts existants) -->
+            <div id="contacts-dropzone-compact" style="display:none;" class="dropzone-compact">
+              <span class="text-secondary" style="font-size:12px;">📁 Déposez un autre fichier CSV pour compléter l'audience ou cliquez sur "Importer CSV"</span>
+            </div>
+
+            <div class="error-banner" id="error-banner" style="display:none;" role="alert">
+              <span id="error-message">Une erreur est survenue lors de l'import.</span>
+              <button class="btn btn-ghost btn-sm" id="btn-error-action">Réessayer</button>
+            </div>
+
+            <div class="table-card">
+              <div class="table-toolbar">
+                <span><strong id="contacts-count">0</strong> contacts dans la campagne</span>
+                <span class="text-muted" style="font-size:11.5px;">Paquets de 8 contacts / page</span>
+              </div>
+              <div class="contacts-table-container">
+                <table class="data-table" id="contacts-table">
+                  <thead>
+                    <tr>
+                      <th scope="col" style="width: 26%;">Nom</th>
+                      <th scope="col" style="width: 28%;">Entreprise & rôle</th>
+                      <th scope="col" style="width: 28%;">Email professionnel</th>
+                      <th scope="col" style="width: 18%;">Statut DNS</th>
+                    </tr>
+                  </thead>
+                  <tbody id="contacts-tbody"></tbody>
+                </table>
+              </div>
+              <!-- Barre de Pagination -->
+              <div class="pagination-bar" id="contacts-pagination">
+                <span class="pagination-info text-secondary" id="pagination-info">0 contact</span>
+                <div class="pagination-controls">
+                  <button type="button" class="btn btn-ghost btn-sm" id="btn-prev-page" onclick="window.SniperUIContacts && window.SniperUIContacts.changePage(-1)" disabled>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    <span>Précédent</span>
+                  </button>
+                  <span class="pagination-page-indicator" id="pagination-current">1 / 1</span>
+                  <button type="button" class="btn btn-ghost btn-sm" id="btn-next-page" onclick="window.SniperUIContacts && window.SniperUIContacts.changePage(1)" disabled>
+                    <span>Suivant</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Onglet 2 : Modèles & Édition de Message -->
+        <section class="tab-panel" id="panel-messages" role="tabpanel">
+          <div class="panel-card">
+            <div class="card-header sticky-header">
+              <div>
+                <h2>Édition du message & personnalisation dynamique</h2>
+                <p class="section-desc">Personnalisez l'objet, le texte et le bouton d'action. Utilisez le Spintax pour des empreintes uniques.</p>
+              </div>
+              <div class="header-actions" style="display:flex; align-items:center; gap:10px;">
+                <button type="button" id="deliverability-score-badge" class="tab-pill tab-pill-green" style="font-size:12px; padding:4px 10px; font-weight:700; cursor:pointer;" title="Cliquez pour inspecter le score">Score Délivrabilité : 100/100</button>
+                <button class="btn btn-primary" id="btn-save-message">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  <span>💾 Enregistrer</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="message-editor-grid">
+              <!-- Colonne Éditeur -->
+              <div class="editor-col">
+                <div id="deliverability-details" style="padding: 8px 12px; background: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);"></div>
+
+                <div class="form-group">
+                  <label for="edit-campaign-subject">Objet de l'email (3 à 7 mots conseillés)</label>
+                  <input type="text" id="edit-campaign-subject" class="input-text" placeholder="ex: Optimisation de la vitalité chez {{entreprise}}">
+                </div>
+
+                <div class="variables-toolbar">
+                  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                    <span class="text-muted" style="font-size: 11.5px; font-weight: 700;">Variables :</span>
+                    <div id="variables-toolbar-chips" style="display:inline-flex; gap:6px; flex-wrap:wrap;"></div>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+                    <span class="text-muted" style="font-size: 11.5px; font-weight: 700;">🎲 Spintax Pro :</span>
+                    <select id="select-spintax-preset" class="select-input" style="font-size:11.5px; height:28px; padding:1px 6px; width:auto;">
+                      <option value="">+ Insérer variation Spintax...</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label for="edit-campaign-body" style="margin-bottom:0;">Corps du message</label>
+                    <span id="body-word-counter" class="text-muted" style="font-size:11.5px; font-family:var(--font-mono);">0 mot (Idéal: 50-120)</span>
+                  </div>
+                  <textarea id="edit-campaign-body" class="input-text" rows="10" placeholder="Rédigez votre email... Utilisez {{prenom}} ou {{entreprise}} pour personnaliser."></textarea>
+                </div>
+
+                <div class="form-row-grid">
+                  <div class="form-group">
+                    <label for="edit-campaign-cta-label">Texte du bouton CTA (Optionnel)</label>
+                    <input type="text" id="edit-campaign-cta-label" class="input-text" placeholder="ex: Découvrir la méthode">
+                  </div>
+                  <div class="form-group">
+                    <label for="edit-campaign-cta-url">URL de destination</label>
+                    <input type="url" id="edit-campaign-cta-url" class="input-text" placeholder="https://aevum.app">
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 14px; padding: 10px 14px; background: var(--bg-surface-elevated, #1A1D20); border: 1px solid var(--border-subtle, #2D3339); border-radius: var(--radius-sm, 8px);">
+                  <label class="switch-label" style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-primary, #F3F4F6);">
+                    <input type="checkbox" id="edit-campaign-stealth" checked style="width: 16px; height: 16px; accent-color: var(--accent-primary, #10B981); cursor: pointer;">
+                    <span>🥷 <strong>Mode Furtif Anti-Promotions</strong> <span class="text-muted" style="font-weight: 400; font-size: 12px;">(0 pixel espion, liens directs sans redirection — Boîte Principale Garantie)</span></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Colonne Prévisualisation Dynamique -->
+              <div class="preview-col">
+                <div class="preview-header-bar">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="meta-label">Aperçu boîte</span>
+                    <span id="preview-stealth-badge" class="badge-status badge-verified" style="font-size: 11px;">🥷 Furtif</span>
+                  </div>
+                  <select id="preview-contact-select" class="select-input" style="max-width: 220px; font-size: 12px; padding: 4px 8px;"></select>
+                </div>
+                <div id="preview-poka-warning" class="poka-warning-box" style="display: none;"></div>
+                <div class="campaign-preview-box lemlist-preview-box">
+                  <div class="mail-window-header">
+                    <span class="window-dot dot-red"></span>
+                    <span class="window-dot dot-yellow"></span>
+                    <span class="window-dot dot-green"></span>
+                    <span class="mail-window-title">Boîte de réception — Aperçu Client</span>
+                  </div>
+                  <div class="preview-meta preview-meta-from">
+                    <span class="meta-label">De :</span>
+                    <span id="preview-sender-meta" style="font-size: 13px; color: var(--text-secondary); font-weight: 500;">-</span>
+                  </div>
+                  <div class="preview-meta">
+                    <span class="meta-label">Objet :</span>
+                    <strong class="meta-value" id="preview-subject">-</strong>
+                  </div>
+                  <div class="email-body-preview" id="preview-body" tabindex="0"></div>
+                  <div id="preview-cta-container" style="margin-top: 12px; display: none;">
+                    <a id="preview-cta-btn" href="#" target="_blank" class="btn btn-primary btn-sm" style="text-decoration:none;">-</a>
+                  </div>
+                </div>
+                <div style="margin-top: 12px;">
+                  <button id="btn-send-preview-test" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; gap: 8px;">
+                    📨 M'envoyer un email de test
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Onglet 3 : 🛡️ Cockpit de Délivrabilité & Score Anti-Spam (NOUVEAU) -->
+        <section class="tab-panel" id="panel-score-checker" role="tabpanel">
+          <div class="panel-card">
+            <div class="card-header sticky-header">
+              <div>
+                <h2>🛡️ Diagnostic de Délivrabilité & Légitimité Expéditeur</h2>
+                <p class="section-desc">Évaluation déterministe en temps réel de votre domaine (SPF/DMARC/MX), de votre message et de vos garde-fous.</p>
+              </div>
+            </div>
+            <div id="score-checker-container" style="display:flex; flex-direction:column; gap:var(--space-16);"></div>
+          </div>
+        </section>
+
+        <!-- Onglet 4 : Envoi & Sécurité -->
+        <section class="tab-panel" id="panel-dispatch" role="tabpanel">
+          <div class="panel-card">
+            <div class="card-header sticky-header">
+              <div>
+                <h2>Exécution & cadencement humain (Mode Réel)</h2>
+                <p class="section-desc">Envois sécurisés avec temporisation humaine (7 à 15 min) et arrêt à 28 emails/jour.</p>
+              </div>
+              <label class="switch-label" title="Cochez pour simuler sans envoyer d'email réel">
+                <input type="checkbox" id="toggle-dry-run">
+                <span>Simulation (sans envoi)</span>
+              </label>
+            </div>
+
+            <div class="smtp-box">
+              <div class="smtp-header">
+                <div class="smtp-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <span>Connexion Expéditeur (Gmail Perso ou Workspace Pro)</span>
+                </div>
+                <button class="btn btn-ghost btn-sm" id="btn-test-smtp">Tester la connexion</button>
+              </div>
+              <div class="smtp-inputs-row">
+                <input type="email" id="smtp-email" placeholder="votre_adresse@gmail.com" class="input-text" />
+                <input type="password" id="smtp-pass" placeholder="Mot de passe d'application 16 caractères" class="input-text" />
+              </div>
+              <div class="smtp-inputs-row" style="margin-top: -4px;">
+                <input type="email" id="smtp-target-test" placeholder="Adresse où recevoir votre test" class="input-text" />
+                <button class="btn btn-primary btn-sm" id="btn-send-live-test" style="white-space: nowrap;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  <span>Envoyer un email réel de test</span>
+                </button>
+              </div>
+              <div class="smtp-status" id="smtp-status">Prêt pour le diagnostic et l'envoi réel.</div>
+            </div>
+
+            <div class="dispatch-config-box">
+              <div class="config-row">
+                <span>Cadence de sécurité Google :</span>
+                <strong style="color: var(--color-emerald, #10b981);">🛡️ 7 à 15 min (Tranquillité Absolue)</strong>
+              </div>
+              <div class="config-row">
+                <span>Horaires ouvrés protégés :</span>
+                <strong>Lundi à Vendredi (08h30 - 18h30)</strong>
+              </div>
+              <div class="config-row">
+                <span>Coupe-circuit de sécurité :</span>
+                <strong class="text-amber">Micro-Paquet de 30 cibles max / jour</strong>
+              </div>
+              <div class="config-row" id="countdown-row" style="display:none;">
+                <span>Prochain tir dans :</span>
+                <strong class="text-countdown" id="countdown-display">0s</strong>
+              </div>
+              <div class="dispatch-eta-banner" id="dispatch-eta-banner">
+                ⏱️ Calcul de l'horizon temporel...
+              </div>
+              
+              <div class="dispatch-actions-row">
+                <button class="btn btn-action" id="btn-launch-dispatch">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  <span id="btn-launch-label">Démarrer cette campagne</span>
+                </button>
+                <button class="btn btn-danger btn-sm" id="btn-stop-dispatch" style="display:none;">Mettre en pause</button>
+              </div>
+            </div>
+            <div class="dispatch-log" id="dispatch-log" tabindex="0">Prêt pour le lancement...</div>
+          </div>
+        </section>
+
+        <!-- Onglet 5 : Performances & VM -->
+        <section class="tab-panel" id="panel-performance" role="tabpanel">
+          <div class="panel-card">
+            <div class="card-header">
+              <div>
+                <h2>Métriques de la campagne & passerelle VM</h2>
+                <p class="section-desc">Ouvertures, clics et synchronisation avec votre serveur de tracking.</p>
+              </div>
+              <div class="header-actions">
+                <button class="btn btn-ghost btn-sm" id="btn-sync-vm">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  <span>Synchroniser VM</span>
+                </button>
+                <button class="btn btn-ghost btn-sm" id="btn-refresh-stats">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                  <span>Actualiser</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="vm-bridge-box">
+              <span class="meta-label">URL publique de tracking (Pixel & Clics) :</span>
+              <div class="vm-input-row">
+                <input type="url" id="vm-tracking-url" class="input-text" placeholder="http://localhost:3500 ou https://vm.votredomaine.com" />
+                <button class="btn btn-primary btn-sm" id="btn-save-vm-url">Enregistrer</button>
+              </div>
+              <small class="text-muted" id="vm-sync-status">Mode : Localhost.</small>
+            </div>
+
+            <div class="stats-row">
+              <div class="stat-pill">
+                <span class="stat-label">Ouvertures uniques</span>
+                <span class="stat-num" id="stat-opens">0</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">Clics sur liens</span>
+                <span class="stat-num" id="stat-clicks">0</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">Taux de clic réel (CTR)</span>
+                <span class="stat-num stat-success" id="stat-ctr">0%</span>
+              </div>
+            </div>
+            <div class="exports-row">
+              <button class="btn btn-export" id="btn-export-all">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Exporter tous</span>
+              </button>
+              <button class="btn btn-export" id="btn-export-opened">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span>Exporter ouvreurs</span>
+              </button>
+              <button class="btn btn-export btn-export-hot" id="btn-export-clicked">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Exporter Hot Leads</span>
+              </button>
+            </div>
+
+            <!-- Journal des Événements Récents (Passerelle VM 24/7) -->
+            <div style="margin-top:var(--space-16); display:flex; flex-direction:column; gap:var(--space-8);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="font-size:13.5px; font-family:var(--font-heading);">🛰️ Flux d'activité en direct (Passerelle VM 24/7)</strong>
+                <span class="text-muted" id="events-count-label" style="font-size:12px;">0 événement</span>
+              </div>
+              <div class="contacts-table-container" style="max-height: 260px;">
+                <table class="data-table" id="tracking-events-table">
+                  <thead>
+                    <tr>
+                      <th>Horodatage</th>
+                      <th>Événement</th>
+                      <th>Contact Cible</th>
+                      <th>Filtre Anti-Bot</th>
+                      <th>Détails</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tracking-events-tbody">
+                    <tr><td colspan="5" class="text-muted" style="text-align:center; padding:24px;">Aucun événement capté pour le moment. Cliquez sur "Synchroniser VM".</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODALE PROFIL & PARAMÈTRES SMTP / CLOUD -->
+  <div id="modal-profile" class="modal-backdrop" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="modal-profile-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-profile-title">Mon Profil Expéditeur & Configuration Cloud</h3>
+        <button class="btn btn-ghost btn-sm" id="btn-close-profile" aria-label="Fermer la boîte de dialogue">&times;</button>
+      </div>
+
+      <div class="modal-body" id="form-profile">
+        <div id="profile-status-box" class="profile-status-card state-empty">
+          <div class="status-icon">💡</div>
+          <div>
+            <strong>Profil expéditeur</strong>
+            <p>Saisissez vos identifiants Google pour activer les envois sécurisés.</p>
+          </div>
+        </div>
+
+        <div class="google-oauth-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="font-size:13.5px; display:flex; align-items:center; gap:6px;">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+              <span>Authentification Google OAuth2 (Gmail API)</span>
+            </strong>
+            <span class="tab-pill tab-pill-green">1-Clic Officiel</span>
+          </div>
+
+          <div id="google-auth-connected" style="display:none;" class="google-connected-row">
+            <div class="google-user-badge">
+              <img id="google-user-avatar" class="google-user-avatar" src="" alt="Avatar" style="display:none;" />
+              <div id="google-connected-user-text"></div>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm text-error" id="btn-google-disconnect">Déconnecter</button>
+          </div>
+
+          <div id="google-auth-not-connected">
+            <p class="text-secondary" style="font-size:12.5px; margin-bottom:8px;">Connectez votre compte Google pour envoyer vos campagnes directement via l'API Gmail sécurisée, sans mot de passe d'application.</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+              <input type="text" id="google-client-id" class="input-text" placeholder="Client ID Google Cloud" style="font-size:12px;" />
+              <input type="password" id="google-client-secret" class="input-text" placeholder="Client Secret Google Cloud" style="font-size:12px;" />
+            </div>
+            <button type="button" class="btn btn-google" id="btn-google-auth" style="width:100%;">
+              <span>Se connecter avec Google</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px; margin: 4px 0;">
+          <div style="flex:1; height:1px; background:var(--border-subtle);"></div>
+          <span style="font-size:11.5px; color:var(--text-muted); font-weight:700;">OU VIA SMTP CLASSIQUE</span>
+          <div style="flex:1; height:1px; background:var(--border-subtle);"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="profile-name">Nom complet affiché</label>
+          <input id="profile-name" type="text" class="input-text" placeholder="ex: Antoine Lecerf">
+        </div>
+
+        <div class="form-group">
+          <label for="profile-email">Adresse Email Google / Workspace</label>
+          <input id="profile-email" type="email" class="input-text" placeholder="ex: antoine@aevum.app">
+        </div>
+
+        <div class="form-group">
+          <label for="profile-app-password">Mot de passe d'application Google (16 caractères)</label>
+          <div class="input-with-btn">
+            <input id="profile-app-password" type="password" class="input-text" placeholder="ex: abcd efgh ijkl mnop">
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-toggle-profile-pass" title="Afficher/Masquer">👁️</button>
+          </div>
+          <small class="text-muted" style="font-size:11.5px; margin-top:2px;">Généré sur myaccount.google.com > Sécurité > Mots de passe des applications.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="profile-signature">Signature professionnelle</label>
+          <textarea id="profile-signature" class="input-text" style="height:60px; font-family:var(--font-sans);" placeholder="Aevum Labs — Hygiène Numérique & Performance"></textarea>
+        </div>
+
+        <div class="form-group" style="border-top: 1px solid var(--border-subtle); padding-top: var(--space-12);">
+          <label for="profile-vm-url">URL Publique de Tracking (VM Oracle Always Free)</label>
+          <input id="profile-vm-url" type="url" class="input-text" placeholder="http://localhost:3500">
+        </div>
+
+        <div class="form-group" style="border-top: 1px solid var(--border-subtle); padding-top: var(--space-12);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <label for="profile-hunter-key" style="margin-bottom:0;">Clé API Hunter.io (Optionnel)</label>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-test-hunter" style="font-size:11.5px; padding:2px 8px;">🔍 Tester la clé & quotas</button>
+          </div>
+          <input id="profile-hunter-key" type="password" class="input-text" placeholder="Clé API Hunter.io (laisser vide pour mode 100% gratuit)">
+          <div id="hunter-status-box" style="margin-top:6px;"></div>
+          <small class="text-muted" style="font-size:11.5px; margin-top:2px;">Garde-fou : Le résolveur DNS/MX local gratuit est toujours utilisé en priorité. Hunter n'est sollicité qu'en cas d'adresse introuvable.</small>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="btn-test-profile-smtp">⚡ Tester la connexion SMTP</button>
+        <button type="button" class="btn btn-primary" id="btn-save-profile">💾 Sauvegarder mon profil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="ui_helpers.js?v=2"></script>
+  <script src="ui_contacts.js?v=2"></script>
+  <script src="ui_campaigns.js?v=2"></script>
+  <script src="ui_score_checker.js?v=2"></script>
+  <script src="ui_profile.js?v=2"></script>
+  <script src="ui_performance.js?v=2"></script>
+  <script src="app.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "version": "1.3.0",
+  "name": "Warm Paper & Editorial Linen Light Palette",
+  "philosophy": "Papier chaud lin #F8F6F1, surfaces blanches pures, carbone dense et signaux naturels",
+  "palettes": {
+    "warm_paper_linen": {
+      "step_1_canvas": "#F8F6F1",
+      "step_2_surface": "#FFFFFF",
+      "step_3_card": "#FFFFFF",
+      "step_4_hover": "#F2EFEB",
+      "step_5_active": "#E9E5DE",
+      "step_6_border_subtle": "#E2DDD5",
+      "step_7_border_interactive": "#C9C2B5",
+      "step_8_border_focus": "#1E1B18",
+      "step_9_accent_solid": "#1E1B18",
+      "step_10_accent_hover": "#36322D",
+      "step_11_text_secondary": "#6E685F",
+      "step_12_text_primary": "#1E1B18"
+    },
+    "sage_forest": {
+      "step_1_bg_tint": "#EDF5F0",
+      "step_2_border": "#B8DEC4",
+      "step_9_solid": "#2D7A4F",
+      "step_11_text": "#1D5436"
+    },
+    "warm_honey": {
+      "step_1_bg_tint": "#FDF5ED",
+      "step_2_border": "#F3D2B5",
+      "step_9_solid": "#B8621B",
+      "step_11_text": "#82400C"
+    },
+    "brick_crimson": {
+      "step_1_bg_tint": "#FDEEEC",
+      "step_2_border": "#F6C1BD",
+      "step_9_solid": "#C23B38",
+      "step_11_text": "#8C2220"
+    }
+  }
+}

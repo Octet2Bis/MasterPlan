@@ -1,0 +1,98 @@
+/**
+ * SWISS CRAFT DESIGN TOKENS (UI-UX PRO MAX)
+ * Master Plan — Core Web Templates (03_Developpement_App_and_Design)
+ * Plafond strict : < 120 lignes
+ */
+
+:root {
+  /* Surfaces Étagées Solides (Zéro Blur Décoratif) */
+  --surface-0: #0B0F17;
+  --surface-1: #151B28;
+  --surface-2: #1E293B;
+  --surface-3: #334155;
+
+  /* Typographie & Contraste (Règle 60-30-10) */
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+
+  /* Accent Sémantique Unique (Ambre Instrumental par défaut) */
+  --accent-main: #F59E0B;
+  --accent-hover: #D97706;
+  --accent-subtle: rgba(245, 158, 11, 0.12);
+
+  /* Lignes de Structure & Lumière Zénithale */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --highlight-top: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+
+  /* Grille 8px & Espacements Mathématiques */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--surface-0);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, .hero-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+}
+
+.badge-status {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.bento-card {
+  background-color: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--highlight-top);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  transition: border-color 0.2s ease;
+}
+
+.bento-card:hover {
+  border-color: var(--border-strong);
+}
+
+.btn-primary {
+  background-color: var(--accent-main);
+  color: #000000;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px);
+}

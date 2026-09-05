@@ -20,10 +20,12 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run App Dev Quality Gate (< 250 lines & Zero Inlining)
+      - name: Run Master Quality Gates (Integrity, DAG, 4 Portes & Assistant)
         run: |
-          node 03_Developpement_App/toolbox/test_code_integrity.js
-          node 03_Developpement_App/toolbox/dag_validator.js
+          node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js
+          node 03_Developpement_App_and_Design/toolbox/dag_validator.js
+          node 03_Developpement_App_and_Design/toolbox/gatekeeper.js --check
+          node 02_Assistant_Personnel/toolbox/test_meeting_ingestor.js
           node 01_GTM_Growth/toolbox/core/aeo_graph_auditor.js
 
       - name: Set up Python (v3.11)

@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "name": "Configuration du Coach Personnel 3x3",
+  "quarterly_horizon": {
+    "theme": "Métacognition, Psychologie Comportementale & Souveraineté Attentionnelle",
+    "target_output": "Charte Personnelle d'Hygiène Attentionnelle & Principes Directeurs",
+    "quarter": "2026-Q3",
+    "deadline": "2026-09-30"
+  },
+  "cadence": {
+    "morning_time": "08:30",
+    "midday_time": "14:00",
+    "evening_time": "21:30",
+    "weekly_review_day": "Sunday",
+    "weekly_review_time": "20:00"
+  },
+  "active_modules": [
+    "redaction_matin",
+    "somatique_midi",
+    "decharge_soir",
+    "revue_hebdo"
+  ],
+  "storage_file": "Workspace/coach_journal.json"
+}

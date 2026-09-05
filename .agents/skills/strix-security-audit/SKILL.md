@@ -1,6 +1,6 @@
 ---
 name: strix-security-audit
-description: Audite et valide méthodiquement la sécurité des applications, APIs et bases de données contre les failles OWASP Top 10 (Injections SQL, fuites de secrets/tokens, failles d'authentification, configurations CORS non sécurisées). À utiliser dans 03_Developpement_App/.
+description: Audite et valide méthodiquement la sécurité des applications, APIs et bases de données contre les failles OWASP Top 10 (Injections SQL, fuites de secrets/tokens, failles d'authentification, configurations CORS non sécurisées). À utiliser dans 03_Developpement_App_and_Design/.
 ---
 
 # 🕵️‍♂️ Strix Security Audit — Validateur & Scanner de Sécurité OWASP
@@ -30,5 +30,5 @@ Ce skill orchestre les audits de sécurité pré-déploiement pour garantir qu'a
 
 ## 🧪 Protocole de Validation Obligatoire
 * Avant tout commit ou déploiement, exécuter le scanner de sécurité :
-  `python 03_Developpement_App/security/strix_audit_runner.py`
+  `python 03_Developpement_App_and_Design/security/strix_audit_runner.py`
 * Critère de passage : **Security Score = 100/100 (0 vulnérabilité critique ou élevée)**.

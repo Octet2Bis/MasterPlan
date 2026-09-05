@@ -31,6 +31,13 @@
 .secrets/
 secrets/
 credentials*
+*google_auth.json
+*senders.json
+**/outbound_sniper/data/config.json
+**/outbound_sniper/data/dispatch_state.json
+**/outbound_sniper/data/tracking_events.json
+**/outbound_sniper/data/campaign_contacts/**
+!**/outbound_sniper/data/config.example.json
 *.pem
 *.key
 

@@ -1,6 +1,6 @@
 ---
 name: longevity-protocol-engine
-description: Moteur de protocoles physiologiques et règles de longévité (Healthspan) pour applications mobiles. Gère le catalogue scientifique des micro-défis, les algorithmes de timer respiratoire, les postures de décompression, et le scoring de vitalité. À utiliser dans 03_Developpement_App/ et 01_GTM_Growth/.
+description: Moteur de protocoles physiologiques et règles de longévité (Healthspan) pour applications mobiles. Gère le catalogue scientifique des micro-défis, les algorithmes de timer respiratoire, les postures de décompression, et le scoring de vitalité. À utiliser dans 03_Developpement_App_and_Design/ et 01_GTM_Growth/.
 ---
 
 # 🧬 Longevity Protocol Engine

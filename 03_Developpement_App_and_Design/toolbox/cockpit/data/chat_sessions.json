@@ -1,0 +1,120 @@
+{
+  "gtm": [
+    {
+      "sender": "agent",
+      "text": "👋 Bonjour ! Je suis le **Growth Lead AI** du Pilier 01. Positionne-toi sur l'un des pipelines (AEO, Buying Committee, CRO) pour rédiger des angles d'acquisition ou calibrer le tracking.",
+      "timestamp": "2026-08-31T12:00:00.000Z"
+    },
+    {
+      "sender": "user",
+      "text": "Ok tu peux me faire un petit tour des projets en cour dans cet onglet stp ?",
+      "timestamp": "2026-08-31T11:49:38.550Z"
+    },
+    {
+      "sender": "agent",
+      "text": "📈 **Tour d'horizon des Projets & Pipelines dans l'Onglet 01. GTM & Growth :**\n\n1. 🔍 **AEO Semantic Graph Auditor (`02_Acquisition_and_AEO`)** :\n• Moteur d'audit et de génération de graphes sémantiques Schema.org (JSON-LD) pour maximiser les citations dans les moteurs d'IA générative (Perplexity, ChatGPT, Claude).\n• Vérification via `aeo_graph_auditor.js` et conformité aux standards SEO d'autorité.\n\n2. 🤝 **B2B Buying Committee Engine (`04_Outbound_and_CRM`)** :\n• Moteur décisionnel de prospection B2B cartographiant les comités d'achat (Champions, Décideurs Économiques, Utilisateurs).\n• Génération de séquences ultra-personnalisées avec audit de délivrabilité (SPF, DKIM, DMARC).\n\n3. 🎯 **Landing Pages CRO & Tracking DataLayer (`03_Experimentation`)** :\n• Wireframing de pages de capture haute conversion selon la grille heuristique CRO (Clarté, Friction, Anxiété, Motivation).\n• Spécifications DataLayer pour GA4, Google Tag Manager et Meta Pixel.\n\n4. 🔁 **Boucles d'Activation & Rétention (`05_Activation_and_CSM`)** :\n• Conception de flux d'onboarding in-app basés sur le Hook Model (Time-To-Value < 60s) et playbooks d'expansion.\n\n5. 🧰 **Toolbox GTM & Linters Automatisés (`toolbox/`)** :\n• Pipeline d'enrichissement gratuit en cascade (Waterfall).\n• Linters déterministes : `email_linter.py`, `ai_slop_linter.py`, `schema_validator.py`.",
+      "timestamp": "2026-08-31T11:49:40.000Z"
+    },
+    {
+      "sender": "user",
+      "text": "Ok admettons que je veuilles lançer des campagnes à partir de notre  outils actuel, de quoi penses-tu que l'on aura besoin ?",
+      "timestamp": "2026-08-31T11:56:24.300Z"
+    },
+    {
+      "sender": "agent",
+      "text": "🚀 **Feuille de Route & Pré-requis pour Lancer des Campagnes depuis notre Système :**\n\n### 1. En Campagne B2B Outbound (Prospection Ciblée) :\n• **Infrastructure DNS & Délivrabilité :** Domaines d'envoi secondaires (SPF, DKIM, DMARC stricts) et warm-up de 2-3 semaines pour garantir 0% de passage en spam.\n• **Data Waterfall :** Fichier CSV de prospects qualifiés enrichi via nos finders/verifiers de la toolbox.\n• **Copywriting & Séquences :** Hooks personnalisés générés par notre `buying_committee_engine.js` sans AI-slop.\n\n### 2. En Campagne B2C / Paid Media (Meta / Google Ads) :\n• **Landing Page CRO Live :** Hébergement de la page de capture avec Consent Mode v2 et Meta CAPI / GA4 actifs.\n• **Créatifs & Hooks Vidéo :** 3 angles publicitaires (Friction positive, Défi respiration 30s, Screen Time).\n• **Compte Publicitaire & Budget :** Configuration du Business Manager et budget de test A/B (15-30€/jour).\n\n### 3. Tracking & Attribution :\n• Nomenclature UTM standardisée et table de conversion DataLayer.",
+      "timestamp": "2026-08-31T11:57:30.000Z"
+    },
+    {
+      "sender": "user",
+      "text": "Quels sont nos linters dans la toolbox GTM ?",
+      "timestamp": "2026-08-31T11:59:21.863Z"
+    },
+    {
+      "sender": "agent",
+      "text": "📈 **Growth Lead AI :** Message bien reçu. Tu es sur le pilier **GTM & Growth**. Nous pouvons travailler sur les angles d'acquisition, l'audit de délivrabilité, ou les variantes de landing pages. Quelle est l'action prioritaire ?",
+      "timestamp": "2026-08-31T11:59:21.974Z"
+    },
+    {
+      "sender": "user",
+      "text": "Comment tester notre schéma AEO ?",
+      "timestamp": "2026-08-31T11:59:57.748Z"
+    },
+    {
+      "sender": "agent",
+      "text": "🔍 **Audit Sémantique AEO/GEO :**\nLe module `aeo_graph_auditor.js` analyse la densité d'entités Schema.org JSON-LD pour maximiser le référencement dans les moteurs d'IA générative. Utilise le bouton d'action ci-dessus pour lancer un audit.",
+      "timestamp": "2026-08-31T11:59:57.785Z"
+    },
+    {
+      "sender": "user",
+      "text": "OK on va tester la connexion",
+      "timestamp": "2026-08-31T12:03:35.018Z"
+    },
+    {
+      "sender": "agent",
+      "text": "📈 **Growth Lead AI :** Message bien reçu. Tu es sur le pilier **GTM & Growth**. Nous pouvons travailler sur les angles d'acquisition, l'audit de délivrabilité, ou les variantes de landing pages. Quelle est l'action prioritaire ?",
+      "timestamp": "2026-08-31T12:03:35.029Z"
+    },
+    {
+      "sender": "user",
+      "text": "Ok, tu peux me dire quels ouils on pourrait ajouter ici ?",
+      "timestamp": "2026-08-31T12:04:16.728Z"
+    },
+    {
+      "sender": "agent",
+      "text": "🛠️ **Voici les 5 Outils & Briques Stratégiques que l'on peut ajouter à l'Onglet GTM & Growth :**\n\n1. 🔍 **OpenSEO (`every-app/open-seo`) — Espionnage Mots-Clés Concurrents :**\n• Alternative open-source et pay-as-you-go à Semrush/Ahrefs.\n• Permet d'extraire les mots-clés exacts et les backlinks qui apportent du trafic à nos concurrents (Opal, Forest, One Sec, apps de longévité) pour quelques centimes par requête via DataForSEO.\n\n2. 🎬 **OpenCut / Moteur Créatifs Vidéo — Usine à Hooks TikTok/Reels :**\n• Éditeur timeline open-source local-first (alternative à CapCut).\n• Permet de générer en masse des variantes de vidéos verticales 9:16 (défis respiration 30s, dopamine detox, démo bouclier de friction) pour tester nos campagnes paid media sans payer d'outils tiers.\n\n3. 🔗 **BabyLoveGrowth (ou Réseau d'Autorité Backlinks) :**\n• Système de syndication et échange de backlinks pour monter rapidement le Domain Rating (DR) de nos pages de vente et booster notre positionnement IA.\n\n4. 📊 **EMARKA Ads Dashboard — Cockpit Multi-Régies Unifié :**\n• Agrégateur de métriques publicitaires (Google Ads, Meta Ads, TikTok Ads) directement branché dans ce dashboard pour suivre le CAC, le ROAS et les conversions en temps réel.\n\n5. 📬 **Routeur d'Outbound Hardened (Délivrabilité & Warm-up) :**\n• Connecteur SMTP/API pour envoyer et tracker les séquences personnalisées créées par notre `buying_committee_engine.js` avec rotation automatique d'expéditeurs.",
+      "timestamp": "2026-08-31T12:04:30.000Z"
+    },
+    {
+      "sender": "user",
+      "text": "Le routeur d'outbound me semble intéréssant",
+      "timestamp": "2026-08-31T12:05:46.892Z"
+    },
+    {
+      "sender": "agent",
+      "text": "📈 **Growth Lead AI :** Message bien reçu. Tu es sur le pilier **GTM & Growth**. Nous pouvons travailler sur les angles d'acquisition, l'audit de délivrabilité, ou les variantes de landing pages. Quelle est l'action prioritaire ?",
+      "timestamp": "2026-08-31T12:05:46.899Z"
+    },
+    {
+      "sender": "user",
+      "text": "Est-ce que l'on peut installer ce routeur d'outbound stp ?",
+      "timestamp": "2026-08-31T12:06:11.995Z"
+    },
+    {
+      "sender": "agent",
+      "text": "📈 **Growth Lead AI :** Message bien reçu. Tu es sur le pilier **GTM & Growth**. Nous pouvons travailler sur les angles d'acquisition, l'audit de délivrabilité, ou les variantes de landing pages. Quelle est l'action prioritaire ?",
+      "timestamp": "2026-08-31T12:06:12.008Z"
+    },
+    {
+      "sender": "user",
+      "text": "Ok on va essayer un truc, peux-tu installer le routeur d'outbound stp ?",
+      "timestamp": "2026-08-31T12:10:43.893Z"
+    },
+    {
+      "sender": "agent",
+      "text": "📈 **Growth Lead AI :** Message bien reçu. Tu es sur le pilier **GTM & Growth**. Nous pouvons travailler sur les angles d'acquisition, l'audit de délivrabilité, ou les variantes de landing pages. Quelle est l'action prioritaire ?",
+      "timestamp": "2026-08-31T12:10:43.903Z"
+    }
+  ],
+  "assistant": [
+    {
+      "sender": "agent",
+      "text": "💼 Bonjour ! Je suis le **Personal Strategist AI** du Pilier 02. Prêt à travailler sur les opportunités Gold ATS, le tailoring de candidatures ou la gestion de ta veille.",
+      "timestamp": "2026-08-31T12:00:00.000Z"
+    }
+  ],
+  "dev": [
+    {
+      "sender": "agent",
+      "text": "📱 Bonjour ! Je suis le **Lead Software Architect** du Pilier 03. Le simulateur Aevum est actif en direct sur ta droite. Sur quel protocole ou composant Swift/Web souhaites-tu travailler ?",
+      "timestamp": "2026-08-31T12:00:00.000Z"
+    }
+  ],
+  "control": [
+    {
+      "sender": "agent",
+      "text": "🌌 Salutations. Je suis le **Master Router CTO**. Cet onglet est ta ligne directe pour reconfigurer le Master Plan, ajouter une nouvelle brique applicative ou arbitrer un choix architectural.",
+      "timestamp": "2026-08-31T12:00:00.000Z"
+    }
+  ]
+}

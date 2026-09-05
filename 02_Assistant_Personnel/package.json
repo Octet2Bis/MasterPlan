@@ -1,0 +1,12 @@
+{
+  "name": "master-plan-assistant-personnel",
+  "version": "1.0.0",
+  "description": "Pilier 02 — Assistant Personnel, Second Cerveau & Automatisation",
+  "main": "02_Automatisation/telegram_bots_service.js",
+  "scripts": {
+    "test": "node toolbox/test_meeting_ingestor.js",
+    "start:telegram": "node 02_Automatisation/telegram_bots_service.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

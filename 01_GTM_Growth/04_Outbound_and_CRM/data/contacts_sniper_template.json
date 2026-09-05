@@ -1,0 +1,39 @@
+{
+  "campaign_metadata": {
+    "name": "Aevum B2B Health & Corporate Wellness Sniper",
+    "batch_size_target": 200,
+    "created_at": "2026-08-31T12:00:00.000Z"
+  },
+  "contacts": [
+    {
+      "id": "cnt_001",
+      "prenom": "Alexandre",
+      "nom": "Dupont",
+      "entreprise": "Alan",
+      "role": "Directeur QVT & People",
+      "email": "alexandre.dupont@alan.com",
+      "campaign_id": "camp_loss_aversion",
+      "custom_note": "Focus sur la réduction du burnout et l'hygiène numérique"
+    },
+    {
+      "id": "cnt_002",
+      "prenom": "Sophie",
+      "nom": "Martin",
+      "entreprise": "Doctolib",
+      "role": "Responsable Expérience Collaborateur",
+      "email": "sophie.martin@doctolib.com",
+      "campaign_id": "camp_reciprocity_benchmark",
+      "custom_note": "Partage du baromètre de variabilité cardiaque au travail"
+    },
+    {
+      "id": "cnt_003",
+      "prenom": "Thomas",
+      "nom": "Lemoine",
+      "entreprise": "Swile",
+      "role": "Head of People Operations",
+      "email": "thomas.lemoine@swile.co",
+      "campaign_id": "camp_social_proof_peers",
+      "custom_note": "Cas d'usage pairs et décompression rachidienne"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "version": "1.4.0",
+  "name": "Neo-Brutalist Swiss Craft Typography",
+  "pairings": {
+    "neo_brutalist_swiss": {
+      "display_heading": "Bricolage Grotesque, -apple-system, sans-serif",
+      "body_interface": "Plus Jakarta Sans, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+      "monospace_data": "JetBrains Mono, SFMono-Regular, Consolas, monospace"
+    }
+  },
+  "opentype_features": {
+    "tabular_numbers": "'tnum' 1",
+    "disambiguation_lower_l": "'cv05' 1",
+    "single_story_a": "'cv11' 1"
+  },
+  "scale": {
+    "h1": { "size": "22px", "weight": 800, "letter_spacing": "-0.02em" },
+    "h2": { "size": "17px", "weight": 700, "letter_spacing": "-0.01em" },
+    "body": { "size": "15px", "weight": 400, "line_height": 1.65 },
+    "badge": { "size": "12.5px", "weight": 600, "letter_spacing": "0.02em" },
+    "caption": { "size": "13px", "weight": 400, "color": "text_secondary" }
+  }
+}

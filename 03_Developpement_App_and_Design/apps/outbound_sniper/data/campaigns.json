@@ -1,0 +1,11 @@
+[
+  {
+    "id": "camp_1788246207210",
+    "name": "Tes01",
+    "subject": "Optimisation de la vitalité chez {{entreprise}}",
+    "body": "Bonjour {{prenom}},\n\nJe me permets de vous contacter car nous accompagnons les équipes de {{entreprise}} sur l'hygiène numérique et la vitalité.\n\nSeriez-vous disponible pour un court échange cette semaine ?\n\nSi vous ne souhaitez plus recevoir de messages, répondez simplement \"stop\".",
+    "cta_label": "Découvrir la méthode",
+    "target_url": "https://aevum.app",
+    "stealth_mode": true
+  }
+]

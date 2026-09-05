@@ -1,0 +1,14 @@
+{
+  "name": "master-plan-developpement-app",
+  "version": "1.0.0",
+  "description": "Pilier 03 — Développement d'Applications, Aevum iOS & Tooling",
+  "main": "toolbox/gatekeeper.js",
+  "scripts": {
+    "test": "node toolbox/test_code_integrity.js",
+    "dag": "node toolbox/dag_validator.js",
+    "gatekeeper": "node toolbox/gatekeeper.js --check",
+    "cockpit": "node toolbox/cockpit/server.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

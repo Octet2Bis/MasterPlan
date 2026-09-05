@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "name": "Configuration du Connecteur Meetily (AI Meeting Assistant)",
+  "inbox_directory": "02_Assistant_Personnel/Inbox/Meetings",
+  "archive_directory": "02_Assistant_Personnel/Workspace/Meetings",
+  "supported_extensions": [".md", ".json", ".txt"],
+  "target_graph": "Workspace/pro_market_graph.json",
+  "action_markers": ["todo", "action", "à faire", "engagement", "livrable", "deadline", "pour le"],
+  "decision_markers": ["décision", "acté", "convenu", "validé", "accord", "choix"],
+  "telegram_alert": {
+    "enabled": true,
+    "target_bot": "PRO",
+    "notify_on_ingest": true
+  }
+}

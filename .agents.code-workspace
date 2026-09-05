@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": ".agents"
+		},
+		{
+			"path": ".github"
+		},
+		{
+			"path": "01_GTM_Growth"
+		},
+		{
+			"path": "02_Assistant_Personnel"
+		},
+		{
+			"path": "03_Developpement_App"
+		}
+	]
+}

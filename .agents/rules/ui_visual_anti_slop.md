@@ -1,6 +1,6 @@
 # 🛡️ Règle Globale : Anti-AI-Slop Visuel & Typographique
 
-> **Scope :** TOUS les projets de développement (`03_Developpement_App/`, `01_GTM_Growth/03_Experimentation/`, tout fichier `.html`, `.css`, `.js` générant de l'UI).
+> **Scope :** TOUS les projets de développement (`03_Developpement_App_and_Design/`, `01_GTM_Growth/03_Experimentation/`, tout fichier `.html`, `.css`, `.js` générant de l'UI).
 > **Priorité :** HAUTE — Cette règle est chargée automatiquement et prévaut sur les préférences par défaut de l'agent.
 
 ---

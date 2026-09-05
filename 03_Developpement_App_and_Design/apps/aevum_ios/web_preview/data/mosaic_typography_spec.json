@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "name": "Mosaic Typography Transit Spec (NYC Subway / Swiss Craft)",
+  "grid_system": {
+    "tile_size_px": 6,
+    "tile_gap_px": 2,
+    "tile_radius_px": 1,
+    "background_color": "#0D0F12",
+    "tile_color_active": "#10B981",
+    "tile_color_muted": "#242B35",
+    "tile_color_highlight": "#E5E7EB"
+  },
+  "typography_presets": {
+    "hero_title": {
+      "text": "AEVUM",
+      "font_family": "Space Grotesk",
+      "weight": "800",
+      "tile_density": "high",
+      "contrast_ratio": "18.5:1"
+    },
+    "vitality_badge": {
+      "text": "BIO-AGE 24",
+      "font_family": "JetBrains Mono",
+      "weight": "700",
+      "tile_density": "medium",
+      "contrast_ratio": "14.2:1"
+    }
+  },
+  "svg_matrix_export_rules": {
+    "clean_svg_paths": true,
+    "responsive_viewbox": "0 0 400 100",
+    "zero_canvas_overhead": true
+  }
+}

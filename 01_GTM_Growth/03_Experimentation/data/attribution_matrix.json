@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "project": "Aevum Multi-Channel Attribution",
+  "channels": [
+    {
+      "channel": "meta_ads",
+      "platform": "Instagram / Facebook",
+      "utm_source": "meta",
+      "utm_medium": "paid_social",
+      "default_campaigns": ["aevum_b2c_cold_v1", "aevum_retargeting_v1"],
+      "conversion_events": [
+        { "name": "LandingPage_View", "pixel_event": "PageView" },
+        { "name": "TestFlight_Click", "pixel_event": "InitiateCheckout" },
+        { "name": "App_Onboarding_Completed", "pixel_event": "CompleteRegistration" }
+      ]
+    },
+    {
+      "channel": "google_ads",
+      "platform": "Google Search / RSA",
+      "utm_source": "google",
+      "utm_medium": "cpc",
+      "default_campaigns": ["aevum_search_screentime", "aevum_search_hrv_bioage"],
+      "conversion_events": [
+        { "name": "LandingPage_View", "gtag_event": "page_view" },
+        { "name": "TestFlight_Click", "gtag_event": "generate_lead" }
+      ]
+    },
+    {
+      "channel": "tiktok_ads",
+      "platform": "TikTok Spark / In-Feed",
+      "utm_source": "tiktok",
+      "utm_medium": "paid_video",
+      "default_campaigns": ["aevum_tiktok_dopamine_v1"],
+      "conversion_events": [
+        { "name": "Video_Hook_3s_View", "tt_event": "ViewContent" },
+        { "name": "TestFlight_Click", "tt_event": "ClickButton" }
+      ]
+    }
+  ],
+  "utm_naming_convention": "{source}_{medium}_{campaign_name}_{audience}_{ad_variant}",
+  "kpis_target": {
+    "target_cpc_max": 0.45,
+    "target_cpa_testflight_install": 1.80,
+    "target_onboarding_completion_rate": 0.65
+  }
+}

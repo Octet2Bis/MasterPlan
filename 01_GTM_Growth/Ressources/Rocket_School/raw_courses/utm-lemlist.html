@@ -1,0 +1,557 @@
+<title>Six liens, deux interrupteurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+
+<style>
+:root{
+  --paper:#ECEEF0; --surface:#F8F9FA; --surface-2:#E1E6EA;
+  --ink:#151A1F; --ink-2:#4E5C68; --ink-3:#7C8995;
+  --rule:#C9D2D9; --rule-strong:#A9B6C0;
+  --accent:#1D4E89; --accent-soft:#DBE5F2;
+  --warn:#A33B2B; --warn-soft:#F2E0DB;
+  --good:#2C6B4F; --good-soft:#D9E8DF;
+  --shadow:0 1px 0 rgba(21,26,31,.05), 0 12px 32px -20px rgba(21,26,31,.4);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1216; --surface:#161C22; --surface-2:#1E262E;
+    --ink:#E5E9ED; --ink-2:#9FADB9; --ink-3:#73828E;
+    --rule:#29333C; --rule-strong:#3B4855;
+    --accent:#82B4E8; --accent-soft:#152941;
+    --warn:#E39383; --warn-soft:#33201B;
+    --good:#82C2A2; --good-soft:#172D23;
+    --shadow:0 1px 0 rgba(0,0,0,.4), 0 12px 32px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1216; --surface:#161C22; --surface-2:#1E262E;
+  --ink:#E5E9ED; --ink-2:#9FADB9; --ink-3:#73828E;
+  --rule:#29333C; --rule-strong:#3B4855;
+  --accent:#82B4E8; --accent-soft:#152941;
+  --warn:#E39383; --warn-soft:#33201B;
+  --good:#82C2A2; --good-soft:#172D23;
+  --shadow:0 1px 0 rgba(0,0,0,.4), 0 12px 32px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  display:flex; flex-direction:column; min-height:100vh;
+}
+
+/* ---- chrome ---- */
+.progress{position:sticky; top:0; height:3px; background:var(--rule); z-index:20; flex:none}
+.progress i{display:block; height:100%; background:var(--accent); width:0; transition:width .3s ease}
+
+.topbar{
+  flex:none; display:flex; align-items:baseline; justify-content:space-between;
+  gap:1rem; padding:.9rem clamp(1rem,4vw,2.6rem) .2rem;
+  font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;
+  font-weight:600; color:var(--ink-3);
+}
+.topbar b{font-weight:600; color:var(--ink-2)}
+.count{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums; letter-spacing:.06em}
+
+.stage{
+  flex:1 1 auto; display:flex; align-items:center; justify-content:center;
+  padding:clamp(.75rem,2.5vw,2rem) clamp(1rem,4vw,2.6rem);
+  min-height:0;
+}
+.slide{
+  display:none; width:100%; max-width:1080px; max-height:100%; overflow-y:auto;
+  animation:rise .34s cubic-bezier(.2,.7,.3,1) both;
+}
+.slide.on{display:block}
+@keyframes rise{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
+@media (prefers-reduced-motion: reduce){
+  .slide{animation:none}
+  .progress i{transition:none}
+}
+
+.eyebrow{
+  font-size:.71rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--accent); margin:0 0 .85rem;
+  display:flex; align-items:center; gap:.6rem;
+}
+.eyebrow::after{content:""; flex:1; height:1px; background:var(--rule)}
+.eyebrow.plain{color:var(--ink-3)}
+
+h1{
+  font-size:clamp(1.9rem,4.4vw,3.35rem); line-height:1.03; letter-spacing:-.025em;
+  font-weight:700; margin:0 0 1rem; text-wrap:balance; max-width:20ch;
+}
+h2{
+  font-size:clamp(1.5rem,3.3vw,2.35rem); line-height:1.08; letter-spacing:-.022em;
+  font-weight:700; margin:0 0 1.1rem; text-wrap:balance; max-width:24ch;
+}
+.lede{
+  font-family:"Newsreader",Georgia,serif; font-size:clamp(1.05rem,1.7vw,1.3rem);
+  line-height:1.5; color:var(--ink-2); margin:0 0 1.5rem; max-width:60ch;
+}
+p{margin:0 0 1rem; line-height:1.55; max-width:66ch; color:var(--ink-2); font-size:.97rem}
+strong{color:var(--ink); font-weight:600}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace}
+code{
+  font-size:.86em; background:var(--surface-2); color:var(--ink);
+  padding:.12em .38em; border-radius:3px;
+}
+
+/* ---- cover ---- */
+.cover{border-left:3px solid var(--accent); padding-left:clamp(1rem,3vw,2rem)}
+.cover .kicker{
+  font-family:"IBM Plex Mono",monospace; font-size:.78rem; color:var(--ink-3);
+  letter-spacing:.02em; margin-top:2rem;
+}
+.cover .kicker kbd{
+  font-family:inherit; border:1px solid var(--rule-strong); border-bottom-width:2px;
+  border-radius:4px; padding:.1em .45em; color:var(--ink-2); background:var(--surface);
+}
+
+/* ---- blocks ---- */
+.grid{display:grid; gap:1rem}
+@media(min-width:760px){ .grid.two{grid-template-columns:1fr 1fr} .grid.four{grid-template-columns:1fr 1fr} }
+
+.card{
+  background:var(--surface); border:1px solid var(--rule); border-radius:6px;
+  padding:1.05rem 1.15rem; box-shadow:var(--shadow);
+}
+.card h3{
+  margin:0 0 .5rem; font-size:.94rem; font-weight:700; letter-spacing:-.01em;
+  display:flex; align-items:baseline; gap:.5rem;
+}
+.card p{margin:0; font-size:.9rem; line-height:1.5}
+.card .tag{
+  font-family:"IBM Plex Mono",monospace; font-size:.68rem; font-weight:600;
+  text-transform:uppercase; letter-spacing:.08em; color:var(--warn);
+  background:var(--warn-soft); padding:.14em .45em; border-radius:3px; flex:none;
+}
+
+.note{
+  border-left:3px solid var(--accent); background:var(--accent-soft);
+  padding:.85rem 1.05rem; border-radius:0 5px 5px 0; margin:1.2rem 0 0;
+}
+.note p{margin:0; color:var(--ink); font-size:.94rem}
+.note.warn{border-color:var(--warn); background:var(--warn-soft)}
+.note.good{border-color:var(--good); background:var(--good-soft)}
+.note .label{
+  display:block; font-size:.68rem; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--accent); margin-bottom:.35rem;
+}
+.note.warn .label{color:var(--warn)}
+.note.good .label{color:var(--good)}
+
+/* ---- tables ---- */
+.tablewrap{overflow-x:auto; border:1px solid var(--rule); border-radius:6px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:.9rem}
+th,td{text-align:left; padding:.62rem .85rem; border-bottom:1px solid var(--rule); vertical-align:top}
+thead th{
+  font-size:.67rem; letter-spacing:.13em; text-transform:uppercase; font-weight:700;
+  color:var(--ink-3); background:var(--surface-2); border-bottom:1px solid var(--rule-strong);
+  white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+td.m,th.m{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-size:.84rem}
+td.dim{color:var(--ink-3)}
+.seqA td:first-child{border-left:3px solid var(--accent)}
+.seqB td:first-child{border-left:3px solid var(--warn)}
+.off{color:var(--warn); font-weight:700; letter-spacing:.06em; font-family:"IBM Plex Mono",monospace}
+
+/* ---- url block ---- */
+.urls{
+  background:var(--surface); border:1px solid var(--rule); border-radius:6px;
+  padding:.9rem 1rem; overflow-x:auto; box-shadow:var(--shadow);
+}
+.urls div{
+  font-family:"IBM Plex Mono",monospace; font-size:.79rem; line-height:2;
+  white-space:nowrap; color:var(--ink-2);
+}
+.urls b{color:var(--accent); font-weight:600; background:var(--accent-soft); padding:.06em .2em; border-radius:2px}
+
+/* ---- lists ---- */
+ol.steps{list-style:none; counter-reset:s; margin:0; padding:0; display:grid; gap:.7rem}
+ol.steps li{
+  counter-increment:s; position:relative; padding-left:2.4rem;
+  font-size:.95rem; line-height:1.5; color:var(--ink-2);
+}
+ol.steps li::before{
+  content:counter(s,decimal-leading-zero); position:absolute; left:0; top:.05em;
+  font-family:"IBM Plex Mono",monospace; font-size:.76rem; font-weight:600;
+  color:var(--accent); border:1px solid var(--rule-strong); border-radius:3px;
+  padding:.1em .35em; background:var(--surface);
+}
+ul.check{list-style:none; margin:0; padding:0; display:grid; gap:.7rem}
+ul.check li{position:relative; padding-left:1.7rem; font-size:.95rem; line-height:1.5; color:var(--ink-2)}
+ul.check li::before{
+  content:""; position:absolute; left:0; top:.42em; width:.62rem; height:.62rem;
+  border:2px solid var(--accent); border-radius:2px;
+}
+
+/* ---- figure ---- */
+figure{margin:0}
+figure svg{width:100%; height:auto; display:block; color:var(--ink-2)}
+figcaption{
+  margin-top:.7rem; font-family:"Newsreader",Georgia,serif; font-style:italic;
+  font-size:.95rem; color:var(--ink-3); max-width:66ch;
+}
+.d-box{fill:var(--surface); stroke:var(--rule-strong); stroke-width:1.25}
+.d-box-acc{fill:var(--accent-soft); stroke:var(--accent); stroke-width:1.5}
+.d-box-warn{fill:var(--warn-soft); stroke:var(--warn); stroke-width:1.25}
+.d-line{stroke:var(--ink-3); stroke-width:1.5; fill:none}
+.d-line-acc{stroke:var(--accent); stroke-width:2; fill:none}
+.d-rule{stroke:var(--rule); stroke-width:1; fill:none}
+.d-txt{fill:var(--ink); font-family:"Archivo",sans-serif; font-size:13px; font-weight:600}
+.d-sub{fill:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:10.5px}
+.d-lab{fill:var(--ink-2); font-family:"IBM Plex Mono",monospace; font-size:11px}
+.d-lab-acc{fill:var(--accent); font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:500}
+.d-warn{fill:var(--warn); font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:500}
+.d-row{fill:var(--ink-3); font-family:"Archivo",sans-serif; font-size:11px; font-weight:700; letter-spacing:.12em}
+.d-head-arrow{fill:var(--ink-3)}
+.d-head-arrow-acc{fill:var(--accent)}
+
+/* ---- nav ---- */
+.nav{
+  flex:none; display:flex; align-items:center; gap:.5rem;
+  padding:.7rem clamp(1rem,4vw,2.6rem) 1.1rem; border-top:1px solid var(--rule);
+}
+.dots{display:flex; gap:5px; flex:1; flex-wrap:wrap; justify-content:center}
+.dots button{
+  width:22px; height:5px; padding:0; border:0; border-radius:99px; cursor:pointer;
+  background:var(--rule-strong); transition:background .2s;
+}
+.dots button.on{background:var(--accent)}
+.dots button:hover{background:var(--ink-3)}
+.nav .arrow{
+  font-family:"Archivo",sans-serif; font-size:.8rem; font-weight:600; letter-spacing:.04em;
+  background:var(--surface); color:var(--ink); border:1px solid var(--rule-strong);
+  border-radius:5px; padding:.42rem .8rem; cursor:pointer; white-space:nowrap;
+}
+.nav .arrow:hover:not(:disabled){border-color:var(--accent); color:var(--accent)}
+.nav .arrow:disabled{opacity:.35; cursor:default}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+</style>
+
+<div class="progress"><i id="bar"></i></div>
+
+<header class="topbar">
+  <span><b>Challenge Growth</b> &middot; Tracking Lemlist &rarr; GA4</span>
+  <span class="count"><span id="cur">01</span> / 11</span>
+</header>
+
+<main class="stage" id="stage">
+
+  <section class="slide on">
+    <div class="cover">
+      <p class="eyebrow plain">Sans custom tracking domain</p>
+      <h1>Six liens, deux interrupteurs.</h1>
+      <p class="lede">Vos campagnes Lemlist peuvent remonter proprement dans GA4 sans domaine de tracking. Il suffit de bien poser les UTM &mdash; et de couper deux r&eacute;glages qui, chez vous, ne servent qu'&agrave; vous nuire.</p>
+      <p class="kicker"><kbd>&rarr;</kbd> ou <kbd>espace</kbd> pour avancer</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow plain">Le point de d&eacute;part</p>
+    <h2>Vous n'avez pas de custom tracking domain.</h2>
+    <p>Lemlist propose normalement de faire passer chaque clic par un sous-domaine <strong>&agrave; vous</strong> (un simple CNAME). Vous ne l'avez pas. R&eacute;sultat : les liens trac&eacute;s partent sur le domaine partag&eacute; de Lemlist, mutualis&eacute; avec des milliers d'autres exp&eacute;diteurs, dont vous ne ma&icirc;trisez pas la r&eacute;putation.</p>
+    <div class="note good">
+      <span class="label">Ce qui n'est pas cass&eacute;</span>
+      <p>Les UTM ne d&eacute;pendent pas du domaine de tracking. Ils voyagent sur l'URL de destination et sont lus par GA4 dans le navigateur, &agrave; l'arriv&eacute;e. Le domaine de tracking ne concerne que le redirect interm&eacute;diaire.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow plain">Le m&eacute;canisme</p>
+    <h2>Ce que le tracking de clic change vraiment</h2>
+    <figure>
+      <svg viewBox="0 0 920 372" role="img" aria-label="Comparaison des deux chemins d'un clic : avec le tracking Lemlist activ&eacute;, le clic passe par le domaine partag&eacute; de Lemlist avant d'atteindre la landing page ; d&eacute;sactiv&eacute;, le clic va directement &agrave; la landing page. Les UTM arrivent intacts dans les deux cas.">
+        <defs>
+          <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <polygon points="0,1 10,5 0,9" class="d-head-arrow"></polygon>
+          </marker>
+          <marker id="arwa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <polygon points="0,1 10,5 0,9" class="d-head-arrow-acc"></polygon>
+          </marker>
+        </defs>
+
+        <text x="24" y="20" class="d-row">TRACKING DE CLIC ON</text>
+        <rect x="24" y="40" width="176" height="60" rx="4" class="d-box"></rect>
+        <text x="112" y="66" class="d-txt" text-anchor="middle">Mail Lemlist</text>
+        <text x="112" y="84" class="d-sub" text-anchor="middle">lien r&eacute;&eacute;crit</text>
+
+        <rect x="338" y="40" width="232" height="60" rx="4" class="d-box-warn"></rect>
+        <text x="454" y="66" class="d-txt" text-anchor="middle">Domaine partag&eacute; Lemlist</text>
+        <text x="454" y="84" class="d-sub" text-anchor="middle">r&eacute;putation mutualis&eacute;e</text>
+
+        <rect x="708" y="40" width="188" height="60" rx="4" class="d-box"></rect>
+        <text x="802" y="66" class="d-txt" text-anchor="middle">Landing page</text>
+        <text x="802" y="84" class="d-sub" text-anchor="middle">GA4 lit les UTM</text>
+
+        <line x1="204" y1="70" x2="330" y2="70" class="d-line" marker-end="url(#arw)"></line>
+        <text x="267" y="60" class="d-lab" text-anchor="middle">clic</text>
+        <line x1="574" y1="70" x2="700" y2="70" class="d-line" marker-end="url(#arw)"></line>
+        <text x="637" y="60" class="d-lab" text-anchor="middle">redirect 302</text>
+        <text x="454" y="126" class="d-warn" text-anchor="middle">+ 1 hop &middot; filtres anti-spam plus s&eacute;v&egrave;res</text>
+
+        <line x1="24" y1="162" x2="896" y2="162" class="d-rule" stroke-dasharray="3 5"></line>
+
+        <text x="24" y="204" class="d-row">TRACKING DE CLIC OFF</text>
+        <rect x="24" y="224" width="176" height="60" rx="4" class="d-box"></rect>
+        <text x="112" y="250" class="d-txt" text-anchor="middle">Mail Lemlist</text>
+        <text x="112" y="268" class="d-sub" text-anchor="middle">lien tel quel</text>
+
+        <rect x="708" y="224" width="188" height="60" rx="4" class="d-box-acc"></rect>
+        <text x="802" y="250" class="d-txt" text-anchor="middle">Landing page</text>
+        <text x="802" y="268" class="d-sub" text-anchor="middle">GA4 lit les UTM</text>
+
+        <line x1="204" y1="254" x2="700" y2="254" class="d-line-acc" marker-end="url(#arwa)"></line>
+        <text x="452" y="244" class="d-lab-acc" text-anchor="middle">clic direct &middot; aucun domaine tiers</text>
+
+        <text x="452" y="316" class="d-lab" text-anchor="middle">?utm_source=lemlist&amp;utm_medium=email&amp;utm_campaign=&hellip;&amp;utm_content=&hellip;</text>
+        <text x="452" y="342" class="d-sub" text-anchor="middle">les m&ecirc;mes param&egrave;tres arrivent dans les deux cas</text>
+      </svg>
+      <figcaption>Le tracking de clic n'ajoute aucune information de campagne : il ajoute un saut par un domaine que vous ne contr&ocirc;lez pas.</figcaption>
+    </figure>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">&Eacute;tape 1 &middot; R&eacute;glages Lemlist</p>
+    <h2>Ce qu'on coupe</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>R&eacute;glage de campagne</th><th>Action</th><th>Pourquoi</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Tracking des clics</td>
+            <td class="off">OFF</td>
+            <td class="dim">Sans domaine &agrave; vous, le redirect passe par le domaine partag&eacute;. GA4 compte d&eacute;j&agrave; les sessions &mdash; et mieux : les scanners anti-spam qui cliquent les liens n'ex&eacute;cutent pas de JavaScript, donc ils ne polluent pas vos chiffres.</td>
+          </tr>
+          <tr>
+            <td>Tracking des ouvertures</td>
+            <td class="off">OFF</td>
+            <td class="dim">Le pixel est fauss&eacute; par Apple Mail Privacy Protection : les ouvertures sont pr&eacute;-charg&eacute;es, donc inexploitables. Il p&egrave;se en plus sur la d&eacute;livrabilit&eacute;.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note warn">
+      <span class="label">Le prix &agrave; payer</span>
+      <p>Plus de statistiques de clic ni d'ouverture dans Lemlist, et les &eacute;tapes conditionnelles &laquo;&nbsp;si a ouvert&nbsp;&raquo; / &laquo;&nbsp;si a cliqu&eacute;&nbsp;&raquo; deviennent inutilisables. Votre s&eacute;quence doit &ecirc;tre <strong>lin&eacute;aire</strong>, avec la r&eacute;ponse comme seule condition d'arr&ecirc;t.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">&Eacute;tape 2 &middot; La grille</p>
+    <h2>Quatre param&egrave;tres, deux qui bougent</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Param&egrave;tre</th><th>Valeur</th><th>Change quand&nbsp;?</th></tr></thead>
+        <tbody>
+          <tr><td class="m">utm_source</td><td class="m">lemlist</td><td class="dim">Jamais</td></tr>
+          <tr><td class="m">utm_medium</td><td class="m">email</td><td class="dim">Jamais</td></tr>
+          <tr><td class="m">utm_campaign</td><td class="m">persona1-s2</td><td class="dim">Une valeur par s&eacute;quence</td></tr>
+          <tr><td class="m">utm_content</td><td class="m">mail1</td><td class="dim">&Agrave; chaque &eacute;tape et &agrave; chaque variante A/B</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid two" style="margin-top:1.1rem">
+      <div class="note" style="margin:0">
+        <span class="label">R&egrave;gle d'&eacute;criture</span>
+        <p>Minuscules, tirets, sans accent, sans espace. GA4 est sensible &agrave; la casse : <code>Email</code> et <code>email</code> cr&eacute;ent deux lignes distinctes dans vos rapports.</p>
+      </div>
+      <div class="note" style="margin:0">
+        <span class="label">Le param&egrave;tre critique</span>
+        <p><code>utm_medium=email</code> est ce qui fait tomber le trafic dans le canal <strong>Email</strong> de GA4. Une autre valeur et la session part en <em>Unassigned</em>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">&Eacute;tape 3 &middot; Le plan de nommage</p>
+    <h2>2 s&eacute;quences &times; 3 mails = 6 URLs</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>S&eacute;quence</th><th>Mail</th><th class="m">utm_source</th><th class="m">utm_medium</th><th class="m">utm_campaign</th><th class="m">utm_content</th></tr></thead>
+        <tbody>
+          <tr class="seqA"><td>A &mdash; PERSONA 1</td><td class="m">1</td><td class="m dim">lemlist</td><td class="m dim">email</td><td class="m">persona1-s2</td><td class="m">mail1</td></tr>
+          <tr class="seqA"><td>A &mdash; PERSONA 1</td><td class="m">2</td><td class="m dim">lemlist</td><td class="m dim">email</td><td class="m">persona1-s2</td><td class="m">mail2</td></tr>
+          <tr class="seqA"><td>A &mdash; PERSONA 1</td><td class="m">3</td><td class="m dim">lemlist</td><td class="m dim">email</td><td class="m">persona1-s2</td><td class="m">mail3</td></tr>
+          <tr class="seqB"><td>B &mdash; PERSONA 2</td><td class="m">1</td><td class="m dim">lemlist</td><td class="m dim">email</td><td class="m">persona2-s2</td><td class="m">mail1</td></tr>
+          <tr class="seqB"><td>B &mdash; PERSONA 2</td><td class="m">2</td><td class="m dim">lemlist</td><td class="m dim">email</td><td class="m">persona2-s2</td><td class="m">mail2</td></tr>
+          <tr class="seqB"><td>B &mdash; PERSONA 2</td><td class="m">3</td><td class="m dim">lemlist</td><td class="m dim">email</td><td class="m">persona2-s2</td><td class="m">mail3</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <span class="label">Ce que &ccedil;a vous donnera</span>
+      <p>La <strong>campagne</strong> r&eacute;pond &agrave; &laquo;&nbsp;quel persona performe&nbsp;&raquo;. Le <strong>contenu</strong> r&eacute;pond &agrave; &laquo;&nbsp;quel mail d&eacute;clenche le clic&nbsp;&raquo;. Sans <code>utm_content</code>, vous saurez que la campagne a g&eacute;n&eacute;r&eacute; 40 sessions, sans jamais savoir si c'est le mail&nbsp;1 ou la relance&nbsp;3 qui travaille.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">&Eacute;tape 3 &middot; Les liens</p>
+    <h2>Les six URLs &agrave; pr&eacute;parer</h2>
+    <div class="urls">
+      <div>https://votre-lp.fr/?utm_source=lemlist&amp;utm_medium=email&amp;utm_campaign=<b>persona1-s2</b>&amp;utm_content=<b>mail1</b></div>
+      <div>https://votre-lp.fr/?utm_source=lemlist&amp;utm_medium=email&amp;utm_campaign=<b>persona1-s2</b>&amp;utm_content=<b>mail2</b></div>
+      <div>https://votre-lp.fr/?utm_source=lemlist&amp;utm_medium=email&amp;utm_campaign=<b>persona1-s2</b>&amp;utm_content=<b>mail3</b></div>
+      <div>https://votre-lp.fr/?utm_source=lemlist&amp;utm_medium=email&amp;utm_campaign=<b>persona2-s2</b>&amp;utm_content=<b>mail1</b></div>
+      <div>https://votre-lp.fr/?utm_source=lemlist&amp;utm_medium=email&amp;utm_campaign=<b>persona2-s2</b>&amp;utm_content=<b>mail2</b></div>
+      <div>https://votre-lp.fr/?utm_source=lemlist&amp;utm_medium=email&amp;utm_campaign=<b>persona2-s2</b>&amp;utm_content=<b>mail3</b></div>
+    </div>
+    <div class="note">
+      <span class="label">&Agrave; remplacer</span>
+      <p><code>persona1</code> et <code>persona2</code> sont des emplacements. Mettez un slug parlant &mdash; <code>rh-pme</code>, <code>cto-scaleup</code>. Dans trois semaines, devant votre rapport GA4, personne ne se souviendra de ce que &laquo;&nbsp;persona2&nbsp;&raquo; d&eacute;signait.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">&Eacute;tape 4 &middot; Dans Lemlist</p>
+    <h2>Le lien va derri&egrave;re le texte, pas dans le texte</h2>
+    <ol class="steps">
+      <li>Pr&eacute;parez les six URLs dans un Sheet <strong>avant</strong> d'ouvrir Lemlist.</li>
+      <li>Ouvrez l'&eacute;tape de la s&eacute;quence dans l'&eacute;diteur.</li>
+      <li>S&eacute;lectionnez le texte du CTA, puis l'ic&ocirc;ne lien (ou <code>Ctrl+K</code>).</li>
+      <li>Collez l'URL compl&egrave;te, avec ses quatre param&egrave;tres.</li>
+    </ol>
+    <div class="note warn">
+      <span class="label">Jamais l'URL en clair</span>
+      <p>120 caract&egrave;res de lien visibles dans un cold email, c'est un signal spam et un taux de clic &eacute;croul&eacute;. Texte d'ancre court, lien derri&egrave;re.</p>
+    </div>
+    <div class="note">
+      <span class="label">Pourquoi le Sheet d'abord</span>
+      <p>Si vous construisez les URLs au fil de l'eau dans l'&eacute;diteur, vous collerez la m&ecirc;me partout. La granularit&eacute; par mail sera perdue, et elle ne se rattrape pas apr&egrave;s coup.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow plain">Contr&ocirc;le</p>
+    <h2>Les quatre erreurs qui reviennent</h2>
+    <div class="grid four">
+      <div class="card">
+        <h3><span class="tag">01</span> Campagne dupliqu&eacute;e</h3>
+        <p>Vous dupliquez la campagne du groupe voisin et gardez son <code>utm_campaign</code>. R&eacute;sultat : deux groupes fusionn&eacute;s dans GA4, impossible &agrave; s&eacute;parer apr&egrave;s coup. &Agrave; v&eacute;rifier explicitement apr&egrave;s chaque duplication.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag">02</span> Variantes A/B</h3>
+        <p>Deux variantes d'une m&ecirc;me &eacute;tape qui partagent le m&ecirc;me <code>utm_content</code> rendent le test illisible. Suffixez syst&eacute;matiquement : <code>mail2-va</code> et <code>mail2-vb</code>.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag">03</span> Lien de signature</h3>
+        <p>S'il pointe vers la landing page, il gonfle les stats du CTA sans en &ecirc;tre un. Donnez-lui son propre <code>utm_content=signature</code>.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag">04</span> &Eacute;tape LinkedIn</h3>
+        <p>Une s&eacute;quence multicanale n'est pas que de l'email. Sur ces &eacute;tapes : <code>utm_source=linkedin</code> et <code>utm_medium=social</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow">&Eacute;tape 5 &middot; V&eacute;rification</p>
+    <h2>Trois minutes avant de lancer</h2>
+    <ul class="check">
+      <li>Envoi test, puis <strong>clic depuis la bo&icirc;te de r&eacute;ception r&eacute;elle</strong> &mdash; pas depuis la preview Lemlist, qui ne reproduit pas le lien final.</li>
+      <li>Une fois la page charg&eacute;e, les quatre param&egrave;tres sont toujours dans la barre d'adresse.</li>
+      <li>GA4 &rarr; Temps r&eacute;el : <code>lemlist / email</code> appara&icirc;t en moins d'une minute.</li>
+      <li>L'&eacute;v&eacute;nement lead se d&eacute;clenche toujours normalement &agrave; la soumission du formulaire.</li>
+    </ul>
+    <div class="note warn">
+      <span class="label">Si les param&egrave;tres ont disparu</span>
+      <p>C'est une redirection de votre site qui mange la query string &mdash; http vers https, www, slash final. Rien &agrave; voir avec Lemlist, et c'est la cause num&eacute;ro un des UTM qui &laquo;&nbsp;ne remontent pas&nbsp;&raquo;.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <p class="eyebrow plain">Apr&egrave;s l'envoi</p>
+    <h2>Ce que vous lirez, et ce qui ne matchera jamais</h2>
+    <div class="grid two">
+      <div class="card">
+        <h3>O&ugrave; regarder</h3>
+        <p>GA4 &rarr; Acquisition &rarr; Acquisition de trafic.<br>
+        Dimension <strong>Campagne de la session</strong> : quel persona performe.<br>
+        Dimension secondaire <strong>Contenu manuel de la session</strong> : quel mail d&eacute;clenche le clic.<br>
+        Comptez 24 &agrave; 48&nbsp;h de latence sur les rapports standards &mdash; le temps r&eacute;el ne couvre que les 30 derni&egrave;res minutes.</p>
+      </div>
+      <div class="card">
+        <h3>L'&eacute;cart normal</h3>
+        <p>Clics Lemlist et sessions GA4 ne se rejoindront jamais : bots anti-spam, consentement refus&eacute;, bloqueurs, navigation cross-device. Et en cold email, une bonne partie des prospects <strong>r&eacute;pondent au mail</strong> au lieu de cliquer.</p>
+      </div>
+    </div>
+    <div class="note good">
+      <span class="label">La r&egrave;gle de reporting</span>
+      <p>Deux sources, toujours crois&eacute;es : <strong>Lemlist</strong> pour les envois, les d&eacute;livr&eacute;s et les r&eacute;ponses &mdash; <strong>GA4</strong> pour les sessions et les leads. Jamais une seule des deux.</p>
+    </div>
+  </section>
+
+</main>
+
+<nav class="nav">
+  <button class="arrow" id="prev" type="button">&larr; Pr&eacute;c&eacute;dent</button>
+  <div class="dots" id="dots" role="tablist" aria-label="Slides"></div>
+  <button class="arrow" id="next" type="button">Suivant &rarr;</button>
+</nav>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dots = document.getElementById('dots');
+  var bar = document.getElementById('bar');
+  var cur = document.getElementById('cur');
+  var prev = document.getElementById('prev');
+  var next = document.getElementById('next');
+  var stage = document.getElementById('stage');
+  var i = 0;
+
+  slides.forEach(function(s, n){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-label', 'Slide ' + (n + 1));
+    b.addEventListener('click', function(){ go(n); });
+    dots.appendChild(b);
+  });
+  var dotEls = Array.prototype.slice.call(dots.children);
+
+  function go(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(s, k){ s.classList.toggle('on', k === i); });
+    dotEls.forEach(function(d, k){
+      d.classList.toggle('on', k === i);
+      d.setAttribute('aria-selected', k === i ? 'true' : 'false');
+    });
+    bar.style.width = ((i + 1) / slides.length * 100) + '%';
+    cur.textContent = String(i + 1).length < 2 ? '0' + (i + 1) : String(i + 1);
+    prev.disabled = i === 0;
+    next.disabled = i === slides.length - 1;
+    stage.scrollTop = 0;
+    try { history.replaceState(null, '', '#s' + (i + 1)); } catch (e) {}
+  }
+
+  prev.addEventListener('click', function(){ go(i - 1); });
+  next.addEventListener('click', function(){ go(i + 1); });
+
+  document.addEventListener('keydown', function(e){
+    if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+  });
+
+  var x0 = null;
+  stage.addEventListener('touchstart', function(e){ x0 = e.changedTouches[0].clientX; }, { passive: true });
+  stage.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 60) go(i + (dx < 0 ? 1 : -1));
+    x0 = null;
+  }, { passive: true });
+
+  var start = 0;
+  var m = (location.hash || '').match(/^#s(\d+)$/);
+  if (m) start = parseInt(m[1], 10) - 1;
+  go(start);
+})();
+</script>

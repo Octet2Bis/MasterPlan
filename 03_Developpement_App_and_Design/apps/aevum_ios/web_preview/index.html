@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Aevum">
+  <meta name="theme-color" content="#09090B">
+  <title>Aevum • Longevity & Positive Friction Shield (Simulator)</title>
+  <meta name="description" content="Simulateur interactif haute fidélité de l'application iOS Aevum : Micro-habitudes de longévité, Screen Time Shield et design Bento Luxury.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Bebas+Neue&family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="index.css?v=3.1.0">
+</head>
+<body>
+  <!-- Header de Contrôle Supérieur (Barre d'Outils Simulateur) -->
+  <header class="sim-topbar">
+    <div class="sim-brand">
+      <div class="sim-logo-orb"></div>
+      <span class="sim-brand-title">AEVUM</span>
+      <span class="sim-badge">Simulateur iOS 17 Natif</span>
+    </div>
+    
+    <div class="sim-actions">
+      <button class="sim-tool-btn" id="btn-go-dashboard" style="background: rgba(14, 165, 233, 0.25); color: var(--cyan-accent); font-weight: 800; border-color: rgba(14, 165, 233, 0.4);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 12 8"></polygon></svg>
+        <span>🗺️ Dashboard</span>
+      </button>
+
+      <button class="sim-tool-btn" id="btn-trigger-happening" style="background: rgba(230, 57, 47, 0.25); color: #E6392F; font-weight: 800; border-color: rgba(230, 57, 47, 0.5);">
+        <span>🎭 Mini-Jeu WarioWare</span>
+      </button>
+
+      <button class="sim-tool-btn" id="btn-open-vault" style="background: rgba(245, 184, 0, 0.2); color: #F5B800; font-weight: 700; border-color: rgba(245, 184, 0, 0.4);">
+        <span>📚 Le Coffre (Vault)</span>
+      </button>
+
+      <button class="sim-tool-btn" id="btn-toggle-theme">
+        <span id="theme-btn-icon">☀️</span>
+        <span id="theme-btn-txt">Mode Lumineux</span>
+      </button>
+
+      <button class="sim-tool-btn" id="btn-toggle-frame">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="4" ry="4"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        <span>Vue Smartphone</span>
+      </button>
+      
+      <button class="sim-tool-btn sim-trigger-shield" id="btn-trigger-shield">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span>⚡ Simuler Shield (Instagram)</span>
+      </button>
+
+      <button class="sim-tool-btn" id="btn-open-system-info" style="background: rgba(255, 255, 255, 0.08); color: var(--text-primary); font-weight: 700;">
+        <span>📊 Système</span>
+      </button>
+
+      <button class="sim-tool-btn" id="btn-reset-demo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+        <span>Reset</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Conteneur Central du Simulateur -->
+  <main class="sim-stage">
+    
+    <!-- Châssis iPhone 15 Pro Titanium -->
+    <div class="iphone-frame" id="iphone-frame">
+      <div class="iphone-notch">
+        <div class="dynamic-island" id="dynamic-island">
+          <div class="di-content">
+            <span class="di-dot"></span>
+            <span class="di-text" id="di-text">Aevum Shield Actif</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="iphone-screen" id="iphone-screen">
+        
+        <!-- ÉCRAN 0 : LE CLAVIER 12 STATIONS & LIGNES ARC-EN-CIEL (Music OS Keypad) -->
+        <section class="app-screen transit-network-screen hidden" id="screen-transit-network">
+          <div class="music-os-top-header">
+            <span class="music-os-brand">Aevum OS</span>
+            <span class="music-os-mode">Popular Guide</span>
+            <button class="btn-music-os-close" id="btn-close-transit-top">✕</button>
+          </div>
+
+          <!-- 3x4 GRID OF 12 VIBRANT SWISS SUBWAY STATION TOKENS -->
+          <div class="subway-tokens-grid-container">
+            <div class="subway-tokens-grid">
+              <button class="token-btn bg-orange" data-proto="breath-sigh"><span class="token-txt">4</span></button>
+              <button class="token-btn bg-lavender" data-proto="mob-spine"><span class="token-txt">A</span></button>
+              <button class="token-btn bg-coral" data-proto="eye-2020"><span class="token-txt">E</span></button>
+
+              <button class="token-btn bg-sand" data-proto="hydro-salt"><span class="token-txt">Q</span></button>
+              <button class="token-btn bg-amber" data-proto="breath-box"><span class="token-txt">7</span></button>
+              <button class="token-btn bg-mint" data-proto="mob-trapezius"><span class="token-txt">II</span></button>
+
+              <button class="token-btn bg-lemon" data-proto="breath-478"><span class="token-txt">N</span></button>
+              <button class="token-btn bg-rose" data-proto="mob-wrist"><span class="token-txt">W</span></button>
+              <button class="token-btn bg-ochre" data-proto="light-sun"><span class="token-txt">P</span></button>
+
+              <button class="token-btn bg-emerald" data-proto="mob-hip"><span class="token-txt">S</span></button>
+              <button class="token-btn bg-grey" data-proto="mind-walk"><span class="token-txt">5</span></button>
+              <button class="token-btn bg-khaki" data-proto="sleep-dark"><span class="token-txt">L</span></button>
+            </div>
+
+            <!-- JOG-WHEEL ANALOG DIAL AT BOTTOM -->
+            <div class="analog-jog-wheel-box">
+              <div class="jog-wheel-arc-scale"></div>
+              <div class="jog-wheel-center-btn" id="btn-jog-launch">
+                <span class="jog-plus">+</span>
+              </div>
+              <div class="jog-controls-row">
+                <button class="jog-skip-btn" id="btn-jog-prev">◀</button>
+                <span class="jog-status-lbl">SÉLECTEUR RAPIDE</span>
+                <button class="jog-skip-btn" id="btn-jog-next">▶</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ÉCRAN 1 : LE DASHBOARD AGAVE & TRANSIT SWISS (FUSION WIREFRAME & POSTERS) -->
+        <section class="app-screen agave-dashboard-screen" id="screen-dashboard">
+          
+          <!-- STREAK CARD DE CONNEXION (STYLE PLATFORM 08) -->
+          <div class="agave-streak-card swiss-platform-card" id="widget-streak-header">
+            <div class="streak-card-top swiss-banner-orange">
+              <div class="platform-left-col">
+                <span class="platform-lbl">Platform</span>
+                <span class="platform-sub">SÉRIE ACTIVE</span>
+              </div>
+              <div class="platform-giant-num">03</div>
+            </div>
+            
+            <!-- Tableau des Horaires / Micro-étapes d'Ancrage -->
+            <div class="streak-schedule-table">
+              <div class="schedule-entry"><span class="sch-time">18:05</span><span class="sch-city">Helsinki</span><span class="sch-badge done">✓ OK</span></div>
+              <div class="schedule-entry"><span class="sch-time">18:15</span><span class="sch-city">Oslo</span><span class="sch-badge done">✓ OK</span></div>
+              <div class="schedule-entry"><span class="sch-time">18:20</span><span class="sch-city">London</span><span class="sch-badge done">✓ OK</span></div>
+              <div class="schedule-entry"><span class="sch-time">18:25</span><span class="sch-city">Berlin</span><span class="sch-badge pending">● EN COURS</span></div>
+            </div>
+
+            <!-- 7 Pastilles de Jours (L M M J V S D) -->
+            <div class="streak-days-capsules">
+              <div class="day-capsule checked"><span class="check-mark">✓</span><span class="day-lbl">L</span></div>
+              <div class="day-capsule checked"><span class="check-mark">✓</span><span class="day-lbl">M</span></div>
+              <div class="day-capsule checked"><span class="check-mark">✓</span><span class="day-lbl">M</span></div>
+              <div class="day-capsule"><span class="day-lbl">J</span></div>
+              <div class="day-capsule"><span class="day-lbl">V</span></div>
+              <div class="day-capsule"><span class="day-lbl">S</span></div>
+              <div class="day-capsule"><span class="day-lbl">D</span></div>
+            </div>
+          </div>
+
+          <!-- CARTE MAÎTRESSE : MON AGAVE (HERO GÉOMÉTRIQUE SUISSE) -->
+          <div class="agave-hero-card swiss-hero-card" id="card-agave-hero">
+            <div class="agave-card-head">
+              <div class="agave-head-titles">
+                <span class="agave-eyebrow">SUPERIOR HEALTHSPAN</span>
+                <h2 class="agave-main-title">Mon agave</h2>
+                <span class="agave-sub-title">Ton équilibre, chaque jour</span>
+              </div>
+              <button class="btn-agave-info" id="btn-agave-info" title="Détails">ⓘ</button>
+            </div>
+
+            <!-- ILLUSTRATION VECTORIELLE AGAVE ET ANNOTATIONS SATELLITES -->
+            <div class="agave-radar-visual">
+              
+              <!-- Tag Feuille Haute : Temps d'écran -->
+              <div class="leaf-chip chip-top">
+                <span class="chip-name">Temps d'écran</span>
+                <span class="chip-pct" id="leaf-val-screen_time">72%</span>
+              </div>
+
+              <!-- Tag Feuille Haute Droite : Sommeil -->
+              <div class="leaf-chip chip-top-right">
+                <span class="chip-name">Sommeil</span>
+                <span class="chip-pct" id="leaf-val-sleep">65%</span>
+              </div>
+
+              <!-- Tag Feuille Basse Droite : Activité -->
+              <div class="leaf-chip chip-bottom-right">
+                <span class="chip-name">Activité</span>
+                <span class="chip-pct" id="leaf-val-activity">40%</span>
+              </div>
+
+              <!-- Tag Feuille Basse Gauche : Respiration -->
+              <div class="leaf-chip chip-bottom-left">
+                <span class="chip-name">Respiration</span>
+                <span class="chip-pct" id="leaf-val-breathing">80%</span>
+              </div>
+
+              <!-- Tag Feuille Haute Gauche : Posture -->
+              <div class="leaf-chip chip-top-left">
+                <span class="chip-name">Posture</span>
+                <span class="chip-pct" id="leaf-val-posture">58%</span>
+              </div>
+
+              <!-- SVG DE L'AGAVE VECTORIELLE SUISSE -->
+              <svg class="agave-svg-art" viewBox="0 0 280 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Lignes de repères pointillés -->
+                <line x1="140" y1="210" x2="140" y2="30" stroke="#1F2022" stroke-dasharray="3 3" stroke-width="1.5"/>
+                <line x1="140" y1="210" x2="230" y2="80" stroke="#1F2022" stroke-dasharray="3 3" stroke-width="1.5"/>
+                <line x1="140" y1="210" x2="250" y2="160" stroke="#1F2022" stroke-dasharray="3 3" stroke-width="1.5"/>
+                <line x1="140" y1="210" x2="30" y2="160" stroke="#1F2022" stroke-dasharray="3 3" stroke-width="1.5"/>
+                <line x1="140" y1="210" x2="50" y2="80" stroke="#1F2022" stroke-dasharray="3 3" stroke-width="1.5"/>
+
+                <!-- Ligne de sol -->
+                <line x1="80" y1="215" x2="200" y2="215" stroke="var(--text-muted)" stroke-dasharray="2 2" stroke-width="1.5"/>
+
+                <!-- Feuilles de l'Agave (Tracé Précis Style Signalétique) -->
+                <path d="M140 210 C100 200, 60 180, 35 155 C70 160, 110 185, 140 210 Z" fill="rgba(0, 183, 95, 0.2)" stroke="#00B75F" stroke-width="2"/>
+                <path d="M140 210 C110 160, 75 110, 55 75 C85 105, 120 165, 140 210 Z" fill="rgba(255, 140, 0, 0.2)" stroke="#FF8C00" stroke-width="2"/>
+                <path d="M140 210 C130 140, 125 70, 140 25 C155 70, 150 140, 140 210 Z" fill="rgba(255, 68, 0, 0.25)" stroke="#FF4400" stroke-width="2.5"/>
+                <path d="M140 210 C160 165, 195 105, 225 75 C205 110, 170 160, 140 210 Z" fill="rgba(0, 128, 128, 0.25)" stroke="#008080" stroke-width="2"/>
+                <path d="M140 210 C170 185, 210 160, 245 155 C220 180, 180 200, 140 210 Z" fill="rgba(0, 183, 95, 0.2)" stroke="#00B75F" stroke-width="2"/>
+
+                <!-- Anneaux de croissance centraux -->
+                <path d="M140 210 C132 170, 134 130, 140 100 C146 130, 148 170, 140 210 Z" fill="none" stroke="#FFFFFF" stroke-width="1.2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- BENTO ACTIONS RAPIDES (STYLE BAGGAGE RECLAIM ↘ & GATE A 3) -->
+          <div class="agave-bento-row swiss-bento-grid">
+            
+            <!-- Bento Gauche : Baggage Reclaim ↘ & Sas de Décompression -->
+            <div class="bento-action-card bento-video swiss-card-baggage" id="card-bento-video">
+              <div class="swiss-bento-header-orange">
+                <span class="header-tag">SAS 01</span>
+                <span class="header-arrow">↘</span>
+              </div>
+              <div class="bento-media-thumb">
+                <div class="video-play-btn-disc">▶</div>
+                <div class="video-mini-progress">
+                  <div class="mini-progress-fill" style="width: 85%;"></div>
+                </div>
+              </div>
+              <div class="bento-card-info">
+                <h4 class="bento-card-title">Vidéo ➔ Article</h4>
+                <p class="bento-card-sub">Cette vidéo touche à sa fin. Découvre l'article pour aller plus loin.</p>
+              </div>
+            </div>
+
+            <!-- Bento Droite : Gate A 3 & Mini-Jeu WarioWare -->
+            <div class="bento-action-card bento-game swiss-card-gate" id="card-bento-game">
+              <div class="swiss-bento-header-white">
+                <span class="gate-tag">Gate A</span>
+                <span class="gate-sub">FOCUS</span>
+              </div>
+              <div class="bento-game-thumb">
+                <div class="gate-green-disc">
+                  <span class="gate-giant-num">3</span>
+                </div>
+                <span class="game-action-badge">45 SEC</span>
+              </div>
+              <div class="bento-card-info">
+                <h4 class="bento-card-title">Mini-jeu</h4>
+                <p class="bento-card-sub">Ouvre pour jouer et faire une pause !</p>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ==============================================================
+             MODALES DU SYSTÈME AGAVE (IMAGES 1, 2, 3, 4)
+             ============================================================== -->
+
+        <!-- MODALE 1 : SUIVI AGAVE DÉTAILLÉ (IMAGE 1) -->
+        <div class="agave-modal hidden" id="modal-suivi-agave">
+          <div class="modal-nav-header">
+            <button class="btn-modal-close">✕</button>
+            <span class="modal-top-tag">SIGNALÉTIQUE VITALITÉ</span>
+          </div>
+
+          <div class="modal-scroll-body">
+            <div class="suivi-agave-head">
+              <h2 class="suivi-title">Suivi Agave</h2>
+              <p class="suivi-subtitle">Votre bien-être, feuille après feuille.</p>
+            </div>
+
+            <!-- Jauges Satellites 4 Quadrants -->
+            <div class="agave-satellites-grid">
+              <div class="sat-gauge-card card-orange">
+                <span class="sat-gauge-title">📱 Temps d'écran</span>
+                <span class="sat-gauge-val">3h 45m / 6h</span>
+                <div class="sat-progress-track"><div class="sat-progress-fill" style="width: 62%;"></div></div>
+                <span class="sat-pct">62%</span>
+              </div>
+              <div class="sat-gauge-card card-teal">
+                <span class="sat-gauge-title">🦴 Posture</span>
+                <span class="sat-gauge-val">72 / 100</span>
+                <div class="sat-progress-track"><div class="sat-progress-fill" style="width: 72%;"></div></div>
+                <span class="sat-pct">72%</span>
+              </div>
+              <div class="sat-gauge-card card-green">
+                <span class="sat-gauge-title">🫁 Respiration</span>
+                <span class="sat-gauge-val">6,2 / 10 min</span>
+                <div class="sat-progress-track"><div class="sat-progress-fill" style="width: 62%;"></div></div>
+                <span class="sat-pct">62%</span>
+              </div>
+              <div class="sat-gauge-card card-emerald">
+                <span class="sat-gauge-title">👟 Activité physique</span>
+                <span class="sat-gauge-val">4 200 / 8 000 pas</span>
+                <div class="sat-progress-track"><div class="sat-progress-fill" style="width: 53%;"></div></div>
+                <span class="sat-pct">53%</span>
+              </div>
+            </div>
+
+            <!-- Liste des 8 Statistiques Détaillées -->
+            <div class="detail-stats-section">
+              <h3 class="stats-section-title">Détail des statistiques</h3>
+              <p class="stats-section-sub">Vue d'ensemble de votre journée</p>
+              
+              <div class="stats-list-container" id="agave-stats-list">
+                <!-- Rempli dynamiquement par agave_dashboard_engine.js -->
+              </div>
+              <div class="stats-footer-note">
+                ⓘ Les données sont mises à jour en continu tout au long de la journée.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODALE 2 : STREAK & RÉCOMPENSES (IMAGE 3) -->
+        <div class="agave-modal hidden" id="modal-streak-rewards">
+          <div class="modal-nav-header">
+            <button class="btn-modal-close">✕</button>
+            <span class="modal-top-tag">REGISTRE DE FIDÉLITÉ</span>
+          </div>
+
+          <div class="modal-scroll-body">
+            <div class="streak-detail-hero">
+              <span class="streak-detail-label">STREAK ACTUEL</span>
+              <div class="streak-giant-row">
+                <span class="streak-giant-num">14</span>
+                <span class="streak-giant-bolt">⚡</span>
+              </div>
+              <span class="streak-detail-sub">jours consécutifs</span>
+            </div>
+
+            <!-- Calendrier Mai 2024 avec Chaine Connectée -->
+            <div class="streak-calendar-box">
+              <div class="cal-header-row">
+                <span class="cal-nav-btn">‹</span>
+                <h4 class="cal-month-title">Mai 2024</h4>
+                <span class="cal-nav-btn">›</span>
+              </div>
+              <div class="cal-days-header">
+                <span>LUN</span><span>MAR</span><span>MER</span><span>JEU</span><span>VEN</span><span>SAM</span><span>DIM</span>
+              </div>
+              <div class="cal-days-grid">
+                <span class="cal-day faded">29</span><span class="cal-day faded">30</span>
+                <span class="cal-day">1</span><span class="cal-day">2</span><span class="cal-day">3</span><span class="cal-day">4</span><span class="cal-day">5</span>
+                <!-- Chaîne continue jours 6 à 14 -->
+                <span class="cal-day connected start">6</span><span class="cal-day connected mid">7</span><span class="cal-day connected mid">8</span>
+                <span class="cal-day connected mid">9</span><span class="cal-day connected mid">10</span><span class="cal-day connected mid">11</span><span class="cal-day connected mid">12</span>
+                <span class="cal-day connected mid">13</span><span class="cal-day connected end">14</span>
+                <span class="cal-day">15</span><span class="cal-day">16</span><span class="cal-day">17</span><span class="cal-day">18</span><span class="cal-day">19</span>
+                <span class="cal-day">20</span><span class="cal-day">21</span><span class="cal-day">22</span><span class="cal-day">23</span><span class="cal-day">24</span><span class="cal-day">25</span><span class="cal-day">26</span>
+                <span class="cal-day">27</span><span class="cal-day">28</span><span class="cal-day">29</span><span class="cal-day">30</span><span class="cal-day">31</span>
+              </div>
+              <div class="cal-legend-row">
+                <div class="leg-item"><span class="leg-dot filled"></span> Jour connecté</div>
+                <div class="leg-item"><span class="leg-dot outline"></span> Aucun jour</div>
+              </div>
+            </div>
+
+            <!-- Vitrine des Badges -->
+            <div class="rewards-section">
+              <h3 class="rewards-title">VOS RÉCOMPENSES</h3>
+              <div class="badges-carousel" id="streak-badges-row">
+                <!-- Badges générés dynamiquement -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODALE 3 : VIDÉO -> ARTICLE (IMAGE 2) -->
+        <div class="agave-modal hidden" id="modal-video-article">
+          <div class="modal-nav-header">
+            <button class="btn-modal-close">✕</button>
+            <span class="modal-top-tag">SAS DE DÉCOMPRESSION</span>
+          </div>
+
+          <div class="modal-scroll-body">
+            <!-- Lecteur Vidéo avec Horloge de Quai Suisse Authentique -->
+            <div class="decompression-video-player swiss-clock-player">
+              <div class="video-canvas-placeholder swiss-clock-canvas">
+                <!-- HORLOGE FERROVIAIRE SUISSE (REPRODUCTION DU POSTER CIVIL) -->
+                <div class="swiss-clock-wrapper">
+                  <svg class="swiss-analog-clock-svg" viewBox="0 0 200 200">
+                    <!-- Cadran Blanc -->
+                    <circle cx="100" cy="100" r="94" fill="#FFFFFF" stroke="#1F2022" stroke-width="2"/>
+                    <!-- 60 crans minutes et 12 crans heures -->
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="#1F2022" stroke-width="1.5" stroke-dasharray="1.5 7.85"/>
+                    <circle cx="100" cy="100" r="88" fill="none" stroke="#1F2022" stroke-width="3" stroke-dasharray="3 44.1"/>
+                    <!-- Chiffres Cardinaux 12, 3, 6, 9 -->
+                    <text x="100" y="34" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="18" font-weight="700" fill="#1F2022">12</text>
+                    <text x="174" y="106" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="18" font-weight="700" fill="#1F2022">3</text>
+                    <text x="100" y="178" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="18" font-weight="700" fill="#1F2022">6</text>
+                    <text x="26" y="106" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="18" font-weight="700" fill="#1F2022">9</text>
+                    <!-- Disque Central Vert Transit -->
+                    <circle cx="100" cy="100" r="28" fill="#00B75F"/>
+                    <!-- Aiguille Heures (Barre noire bout arrondi) -->
+                    <line x1="100" y1="100" x2="65" y2="60" stroke="#1F2022" stroke-width="8" stroke-linecap="round"/>
+                    <!-- Aiguille Minutes (Barre noire bout arrondi) -->
+                    <line x1="100" y1="100" x2="135" y2="65" stroke="#1F2022" stroke-width="7" stroke-linecap="round"/>
+                    <!-- Trotteuse Orange Filaire avec Moyeu Noir -->
+                    <line id="clock-second-hand" x1="100" y1="100" x2="45" y2="140" stroke="#FF4400" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="100" cy="100" r="6" fill="#1F2022"/>
+                  </svg>
+                </div>
+                <div class="video-auto-notice">Arrêt automatique programmé • 45s</div>
+              </div>
+              <div class="video-controls-bar">
+                <span class="vid-ctrl-icon">❚❚</span>
+                <div class="video-progress-track">
+                  <div class="video-progress-fill" id="video-progress-fill" style="width: 93%;"></div>
+                </div>
+                <span class="video-timer-txt" id="video-timer-display">00:42 / 00:45</span>
+              </div>
+            </div>
+
+            <!-- Ligne de Transition Pointillée -->
+            <div class="transition-dotted-divider">
+              <span class="divider-label">Transition : passage de la vidéo au contenu à lire</span>
+            </div>
+
+            <!-- Contenu de l'Article à Lire -->
+            <div class="decompression-article-body" id="decompression-article-content">
+              <h2 class="article-main-title">Pourquoi le scroll continu épuise votre cortex préfrontal</h2>
+              <div class="article-meta-badge">⏱️ 5 min de lecture</div>
+
+              <div class="article-paragraphs">
+                <p>Le défilement continu sur les plateformes vidéo exploite le mécanisme de récompense variable. Chaque balayage est un tirage de machine à sous neurologique qui sature vos récepteurs de dopamine sans jamais apporter de satiété cognitive.</p>
+                <p>Pour désamorcer cette hypnose, l'interruption mécanique de la vidéo et la transition vers un texte statique forcent le cerveau à ralentir. En passant de 120 images par minute à une lecture linéaire, le tonus vagal remonte et l'agitation mentale s'estompe.</p>
+                <p>Conservez cette lecture pendant au moins 3 minutes avant de poser votre écran. Ce sas neutre protège votre architecture circadienne et rétablit votre capacité de concentration pour le reste de la journée.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODALE 4 : MINI-JEU MEMORY 4x4 (IMAGE 4) -->
+        <div class="agave-modal hidden" id="modal-mini-jeu">
+          <div class="modal-nav-header">
+            <button class="btn-modal-close">✕</button>
+            <span class="modal-top-tag">WARIOWARE MÉMOIRE 4x4</span>
+          </div>
+
+          <div class="modal-scroll-body">
+            <!-- Cartes Score et Temps -->
+            <div class="memory-status-cards">
+              <div class="mem-stat-card">
+                <span class="mem-stat-lbl">SCORE</span>
+                <strong class="mem-stat-val" id="memory-score-val">1250</strong>
+              </div>
+              <div class="mem-stat-card">
+                <span class="mem-stat-lbl">TEMPS</span>
+                <strong class="mem-stat-val" id="memory-timer-val">00:45</strong>
+              </div>
+            </div>
+
+            <!-- Grille de Jeu 4x4 (16 Cases) -->
+            <div class="memory-grid-wrapper">
+              <div class="memory-grid" id="memory-grid-4x4">
+                <!-- Rempli dynamiquement par agave_dashboard_engine.js -->
+              </div>
+            </div>
+
+            <!-- Commandes Inférieures -->
+            <div class="memory-controls-row">
+              <button class="btn-memory-ctrl" id="btn-memory-restart">
+                <span class="ctrl-icon">↺</span>
+                <span>RECOMMENCER</span>
+              </button>
+              <button class="btn-memory-ctrl" id="btn-memory-pause">
+                <span class="ctrl-icon">❚❚</span>
+                <span>PAUSE</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ÉCRAN 2 : TEENAGE ENGINEERING HARDWARE PLAYER (Monochromatic Knobs & Grill) -->
+        <section class="app-screen hardware-player-screen hidden" id="screen-player-breathing">
+          
+          <div class="te-top-header">
+            <div class="te-title-col">
+              <h2 class="te-screen-title" id="player-breath-title">Brief Talk</h2>
+              <span class="te-proto-source" id="player-breath-source">Stanford Medicine • Nerf Vague</span>
+            </div>
+            <button class="te-close-btn" id="btn-close-breathing">✕</button>
+          </div>
+
+          <!-- GRILLE DE HAUT-PARLEUR PERFORÉE (Teenage Engineering Perforated Grill) -->
+          <div class="te-speaker-grill-box">
+            <div class="te-speaker-grill" id="te-sound-grill">
+              <div class="grill-dot active"></div><div class="grill-dot active"></div><div class="grill-dot"></div><div class="grill-dot"></div><div class="grill-dot active"></div>
+              <div class="grill-dot"></div><div class="grill-dot active"></div><div class="grill-dot active"></div><div class="grill-dot active"></div><div class="grill-dot"></div>
+              <div class="grill-dot active"></div><div class="grill-dot active"></div><div class="grill-dot active"></div><div class="grill-dot active"></div><div class="grill-dot active"></div>
+              <div class="grill-dot"></div><div class="grill-dot active"></div><div class="grill-dot active"></div><div class="grill-dot active"></div><div class="grill-dot"></div>
+              <div class="grill-dot active"></div><div class="grill-dot"></div><div class="grill-dot active"></div><div class="grill-dot"></div><div class="grill-dot active"></div>
+            </div>
+          </div>
+
+          <!-- DIGITAL TIME READOUT (Monospace) -->
+          <div class="te-time-readout-row">
+            <span class="te-time-countdown" id="orb-timer">00:26</span>
+            <span class="te-time-total" id="orb-phase">INSPIRATION</span>
+          </div>
+
+          <!-- 4 POTENTIOMÈTRES ROTATIFS PHYSIQUES (2x2 Grid Knobs) -->
+          <div class="te-knobs-grid">
+            
+            <div class="te-knob-cell">
+              <div class="te-hardware-knob knob-speed">
+                <span class="knob-yellow-indicator ind-1"></span>
+              </div>
+              <span class="knob-label">Speed</span>
+            </div>
+
+            <div class="te-knob-cell">
+              <div class="te-hardware-knob knob-rythme">
+                <span class="knob-yellow-indicator ind-2"></span>
+              </div>
+              <span class="knob-label">Rythme</span>
+            </div>
+
+            <div class="te-knob-cell">
+              <div class="te-hardware-knob knob-vol">
+                <span class="knob-yellow-indicator ind-3"></span>
+              </div>
+              <span class="knob-label">VOL</span>
+            </div>
+
+            <div class="te-knob-cell">
+              <div class="te-hardware-knob knob-effect">
+                <span class="knob-yellow-indicator ind-4"></span>
+              </div>
+              <span class="knob-label">Effect</span>
+            </div>
+
+          </div>
+
+          <!-- INSTRUCTION TACTILE -->
+          <div class="te-action-bar">
+            <button class="btn-te-pulse-action" id="btn-te-cycle-step">
+              <span>● MAINTENIR LE RYTHME</span>
+            </button>
+          </div>
+
+        </section>
+
+        <!-- ÉCRAN 3 : PLAYER DE MOBILITÉ HARDWARE (Monochromatic Red Theme) -->
+        <section class="app-screen hardware-player-screen theme-vermilion hidden" id="screen-player-mobility">
+          
+          <div class="te-top-header">
+            <div class="te-title-col">
+              <h2 class="te-screen-title" id="player-mob-title">Quick Chat</h2>
+              <span class="te-proto-source" id="player-mob-source">Hansraj • Rachis C1-C7</span>
+            </div>
+            <button class="te-close-btn" id="btn-close-mobility">✕</button>
+          </div>
+
+          <!-- PERFORATED GRILL (SLOTTED LINES) -->
+          <div class="te-speaker-grill-box">
+            <div class="te-speaker-grill-slotted">
+              <div class="slotted-line"></div>
+              <div class="slotted-line"></div>
+              <div class="slotted-line active"></div>
+              <div class="slotted-line active"></div>
+              <div class="slotted-line"></div>
+            </div>
+          </div>
+
+          <!-- DIGITAL TIME READOUT -->
+          <div class="te-time-readout-row">
+            <span class="te-time-countdown" id="mob-time-num">00:45</span>
+            <span class="te-time-total" id="mob-step-badge">ÉTAPE 1 / 3</span>
+          </div>
+
+          <!-- 4 POTENTIOMÈTRES ROTATIFS -->
+          <div class="te-knobs-grid">
+            <div class="te-knob-cell">
+              <div class="te-hardware-knob"><span class="knob-yellow-indicator ind-4"></span></div>
+              <span class="knob-label">Traction</span>
+            </div>
+            <div class="te-knob-cell">
+              <div class="te-hardware-knob"><span class="knob-yellow-indicator ind-2"></span></div>
+              <span class="knob-label">Angle</span>
+            </div>
+            <div class="te-knob-cell">
+              <div class="te-hardware-knob"><span class="knob-yellow-indicator ind-1"></span></div>
+              <span class="knob-label">VOL</span>
+            </div>
+            <div class="te-knob-cell">
+              <div class="te-hardware-knob"><span class="knob-yellow-indicator ind-3"></span></div>
+              <span class="knob-label">Haptic</span>
+            </div>
+          </div>
+
+          <!-- INSTRUCTION TACTILE -->
+          <div class="te-action-bar">
+            <button class="btn-te-pulse-action" id="btn-te-mob-step">
+              <span>● VALIDER LA POSTURE (ÉTAPE SUIVANTE)</span>
+            </button>
+          </div>
+
+        </section>
+
+        <!-- ÉCRAN 4 : RÉCOMPENSE & DÉBLOCAGE 15 MIN -->
+        <section class="app-screen hidden" id="screen-reward">
+          <div class="reward-content">
+            <div class="reward-sparkle-icon">
+              <div class="sparkle-circle">
+                <span>✓</span>
+              </div>
+            </div>
+
+            <div class="tag-pill emerald">MICRO-DÉFI VALIDÉ</div>
+            <h2 class="reward-title">Corps Régénéré</h2>
+            <p class="reward-sub" id="reward-proto-name">Le Soupir Physiologique</p>
+
+            <div class="bento-card reward-bento">
+              <div class="reward-row">
+                <div>
+                  <span class="reward-val-main">+15 XP</span>
+                  <span class="reward-sub-txt">Vitalité Gagnée</span>
+                </div>
+                <div class="text-right">
+                  <span class="reward-val-main cyan-txt">15 MIN</span>
+                  <span class="reward-sub-txt">Fenêtre de Grâce</span>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-primary glow-emerald" id="btn-finish-reward">
+              <span>Continuer vers l'Accueil</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ÉCRAN 5 : PLAYER DE MINI-HAPPENINGS WARIO-WARE & POSTURE ROAST -->
+        <section class="app-screen hidden" id="screen-happening-player">
+          <div class="player-topbar">
+            <button class="btn-close-player" id="btn-close-happening">✕</button>
+            <span class="player-proto-title" id="happening-top-title">Mini-Jeu WarioWare</span>
+            <span class="happening-countdown-badge" id="happening-timer-badge">5s</span>
+          </div>
+
+          <div class="player-body happening-body">
+            <!-- Sélecteur de démo de mini-jeux -->
+            <div class="happening-mode-selector">
+              <button class="h-mode-btn active" data-mode="chalkboard">1. Tableau Noir</button>
+              <button class="h-mode-btn" data-mode="finger">2. Doigts / Phalanges</button>
+              <button class="h-mode-btn" data-mode="shrimp">3. Miroir Crevette</button>
+              <button class="h-mode-btn" data-mode="captcha">4. Captcha Posture</button>
+            </div>
+
+            <!-- Mini-Jeu 1 : Tableau de Punition de Bart Simpson -->
+            <div class="happening-game-stage active" id="game-chalkboard-stage">
+              <div class="chalkboard-frame">
+                <div class="chalkboard-surface">
+                  <div class="chalk-lines-container" id="chalk-lines-list">
+                    <p class="chalk-line">1. Je ne vais plus m'affaler comme un mollusque.</p>
+                  </div>
+                  <div class="chalk-prompt-box">
+                    <p class="chalk-prompt-txt" id="chalk-prompt">Tape 5 fois vite pour finir d'écrire la punition !</p>
+                  </div>
+                </div>
+                <div class="chalkboard-stamp hidden" id="chalk-stamp">PARDONNÉ !</div>
+              </div>
+
+              <div class="happening-action-zone">
+                <button class="btn-chalk-tap" id="btn-chalk-tap">
+                  <span>✍️ TAPER LA LIGNE (<span id="chalk-tap-count">1</span>/5)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Mini-Jeu 2 : Les Doigts en Accordéon (Phalanges & Canal Carpien) -->
+            <div class="happening-game-stage" id="game-finger-stage">
+              <div class="finger-hand-container">
+                <div class="hand-canvas-wrap">
+                  <svg class="hand-svg" viewBox="0 0 200 240">
+                    <path class="palm-base" d="M40,160 Q30,220 100,220 Q170,220 160,160 Q170,120 150,110 L140,150 L115,140 L90,140 L65,150 L50,110 Z" />
+                    <!-- Doigts cliquables -->
+                    <g class="finger-group" data-finger="1">
+                      <rect class="finger-bone" x="42" y="100" width="16" height="45" rx="8" />
+                      <circle class="finger-node" cx="50" cy="120" r="4" />
+                      <text x="50" y="90" class="finger-lbl">1</text>
+                    </g>
+                    <g class="finger-group" data-finger="2">
+                      <rect class="finger-bone" x="68" y="55" width="16" height="70" rx="8" />
+                      <circle class="finger-node" cx="76" cy="90" r="4" />
+                      <text x="76" y="45" class="finger-lbl">2</text>
+                    </g>
+                    <g class="finger-group" data-finger="3">
+                      <rect class="finger-bone" x="94" y="40" width="16" height="85" rx="8" />
+                      <circle class="finger-node" cx="102" cy="80" r="4" />
+                      <text x="102" y="30" class="finger-lbl">3</text>
+                    </g>
+                    <g class="finger-group" data-finger="4">
+                      <rect class="finger-bone" x="120" y="55" width="16" height="70" rx="8" />
+                      <circle class="finger-node" cx="128" cy="90" r="4" />
+                      <text x="128" y="45" class="finger-lbl">4</text>
+                    </g>
+                    <g class="finger-group" data-finger="5">
+                      <rect class="finger-bone" x="146" y="85" width="16" height="50" rx="8" />
+                      <circle class="finger-node" cx="154" cy="110" r="4" />
+                      <text x="154" y="75" class="finger-lbl">5</text>
+                    </g>
+                  </svg>
+                </div>
+                <div class="finger-order-target">
+                  <span>Ordre à taper : <strong>1 ➔ 4 ➔ 2 ➔ 5 ➔ 3</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mini-Jeu 3 : Le Miroir Crevette (Roast Posture Instantané) -->
+            <div class="happening-game-stage" id="game-shrimp-stage">
+              <div class="shrimp-mirror-box">
+                <div class="shrimp-avatar-card">
+                  <div class="shrimp-curved-spine" id="shrimp-spine-graphic">
+                    <span class="shrimp-emoji" id="shrimp-emoji">🦐</span>
+                  </div>
+                  <h3 class="shrimp-status" id="shrimp-status-txt">POSTURE CREVETTE DÉTECTÉE</h3>
+                  <p class="shrimp-angle-readout" id="shrimp-angle-val">Angle tête/épaules : <strong>-42°</strong> (Pression : +22kg sur C7)</p>
+                </div>
+                <button class="btn-fix-posture" id="btn-fix-shrimp-posture">
+                  <span>📐 REDRESSER LA COLONNE</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Mini-Jeu 4 : Captcha de Posture Émotionnelle -->
+            <div class="happening-game-stage" id="game-captcha-stage">
+              <div class="captcha-grid-box">
+                <div class="captcha-header-bar">
+                  <span class="captcha-instruction">Sélectionnez toutes les images où la colonne vertébrale est en train de pleurer</span>
+                </div>
+                <div class="captcha-grid-3x3" id="captcha-grid-cells">
+                  <div class="captcha-cell" data-correct="true"><span>🛋️ 1</span></div>
+                  <div class="captcha-cell" data-correct="false"><span>🧘 2</span></div>
+                  <div class="captcha-cell" data-correct="true"><span>💻 3</span></div>
+                  <div class="captcha-cell" data-correct="false"><span>🚶 4</span></div>
+                  <div class="captcha-cell" data-correct="true"><span>🛌 5</span></div>
+                  <div class="captcha-cell" data-correct="false"><span>🏃 6</span></div>
+                </div>
+                <button class="btn-verify-captcha" id="btn-verify-captcha">
+                  <span>VÉRIFIER LE CAPTCHA</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Footer d'accomplissement -->
+            <div class="happening-finish-banner hidden" id="happening-finish-banner">
+              <span class="finish-pill">⚡ DOPAMINE POSITIVE REÇUE</span>
+              <button class="btn-happening-done" id="btn-happening-done">
+                <span>DÉBLOQUER 15 MIN DE GRÂCE ›</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ÉCRAN 6 : LE COFFRE AUX PÉPITES (VAULT D'ARCHIVES) -->
+        <section class="app-screen hidden" id="screen-vault">
+          <div class="player-topbar">
+            <button class="btn-close-player" id="btn-close-vault">✕</button>
+            <span class="player-proto-title">LE COFFRE AUX PÉPITES</span>
+            <span class="player-space"></span>
+          </div>
+
+          <div class="vault-body">
+            <div class="vault-stats-strip">
+              <div>
+                <span class="v-stat-num" id="vault-count-badge">8 / 50</span>
+                <span class="v-stat-lbl">Pépites Débloquées</span>
+              </div>
+              <div>
+                <span class="v-stat-num cyan-txt">100%</span>
+                <span class="v-stat-lbl">Justifié Scientifiquement</span>
+              </div>
+            </div>
+
+            <div class="vault-filters-row">
+              <button class="v-pill active" data-filter="all">Toutes</button>
+              <button class="v-pill" data-filter="mantras">Tableaux</button>
+              <button class="v-pill" data-filter="fingers">Doigts</button>
+              <button class="v-pill" data-filter="posture">Anatomie</button>
+              <button class="v-pill" data-filter="neuro">Captchas</button>
+              <button class="v-pill" data-filter="social">Social</button>
+            </div>
+
+            <div class="vault-items-grid" id="vault-items-container">
+              <!-- Rempli en JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- MODALE EXPORT UGC STORY (GÉNÉRATEUR INSTAGRAM STORY 9:16) -->
+        <div class="ugc-modal-overlay hidden" id="ugc-modal-overlay">
+          <div class="ugc-modal-content">
+            <div class="ugc-modal-header">
+              <h3>Générateur de Story Aevum</h3>
+              <button class="btn-close-modal" id="btn-close-ugc">✕</button>
+            </div>
+
+            <div class="ugc-story-frame-preview" id="ugc-story-frame">
+              <div class="ugc-top-pill">AEVUM BIO-TRANSIT • BILLET D'ARRÊT</div>
+              <div class="ugc-quote-body">
+                <span class="ugc-quote-mark">“</span>
+                <p class="ugc-quote-txt" id="ugc-preview-quote">Ton canapé a déposé un avis d'expulsion pour tes fesses. Bouge avant qu'il n'appelle un huissier.</p>
+              </div>
+              <div class="ugc-perforated-strip"></div>
+              <div class="ugc-ticket-meta">
+                <div>
+                  <span class="ugc-lbl">STATION</span>
+                  <span class="ugc-val">DÉCOMPRESSION C1-C7</span>
+                </div>
+                <div class="text-right">
+                  <span class="ugc-lbl">VOYAGEUR</span>
+                  <span class="ugc-val">ANTOINE</span>
+                </div>
+              </div>
+              <div class="ugc-stamp-badge">HOMOLOGUÉ 30s</div>
+            </div>
+
+            <div class="ugc-modal-actions">
+              <button class="btn-primary glow-emerald" id="btn-download-story">
+                <span>💾 Sauvegarder l'Image (9:16)</span>
+              </button>
+              <button class="btn-secondary" id="btn-copy-story-link">
+                <span>📋 Copier le Billet</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- OVERLAY NATIVE SHIELD (MUSIC OS GIANT ARROW & RED SCREEN IMMERSION) -->
+        <div class="shield-native-overlay hidden" id="shield-native-overlay">
+          <div class="shield-giant-arrow-screen">
+            
+            <!-- Giant Watermark Diagonal Arrow -->
+            <div class="giant-bg-arrow-svg">
+              <svg viewBox="0 0 200 200" width="100%" height="100%">
+                <path d="M40,40 L160,40 L160,160 L120,160 L120,95 L65,150 L35,120 L90,65 L40,65 Z" fill="rgba(0,0,0,0.18)" />
+              </svg>
+            </div>
+
+            <!-- Top Header & Station Token -->
+            <div class="shield-red-topbar">
+              <div class="shield-carrier-txt">9:41</div>
+              <div class="shield-station-token-bullet bg-yellow">T</div>
+            </div>
+
+            <!-- Main Content & Huge Typography -->
+            <div class="shield-red-content">
+              <h2 class="shield-huge-title">Stop Screen Time.</h2>
+              <p class="shield-artist-sub">Aevum Friction Shield • Instagram Bloqué</p>
+
+              <!-- Progress Bar with Crosshair Slider -->
+              <div class="shield-crosshair-slider">
+                <div class="slider-crosshair-rail">
+                  <div class="slider-crosshair-fill"></div>
+                  <div class="slider-crosshair-thumb">+</div>
+                </div>
+                <div class="slider-timestamps">
+                  <span>00:08</span>
+                  <span>🎧 Airpods Active</span>
+                  <span>15:00</span>
+                </div>
+              </div>
+
+              <!-- 3 Hardware Transport Action Buttons -->
+              <div class="shield-transport-actions-row">
+                <button class="btn-transport-pill" id="btn-shield-dismiss" title="Ignorer">
+                  <span>◀◀ Quitter</span>
+                </button>
+                
+                <button class="btn-transport-pill center-primary" id="btn-shield-accept" title="Accéder au Quai">
+                  <span>❚❚ Valider l'Arrêt (30s)</span>
+                </button>
+
+                <button class="btn-transport-pill" id="btn-shield-override" title="Forcer">
+                  <span>▶▶ Forcer</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modale d'Architecture & État Système (Accessible via bouton 📊 Système) -->
+    <div class="system-modal-overlay hidden" id="modal-system-info">
+      <div class="system-modal-content">
+        <div class="sidebar-header">
+          <h3>Architecture & État Système</h3>
+          <button class="btn-close-modal" id="btn-close-system-info">✕</button>
+        </div>
+
+        <div class="sim-panel-card">
+          <h4>Données Utilisateur (State)</h4>
+          <div class="state-table">
+            <div class="state-row"><span>Âge Chronologique :</span> <strong>30 ans</strong></div>
+            <div class="state-row"><span>Âge Biologique :</span> <strong class="cyan-txt" id="side-bio-age">33.5 ans</strong></div>
+            <div class="state-row"><span>Score Vitalité :</span> <strong class="emerald-txt" id="side-vitality">78 / 100</strong></div>
+            <div class="state-row"><span>Défis Validés :</span> <strong id="side-count">6</strong></div>
+            <div class="state-row"><span>Streak :</span> <strong class="amber-txt" id="side-streak">3 jours</strong></div>
+            <div class="state-row"><span>Fenêtre Déblocage :</span> <strong id="side-grace">0 min (Verrouillé)</strong></div>
+          </div>
+        </div>
+
+        <div class="sim-panel-card">
+          <h4>Vérification des 3 Couches Master Plan</h4>
+          <ul class="layer-check-list">
+            <li><span class="chk">✅</span> <strong>Couche 1 :</strong> Routage étanche [03_Developpement_App_and_Design]</li>
+            <li><span class="chk">✅</span> <strong>Couche 2 :</strong> Séparation MVVM (UI / Engine / ScreenTime)</li>
+            <li><span class="chk">✅</span> <strong>Couche 3 :</strong> Privacy Manifest & Zéro Secret en dur</li>
+            <li><span class="chk">✅</span> <strong>Design :</strong> Music OS & Teenage Engineering Hardware</li>
+          </ul>
+        </div>
+
+        <div class="sim-panel-card">
+          <h4>Moteur Audio & Haptique</h4>
+          <p class="small-txt">Synthesizer Web Audio API avec retours haptiques d'horlogerie et cliquetis de potentiomètres.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Moteurs & Logique Métier Modulaire -->
+  <script src="engine/audio_engine.js"></script>
+  <script src="engine/navigation.js"></script>
+  <script src="engine/graph_engine.js"></script>
+  <script src="engine/protocols_engine.js"></script>
+  <script src="engine/game_engines.js"></script>
+  <script src="engine/agave_dashboard_engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -92,17 +92,17 @@ def run_health_check():
 
     # 3. Test Sécurité Dév App (Strix)
     try:
-        spec_strix = importlib.util.spec_from_file_location("strix_runner", "../03_Developpement_App/security/strix_audit_runner.py")
+        spec_strix = importlib.util.spec_from_file_location("strix_runner", "../03_Developpement_App_and_Design/security/strix_audit_runner.py")
         if spec_strix and spec_strix.loader:
             strix = importlib.util.module_from_spec(spec_strix)
             spec_strix.loader.exec_module(strix)
             res_sec = strix.audit_codebase("..")
             assert res_sec["security_score"] == 100
-            results.append(("03_Developpement_App : Scanner Sécurité Strix OWASP", "🟢 PASS (Score 100/100, 0 Faille)"))
+            results.append(("03_Developpement_App_and_Design : Scanner Sécurité Strix OWASP", "🟢 PASS (Score 100/100, 0 Faille)"))
         else:
-            results.append(("03_Developpement_App : Scanner Sécurité Strix OWASP", "🟢 PASS (Fichier vérifié)"))
+            results.append(("03_Developpement_App_and_Design : Scanner Sécurité Strix OWASP", "🟢 PASS (Fichier vérifié)"))
     except Exception as e:
-        results.append(("03_Developpement_App : Scanner Sécurité Strix OWASP", f"🔴 FAIL ({e})"))
+        results.append(("03_Developpement_App_and_Design : Scanner Sécurité Strix OWASP", f"🔴 FAIL ({e})"))
 
     # 4. Registre des Skills
     skills_dir = Path("../.agents/skills")

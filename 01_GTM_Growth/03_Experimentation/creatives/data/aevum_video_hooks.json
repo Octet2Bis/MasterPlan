@@ -1,0 +1,77 @@
+{
+  "project": "Aevum iOS Native",
+  "aspect_ratio": "9:16",
+  "target_duration_seconds": 30,
+  "storyboards": [
+    {
+      "id": "hook_pattern_interrupt",
+      "name": "Hook 1 : Le Déverrouillage Conscient (Screen Time)",
+      "target_audience": "Utilisateurs accros aux réseaux sociaux / Scroll infini",
+      "scenes": [
+        {
+          "step": 1,
+          "duration": "0-3s",
+          "type": "Hook Visuel",
+          "text_overlay": "3h42 de temps d'écran aujourd'hui...",
+          "visual_asset": "screen_recording_instagram_scroll.mp4",
+          "audio_cue": "Silence abrupt + haptic click"
+        },
+        {
+          "step": 2,
+          "duration": "3-8s",
+          "type": "Friction Aevum",
+          "text_overlay": "Et si chaque déblocage te redonnait de l'énergie ?",
+          "visual_asset": "aevum_shield_activation.mp4",
+          "audio_cue": "Breathing orb sound 4-7-8"
+        },
+        {
+          "step": 3,
+          "duration": "8-24s",
+          "type": "Micro-Défi 30s",
+          "text_overlay": "Respiration vagale guidée : active ton nerf vague",
+          "visual_asset": "aevum_breathing_player.mp4",
+          "audio_cue": "Tone synthe 432Hz"
+        },
+        {
+          "step": 4,
+          "duration": "24-30s",
+          "type": "Appel à l'Action",
+          "text_overlay": "Installe Aevum sur TestFlight (Lien en bio)",
+          "visual_asset": "aevum_app_icon_bento.png",
+          "audio_cue": "Success chime"
+        }
+      ]
+    },
+    {
+      "id": "hook_bioage_calculator",
+      "name": "Hook 2 : Âge Biologique vs Âge Chronologique",
+      "target_audience": "Biohackers, Santé préventive, Sportifs",
+      "scenes": [
+        {
+          "step": 1,
+          "duration": "0-4s",
+          "type": "Hook Curiosité",
+          "text_overlay": "Ton cœur a-t-il l'âge de ta carte d'identité ?",
+          "visual_asset": "bioage_diagnostic_screen.mp4",
+          "audio_cue": "Heartbeat slow pulse"
+        },
+        {
+          "step": 2,
+          "duration": "4-15s",
+          "type": "Preuve VRC HealthKit",
+          "text_overlay": "Analyse de ta Variabilité Cardiaque (VRC) en local",
+          "visual_asset": "aevum_vitality_score_widget.mp4",
+          "audio_cue": "Data sweep sound"
+        },
+        {
+          "step": 3,
+          "duration": "15-30s",
+          "type": "Défi Décompression",
+          "text_overlay": "Gagne 2 ans d'âge biologique avec nos 12 protocoles",
+          "visual_asset": "aevum_decompression_routine.mp4",
+          "audio_cue": "Deep hum tone"
+        }
+      ]
+    }
+  ]
+}

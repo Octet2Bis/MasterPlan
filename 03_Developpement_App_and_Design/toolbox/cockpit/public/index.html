@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌌 Master Plan • Visual Cockpit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles/tokens.css">
+  <link rel="stylesheet" href="./styles/cockpit.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="cockpit-header">
+    <div class="brand-group">
+      <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-gtm); box-shadow: 0 0 10px var(--accent-gtm);"></div>
+      <h1 class="brand-title">MASTER PLAN COCKPIT</h1>
+      <span class="status-pill" id="system-status-pill">● OPÉRATIONNEL</span>
+    </div>
+
+    <!-- 4 Tabs Navigation -->
+    <nav class="nav-tabs" id="nav-tabs-container">
+      <button class="tab-btn active" data-tab="gtm"><span>📈</span> 01. GTM & Growth</button>
+      <button class="tab-btn" data-tab="assistant"><span>💼</span> 02. Assistant</button>
+      <button class="tab-btn" data-tab="dev"><span>📱</span> 03. Dev Apps</button>
+      <button class="tab-btn" data-tab="control"><span>🌌</span> 04. Tour de Contrôle</button>
+    </nav>
+
+    <!-- Quick Tools -->
+    <div style="display: flex; gap: var(--gap-sm);">
+      <button class="btn-action" id="btn-run-tests">⚡ Quality Gate</button>
+      <button class="btn-action" id="btn-run-dag">🗺️ DAG Topo</button>
+    </div>
+  </header>
+
+  <!-- Main Bento Grid (2 Columns : Sidebar Projects + Fullscreen Live Render) -->
+  <main class="cockpit-grid">
+    <!-- Colonne 1 : Projets & Périmètre Actif -->
+    <section class="col-projects">
+      <div class="panel-header">
+        <span id="tab-pillar-label">01_GTM_GROWTH</span>
+        <span class="status-pill" id="tab-project-count">5 PROJETS</span>
+      </div>
+      <div style="padding: 12px var(--gap-md); border-bottom: 1px solid var(--border-subtle); background: var(--surface-2);">
+        <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.4;" id="tab-desc-text">
+          Stratégies d'acquisition B2B/B2C, AEO/GEO, Tracking DataLayer et Pipelines Outbound.
+        </p>
+      </div>
+      <div class="project-list" id="project-list-container">
+        <!-- Rendu dynamique des projets -->
+      </div>
+    </section>
+
+    <!-- Colonne 2 : Live Render Plein Écran (Simulateur / Dashboard / Docs / DAG) -->
+    <section class="col-live">
+      <div class="panel-header" style="background: var(--surface-1);">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 14px;">🖥️</span>
+          <span id="live-panel-title">Aperçu en Direct</span>
+        </div>
+        <div style="display: flex; gap: 6px;" id="live-actions-bar">
+          <!-- Actions contextuelles dynamiques -->
+        </div>
+      </div>
+      <div class="live-frame-container" id="live-frame-container">
+        <!-- iFrame ou vue de contenu injectée en direct -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts Moteurs -->
+  <script src="./engine/navigation.js"></script>
+  <script src="./engine/live_renderer.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+/**
+ * OUTBOUND CAMPAIGNS — TOKENS NEO-BRUTALIST SWISS & WARM PAPER
+ * Palette Papier Lin #F8F6F1 & Typographie Bricolage Grotesque (< 70 lignes)
+ */
+
+:root {
+  /* Surfaces Étagées Papier Chaud & Lin */
+  --bg-canvas: #F8F6F1;
+  --surface-card: #FFFFFF;
+  --surface-card-hover: #F5F2EC;
+  --surface-input: #FDFCFA;
+  --surface-skeleton: #EAE6DF;
+
+  /* Bordures Hairlines Délicates */
+  --border-subtle: #E4DFD6;
+  --border-interactive: #C9C2B5;
+  --border-focus: #1E1B18;
+  --border-success: #B8DEC4;
+
+  /* Accents Nobles & Carbone */
+  --accent-primary: #1E1B18;
+  --accent-primary-hover: #36322D;
+  --accent-primary-text: #FFFFFF;
+  --accent-success: #2D7A4F;
+  --accent-success-text: #1D5436;
+  --accent-success-bg: #EDF5F0;
+  --accent-warning: #B8621B;
+  --accent-warning-text: #82400C;
+  --accent-warning-bg: #FDF5ED;
+  --accent-error: #C23B38;
+  --accent-error-text: #8C2220;
+  --accent-error-bg: #FDEEEC;
+  --accent-info: #4A6572;
+
+  /* Textes Carbone Haute Lisibilité */
+  --text-primary: #1E1B18;
+  --text-secondary: #6E685F;
+  --text-muted: #8F877B;
+
+  /* Pairing Typographique : Bricolage Grotesque + Plus Jakarta Sans + JetBrains Mono */
+  --font-heading: 'Bricolage Grotesque', -apple-system, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Échelle Spatiale Grille 8pt */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  /* Rayons & Ombres Feutrées */
+  --radius-card: 12px;
+  --radius-sm: 8px;
+  --radius-pill: 9999px;
+  --shadow-card: 0 2px 14px rgba(30, 27, 24, 0.05);
+}

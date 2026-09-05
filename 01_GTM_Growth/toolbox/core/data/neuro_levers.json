@@ -1,0 +1,37 @@
+{
+  "PSY-LOSS-AVERSION": {
+    "name": "Aversion à la Perte & Coût de l'Inaction",
+    "author": "Daniel Kahneman & Amos Tversky (Système 1 / Prospect Theory)",
+    "mechanism": "Le cerveau humain ressent 2 à 2.5 fois plus intensément la douleur d'une perte que le plaisir d'un gain équivalent. Le message chiffre explicitement ce que l'inaction ou le statu quo fait perdre chaque mois à l'entreprise."
+  },
+  "PSY-RECIPROCITY": {
+    "name": "Réciprocité Asymétrique (Value-First)",
+    "author": "Robert Cialdini (Principes d'Influence)",
+    "mechanism": "Offrir une ressource à haute valeur perçue (mini-audit, benchmark, modèle) immédiatement et sans contrepartie déclenche un réflexe neuro-psychologique d'obligation morale et d'écoute bienveillante."
+  },
+  "PSY-SOCIAL-PROOF": {
+    "name": "Preuve Sociale de Pairs (Bandwagon & Nudge)",
+    "author": "Robert Cialdini & Richard Thaler",
+    "mechanism": "Face à l'incertitude, le cerveau économise de l'énergie cognitive en observant le comportement de ses pairs directs. Citer des entreprises comparables réduit l'anxiété du risque d'achat."
+  },
+  "PSY-AUTHORITY-DATA": {
+    "name": "Autorité par la Spécificité Chiffrée",
+    "author": "B.J. Fogg & Robert Cialdini",
+    "mechanism": "Le cerveau rejette instinctivement les superlatifs vagues ('leader', 'meilleur'). Les chiffres précis et non arrondis (ex: '98.4%') activent le cortex analytique et inspirent une crédibilité maximale."
+  },
+  "PSY-MICRO-COMMITMENT": {
+    "name": "Micro-Engagement & Validation Binaire (Foot-in-the-Door)",
+    "author": "Chris Voss & Robert Cialdini",
+    "mechanism": "Remplacer les demandes à forte friction ('prenons 30 min en visio') par une question à réponse binaire et sans risque oriente le prospect vers une micro-validation, créant un biais de cohérence pour l'étape suivante."
+  },
+  "PSY-FRAMING-CONTRAST": {
+    "name": "Effet de Cadrage & Ancrage Financier",
+    "author": "Daniel Kahneman (Système 2 / Framing Effect)",
+    "mechanism": "La perception de valeur dépend du point de référence. Comparer le coût de la solution au coût d'un problème récurrent (ex: un recrutement raté ou un mois de churn) fait paraître l'offre dérisoire."
+  },
+  "PSY-CURIOSITY-GAP": {
+    "name": "Trou Informationnel & Détection d'Angle Mort",
+    "author": "George Loewenstein",
+    "mechanism": "Mettre en lumière une disparité entre ce que le prospect sait et ce qu'il devrait savoir crée un inconfort cognitif que le cerveau cherche immédiatement à combler en lisant la suite."
+  }
+}

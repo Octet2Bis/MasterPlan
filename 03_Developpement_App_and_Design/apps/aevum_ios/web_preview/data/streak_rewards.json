@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "name": "Aevum Streak & Rewards",
+  "current_streak": 14,
+  "weekly_tracker": [
+    { "day": "L", "full": "Lundi", "active": true },
+    { "day": "M", "full": "Mardi", "active": true },
+    { "day": "M", "full": "Mercredi", "active": true },
+    { "day": "J", "full": "Jeudi", "active": false },
+    { "day": "V", "full": "Vendredi", "active": false },
+    { "day": "S", "full": "Samedi", "active": false },
+    { "day": "D", "full": "Dimanche", "active": false }
+  ],
+  "month_calendar": {
+    "month": "Mai 2024",
+    "streak_range": [6, 7, 8, 9, 10, 11, 12, 13, 14],
+    "active_days": [1, 2, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+  },
+  "badges": [
+    { "id": "badge_3d", "label": "3 jours", "date": "01/05/24", "unlocked": true, "icon": "star" },
+    { "id": "badge_7d", "label": "7 jours", "date": "05/05/24", "unlocked": true, "icon": "flame" },
+    { "id": "badge_14d", "label": "14 jours", "date": "12/05/24", "unlocked": true, "icon": "trophy" },
+    { "id": "badge_30d", "label": "30 jours", "date": "--/--/--", "unlocked": false, "icon": "medal" },
+    { "id": "badge_60d", "label": "60 jours", "date": "--/--/--", "unlocked": false, "icon": "diamond" },
+    { "id": "badge_100d", "label": "100 jours", "date": "--/--/--", "unlocked": false, "icon": "lock" }
+  ]
+}

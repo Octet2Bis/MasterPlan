@@ -1,0 +1,59 @@
+/**
+ * MASTER PLAN COCKPIT — DESIGN TOKENS (Swiss Craft / Dark Charcoal)
+ * Plafond strict : < 120 lignes
+ */
+
+:root {
+  /* Surfaces & Fond (60%) */
+  --bg-core: #08090A;
+  --surface-1: #101215;
+  --surface-2: #181B20;
+  --surface-3: #22262D;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(255, 255, 255, 0.2);
+
+  /* Typographie & Contraste (30%) */
+  --text-primary: #F4EFE6;
+  --text-secondary: #9AA0A6;
+  --text-muted: #5F6368;
+
+  /* Accents par Pilier (10%) */
+  --accent-gtm: #10B981;        /* Vert Émeraude / Croissance */
+  --accent-assistant: #F59E0B;  /* Ambre / Second Cerveau */
+  --accent-dev: #0EA5E9;        /* Bleu Cyan / Ingénierie */
+  --accent-control: #8B5CF6;    /* Violet / Tour de Contrôle */
+  --accent-danger: #EF4444;     /* Rouge / Alertes */
+
+  /* Typographies Système */
+  --font-title: 'Space Grotesk', -apple-system, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Grille & Rayons */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 16px;
+  --gap-lg: 24px;
+
+  /* Transitions & Élévations */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 15px rgba(14, 165, 233, 0.25);
+}
+
+[data-theme="light"] {
+  --bg-core: #F8F9FA;
+  --surface-1: #FFFFFF;
+  --surface-2: #F1F3F5;
+  --surface-3: #E9ECEF;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-focus: rgba(0, 0, 0, 0.2);
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
+}

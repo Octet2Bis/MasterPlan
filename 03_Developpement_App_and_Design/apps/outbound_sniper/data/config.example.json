@@ -1,0 +1,45 @@
+{
+  "app_name": "Outbound Sniper Studio",
+  "version": "1.1.0",
+  "port": 3500,
+  "daily_send_limit": 28,
+  "safety_pause_threshold": 28,
+  "min_delay_seconds": 420,
+  "max_delay_seconds": 900,
+  "pacing_mode": "tranquility",
+  "pacing_presets": {
+    "tranquility": {
+      "label": "Tranquillité Absolue (7-15 min, recommandé)",
+      "min": 420,
+      "max": 900
+    },
+    "ghost": {
+      "label": "Ghost Mode Journée (12-20 min, étalé 8h)",
+      "min": 720,
+      "max": 1200
+    },
+    "brisk": {
+      "label": "Rythmé (3-5 min)",
+      "min": 180,
+      "max": 300
+    }
+  },
+  "working_hours": {
+    "enabled": true,
+    "start": "08:30",
+    "end": "18:30",
+    "days": [1, 2, 3, 4, 5]
+  },
+  "sender": {
+    "name": "Votre Prénom Nom",
+    "email": "contact@votre-domaine.com",
+    "signature": "Bien cordialement,\nVotre Prénom",
+    "app_password": ""
+  },
+  "tracking": {
+    "vm_tracking_url": "http://88.96.57.168:3000"
+  },
+  "hunter": {
+    "api_key": ""
+  }
+}
