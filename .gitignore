@@ -6,6 +6,7 @@
 # 1. Antigravity Architecture (Couche 3 - Workspaces & Secrets Étanches)
 **/Workspace/**
 !**/Workspace/**/.gitkeep
+!02_Assistant_Personnel/Workspace/research_graph.json
 **/.secrets/**
 !**/.secrets/**/.gitkeep
 !**/.env.example

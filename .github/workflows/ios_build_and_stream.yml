@@ -31,7 +31,7 @@ jobs:
 
       - name: Générer le Projet Xcode
         run: |
-          cd 03_Developpement_App/apps/${{ github.event.inputs.app_name }}
+          cd 03_Developpement_App_and_Design/apps/${{ github.event.inputs.app_name }}
           if [ -f "project.yml" ]; then
             xcodegen generate
           else
@@ -41,7 +41,7 @@ jobs:
 
       - name: Compiler le Binaire iOS Simulator
         run: |
-          cd 03_Developpement_App/apps/${{ github.event.inputs.app_name }}
+          cd 03_Developpement_App_and_Design/apps/${{ github.event.inputs.app_name }}
           APP_NAME=$(basename $(find . -maxdepth 1 -name "*.xcodeproj" | head -n 1) .xcodeproj)
           
           xcodebuild build \
