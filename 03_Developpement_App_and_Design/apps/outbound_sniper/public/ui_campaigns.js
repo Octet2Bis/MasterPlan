@@ -39,10 +39,9 @@ function renderSenderSelector(senders, selectedId, onSenderChange) {
 }
 
 function cleanVarName(v) {
-  const map = { prenom: 'Prénom', nom: 'Nom', entreprise: 'Entreprise', role: 'Rôle', civilite: 'Civilité', telephone: 'Téléphone' };
-  const simple = v.replace(/_+/g, ' ').trim().toLowerCase();
-  if (map[simple]) return map[simple];
-  return simple.length > 15 ? simple.slice(0, 13) + '..' : simple;
+  const map = { prenom: 'Prénom', pr_nom: 'Prénom', nom: 'Nom', entreprise: 'Entreprise', soci_t_: 'Entreprise', role: 'Rôle', roles: 'Rôle', civilite: 'Civilité', civilit_: 'Civilité', telephone: 'Téléphone' };
+  const k = v.toLowerCase().replace(/_+/g, '_').trim();
+  return map[k] || (k.length > 12 ? k.slice(0, 10) + '..' : k);
 }
 
 async function loadSpintaxPresets() {
@@ -68,15 +67,15 @@ function renderDynamicVariableChips(contacts) {
   if (!container) return;
   const standard = ['prenom', 'nom', 'entreprise', 'role'];
   const custom = new Set();
+  const ignored = ['email', 'id', 'status', 'pr_nom', 'soci_t_', 'unnamed__13', 'roles', 'nom', 'prenom', 'entreprise'];
   (contacts || []).slice(0, 15).forEach(c => {
     if (c.custom_fields) Object.keys(c.custom_fields).forEach(k => {
       const lk = k.toLowerCase().replace(/_+/g, '_').replace(/^_|_$/g, '');
-      if (!standard.includes(lk) && !['email', 'id', 'status'].includes(lk) && !lk.includes('linkedin') && lk.length < 22) {
-        custom.add(lk);
-      }
+      if (!standard.includes(lk) && !ignored.includes(lk) && !lk.includes('linkedin') && !lk.includes('adresse') && !lk.includes('postal') && lk.length < 20) custom.add(lk);
     });
   });
-  const chips = [...standard, ...Array.from(custom).slice(0, 3)].map(v => `<button type="button" class="var-chip" data-var="{{${v}}}">+ ${cleanVarName(v)}</button>`);
+  const chips = standard.map(v => `<button type="button" class="var-chip" data-var="{{${v}}}">+ ${cleanVarName(v)}</button>`);
+  Array.from(custom).slice(0, 2).forEach(v => chips.push(`<button type="button" class="var-chip" data-var="{{${v}}}">+ ${cleanVarName(v)}</button>`));
   chips.push(`<button type="button" class="var-chip" style="color:var(--accent-primary);" data-var="{{prenom|Bonjour}}">+ Fallback</button>`);
   container.innerHTML = chips.join('');
 }

@@ -26,6 +26,7 @@ class PixelRAGEngine {
           background: '#F5F6F9', surface1: '#FFFFFF', surface2: '#111318',
           accent: '#10B981', textPrimary: '#111318', textSecondary: '#64748B', border: '#E5E8ED'
         },
+        typographyScale: { micro: '11px', caption: '12px', bodySecondary: '13px', body: '14px', subhead: '16px', title: '18px', display: '20px' },
         layoutGrid: { unitPx: 8, padding: '20px', gap: '14px', borderRadius: '16px' },
         detectedComponents: [
           { type: 'SidebarNav', label: 'Vertical Left Dock (White)', items: 7 },

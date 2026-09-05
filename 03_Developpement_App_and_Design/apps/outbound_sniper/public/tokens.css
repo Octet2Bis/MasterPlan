@@ -50,6 +50,15 @@
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
+  /* Échelle Typographique Harmonisée (Specimen Whale Loans / Major Second) */
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+
   /* Rayons & Ombres Feutrées (Specimen 16px Radius) */
   --radius-card: 16px;
   --radius-sm: 8px;
