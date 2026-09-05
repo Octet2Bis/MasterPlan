@@ -1,59 +1,60 @@
 /**
- * OUTBOUND CAMPAIGNS — TOKENS NEO-BRUTALIST SWISS & WARM PAPER
- * Palette Papier Lin #F8F6F1 & Typographie Bricolage Grotesque (< 70 lignes)
+ * OUTBOUND SNIPER — TOKENS DUAL-CONTRAST (PIXELRAG EXTRACTED)
+ * Soft Canvas #F5F6F9 + Pure White Cards #FFFFFF + Obsidian Bento #111318 (< 70L)
  */
 
 :root {
-  /* Surfaces Étagées Papier Chaud & Lin */
-  --bg-canvas: #F8F6F1;
+  /* Surfaces Dual-Contrast */
+  --bg-canvas: #F5F6F9;
   --surface-card: #FFFFFF;
-  --surface-card-hover: #F5F2EC;
-  --surface-input: #FDFCFA;
-  --surface-skeleton: #EAE6DF;
+  --surface-card-hover: #FAFBFC;
+  --surface-input: #F8F9FB;
+  --surface-skeleton: #EAEBF0;
+  --surface-pill: #F0F2F5;
 
-  /* Bordures Hairlines Délicates */
-  --border-subtle: #E4DFD6;
-  --border-interactive: #C9C2B5;
-  --border-focus: #1E1B18;
-  --border-success: #B8DEC4;
+  /* Surfaces Obsidian Bento (High-Contrast Specimen) */
+  --surface-dark: #111318;
+  --surface-dark-card: #16181F;
+  --surface-dark-hover: #1C1F28;
+  --surface-dark-border: rgba(255, 255, 255, 0.08);
 
-  /* Accents Nobles & Carbone */
-  --accent-primary: #1E1B18;
-  --accent-primary-hover: #36322D;
+  /* Bordures Hairlines & Contrastes */
+  --border-subtle: #E5E8ED;
+  --border-interactive: #111318;
+  --border-focus: #111318;
+  --border-success: #A7F3D0;
+
+  /* Accents & Signaux */
+  --accent-primary: #111318;
+  --accent-primary-hover: #262930;
   --accent-primary-text: #FFFFFF;
-  --accent-success: #2D7A4F;
-  --accent-success-text: #1D5436;
-  --accent-success-bg: #EDF5F0;
-  --accent-warning: #B8621B;
-  --accent-warning-text: #82400C;
-  --accent-warning-bg: #FDF5ED;
-  --accent-error: #C23B38;
-  --accent-error-text: #8C2220;
-  --accent-error-bg: #FDEEEC;
-  --accent-info: #4A6572;
+  --accent-success: #10B981;
+  --accent-success-text: #065F46;
+  --accent-success-bg: #ECFDF5;
+  --accent-warning: #F59E0B;
+  --accent-warning-text: #92400E;
+  --accent-warning-bg: #FFFBEB;
+  --accent-error: #EF4444;
+  --accent-error-text: #991B1B;
+  --accent-error-bg: #FEF2F2;
 
-  /* Textes Carbone Haute Lisibilité */
-  --text-primary: #1E1B18;
-  --text-secondary: #6E685F;
-  --text-muted: #8F877B;
+  /* Textes & Contraste */
+  --text-primary: #111318;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --text-on-dark: #FFFFFF;
+  --text-on-dark-secondary: #94A3B8;
 
-  /* Pairing Typographique : Bricolage Grotesque + Plus Jakarta Sans + JetBrains Mono */
-  --font-heading: 'Bricolage Grotesque', -apple-system, sans-serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  /* Typographie : Plus Jakarta Sans + JetBrains Mono Tabulaire */
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
-  /* Échelle Spatiale Grille 8pt */
-  --space-4: 4px;
-  --space-8: 8px;
-  --space-12: 12px;
-  --space-16: 16px;
-  --space-20: 20px;
-  --space-24: 24px;
-  --space-32: 32px;
-
-  /* Rayons & Ombres Feutrées */
-  --radius-card: 12px;
+  /* Rayons & Ombres Feutrées (Specimen 16px Radius) */
+  --radius-card: 16px;
   --radius-sm: 8px;
   --radius-pill: 9999px;
-  --shadow-card: 0 2px 14px rgba(30, 27, 24, 0.05);
+  --shadow-card: 0 4px 20px -2px rgba(17, 19, 24, 0.04), 0 2px 6px -1px rgba(17, 19, 24, 0.02);
+  --shadow-dark: 0 10px 30px -4px rgba(0, 0, 0, 0.25);
+  --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }

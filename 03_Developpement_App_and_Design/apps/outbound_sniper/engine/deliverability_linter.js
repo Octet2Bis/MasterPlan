@@ -100,12 +100,54 @@ function auditMessage({ subject = '', body = '', cta_label = '', target_url = ''
     });
   }
 
+  // 5. 🔍 Télémétrie Google Inbox (Inspirée du Google Leak)
+  const words = cleanBody.split(/\s+/).filter(w => w.length > 0);
+  const wordCount = words.length;
+  const isOptimalDwellTime = wordCount >= 60 && wordCount <= 150;
+  if (wordCount > 200) {
+    score -= 10;
+    issues.push({
+      type: 'LONG_BODY_PENALTY',
+      severity: 'LOW',
+      message: `Longueur élevée (${wordCount} mots). Google pénalise le faible dwell-time / abandon.`,
+      tip: 'Raccourcissez entre 75 et 130 mots pour maximiser le taux de lecture complète.'
+    });
+  }
+
+  // Détection du Human Reply-Trigger (signal n°1 d'autorité de domaine dans le leak)
+  const lastChunk = cleanBody.slice(-200);
+  const hasReplyTrigger = lastChunk.includes('?');
+  const replyTriggerScore = hasReplyTrigger ? 95 : 40;
+  if (!hasReplyTrigger) {
+    issues.push({
+      type: 'NO_REPLY_TRIGGER',
+      severity: 'MEDIUM',
+      message: 'Aucune question ouverte finale détectée.',
+      tip: 'Terminez par une question courte (ex: « Auriez-vous 5 min mardi ? ») pour déclencher une réponse humaine.'
+    });
+  }
+
+  // Empreinte HTML brute (Google pénalise les structures marketing)
+  const tagCount = (body.match(/<[^>]+>/g) || []).length;
+  const isCleanHtml = tagCount <= 12 && !/style\s*=/i.test(body);
+
   // Normalisation du score
   score = Math.max(0, Math.min(100, score));
   let grade = 'OPTIMAL';
   let badgeColor = 'green';
   if (score < 60) { grade = 'CRITICAL'; badgeColor = 'red'; }
   else if (score < 80) { grade = 'WARNING'; badgeColor = 'amber'; }
+
+  // Placement prédictif Google Inbox
+  let predictedPlacement = 'PRIMARY_INBOX';
+  let placementLabel = 'Boîte Principale';
+  if (score < 65 || detectedSpamWords.length >= 2) {
+    predictedPlacement = 'SPAM_FOLDER';
+    placementLabel = 'Dossier Spam';
+  } else if (!isCleanHtml || totalLinks > 2 || !hasOptOut || score < 82) {
+    predictedPlacement = 'PROMOTIONS_TAB';
+    placementLabel = 'Onglet Promotions';
+  }
 
   return {
     score,
@@ -114,8 +156,14 @@ function auditMessage({ subject = '', body = '', cta_label = '', target_url = ''
     hasOptOut,
     detectedSpamWords,
     totalLinks,
+    wordCount,
+    hasReplyTrigger,
+    replyTriggerScore,
+    isCleanHtml,
+    predictedPlacement,
+    placementLabel,
     issues,
-    isHealthy: score >= 80 && hasOptOut
+    isHealthy: score >= 80 && hasOptOut && predictedPlacement === 'PRIMARY_INBOX'
   };
 }
 

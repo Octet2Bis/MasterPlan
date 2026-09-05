@@ -8,6 +8,7 @@ const path = require('node:path');
 const { SniperCoreEngine } = require('./engine/sniper_core_engine');
 const googleOAuth = require('./engine/google_oauth');
 const { auditMessage, loadSpamRules } = require('./engine/deliverability_linter');
+const { runPreFlightScan } = require('./engine/preflight_scanner');
 const { auditDomain, computeFullDeliverabilityScore } = require('./engine/domain_deliverability_checker');
 const { sendJSON, parseBody, dispatchMessage } = require('./engine/server_helpers');
 
@@ -119,7 +120,13 @@ const server = http.createServer(async (req, res) => {
     return sendJSON(res, 200, await engine.findHunterEmail(b.domain, b.first_name, b.last_name));
   }
 
-  // 6. Deliverability, DNS & Score Checker
+  // 6. Deliverability, DNS, Pre-Flight & Score Checker
+  if (pathname === '/api/campaign/preflight' && req.method === 'POST') {
+    const b = await parseBody(req);
+    const camp = b.campaign || engine.campaigns.find(c => c.id === b.campaign_id) || {};
+    const contacts = b.contacts || engine.getCampaignContacts(b.campaign_id || camp.id);
+    return sendJSON(res, 200, runPreFlightScan(camp, contacts, b.sender_email));
+  }
   if (pathname === '/api/campaign/audit-deliverability' && req.method === 'POST') return sendJSON(res, 200, auditMessage(await parseBody(req)));
   if (pathname === '/api/deliverability/audit-sender' && req.method === 'POST') {
     const b = await parseBody(req);

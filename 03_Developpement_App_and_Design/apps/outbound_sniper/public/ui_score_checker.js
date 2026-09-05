@@ -1,6 +1,6 @@
 /**
  * UI SCORE CHECKER & DELIVERABILITY COCKPIT (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / UI (< 240 lignes)
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / UI (< 230L)
  */
 (function() {
   let currentAudit = null;
@@ -40,132 +40,160 @@
   function renderScoreCockpit(audit) {
     const container = document.getElementById('score-checker-container');
     if (!container || !audit) return;
-    const { globalScore, status, badgeColor, verdict, pillars, actionableRemedies } = audit;
+    const { globalScore, status, badgeColor, verdict, pillars } = audit;
     const colorHex = badgeColor === 'green' ? '#10b981' : (badgeColor === 'amber' ? '#f59e0b' : '#ef4444');
-    const sa = pillars.spamassassin || { score: 0, isPassing: true, rules: [] };
-    const links = pillars.links || { total: 0, hasShorteners: false, brokenCount: 0 };
-    const penaltyRules = (sa.rules || []).filter(r => parseFloat(r.score) > 0);
+    const sa = pillars.spamassassin || { score: 0, isPassing: true };
+    const links = pillars.links || { total: 0, brokenCount: 0 };
+    const copy = pillars.copy?.details || {};
+    const placement = copy.predictedPlacement || 'PRIMARY_INBOX';
+    const placementLabel = copy.placementLabel || 'Boîte Principale';
+    const isPrimary = placement === 'PRIMARY_INBOX';
 
     container.innerHTML = `
-      <div class="score-hero-card">
-        <div class="score-gauge-box">
-          <div class="score-circle" style="border-color: ${colorHex};">
-            <span class="score-number" style="color: ${colorHex};">${globalScore}</span>
-            <span class="score-max">/100</span>
-          </div>
-          <div class="score-verdict-content">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span class="tab-pill ${badgeColor === 'green' ? 'tab-pill-green' : (badgeColor === 'amber' ? 'tab-pill-amber' : 'badge-invalid')}">${status}</span>
-              <strong style="font-size:15px; font-family:var(--font-heading);">Indice de Confiance Délivrabilité</strong>
+      <div style="display:grid; grid-template-columns: 1.35fr 1fr; gap:14px; align-items:stretch;">
+        <div class="score-hero-card" style="height:100%;">
+          <div class="score-gauge-box">
+            <div class="score-circle" style="border-color: ${colorHex};">
+              <span class="score-number" style="color: ${colorHex};">${globalScore}</span>
+              <span class="score-max">/100</span>
             </div>
-            <p style="font-size:13px; color:var(--text-secondary); margin-top:4px;">${verdict}</p>
+            <div class="score-verdict-content">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="tab-pill ${badgeColor === 'green' ? 'tab-pill-green' : 'tab-pill-amber'}">${status}</span>
+                <strong style="font-size:14px; font-family:var(--font-heading);">Indice de Délivrabilité</strong>
+              </div>
+              <p style="font-size:12.5px; color:var(--text-secondary); margin-top:4px;">${verdict}</p>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-retest-deliverability" style="align-self:flex-start;">⚡ Re-tester</button>
+        </div>
+
+        <div class="bento-dark-card">
+          <div class="bento-dark-header">
+            <span style="font-size:11px; font-weight:700; color:var(--text-on-dark-secondary); text-transform:uppercase; letter-spacing:0.5px;">Télémétrie Google Inbox</span>
+            <span class="bento-pill-badge" style="color:${isPrimary ? '#10B981' : '#F59E0B'};">${isPrimary ? '↗' : '⚠️'}</span>
+          </div>
+          <div>
+            <div style="font-size:11px; color:var(--text-on-dark-secondary);">Placement Estimé</div>
+            <div class="bento-dark-metric" style="color:${isPrimary ? '#10B981' : '#F59E0B'}; font-size:22px;">${placementLabel}</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:6px; border-top:1px solid var(--surface-dark-border); font-size:11.5px;">
+            <div>
+              <span style="color:var(--text-on-dark-secondary); font-size:10.5px;">Reply-Trigger :</span>
+              <strong style="font-family:var(--font-mono); color:#FFF; display:block;">${copy.replyTriggerScore || 90}%</strong>
+            </div>
+            <div>
+              <span style="color:var(--text-on-dark-secondary); font-size:10.5px;">Longueur :</span>
+              <strong style="font-family:var(--font-mono); color:#FFF; display:block;">${copy.wordCount || 0} mots</strong>
+            </div>
           </div>
         </div>
-        <button class="btn btn-primary btn-sm" id="btn-retest-deliverability" style="align-self:flex-start;">
-          ⚡ Relancer le diagnostic
-        </button>
       </div>
 
-      <div class="pillars-bento-grid">
-        <!-- 1. Domaine & DNS -->
-        <div class="pillar-card">
-          <div class="pillar-header">
-            <span class="pillar-icon">🌐</span><strong>Domaine & DNS</strong>
-            <span class="tab-pill ${pillars.domain.score >= 80 ? 'tab-pill-green' : 'tab-pill-amber'}">${pillars.domain.score}/100</span>
+      <div class="callout-notice" style="justify-content:space-between; flex-wrap:wrap; margin-top:2px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:15px;">🛡️</span>
+          <div>
+            <strong>Skylos Pre-Flight Scanner</strong>
+            <span class="text-secondary" style="font-size:11px; display:block;">Contrôle déterministe pré-vol (0 variable orpheline, 0 secret fuité).</span>
           </div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-run-preflight">Lancer le Pre-Flight</button>
+      </div>
+      <div id="preflight-results-box" style="display:none; padding:10px 14px; border-radius:var(--radius-sm); font-size:12px;"></div>
+
+      <div class="pillars-bento-grid">
+        <div class="pillar-card">
+          <div class="pillar-header"><span>🌐 <strong>Domaine & DNS</strong></span><span class="tab-pill ${pillars.domain.score >= 80 ? 'tab-pill-green' : 'tab-pill-amber'}">${pillars.domain.score}/100</span></div>
           <div class="pillar-body">
             <div class="pill-row"><span>Fournisseur MX :</span><strong>${pillars.domain.details.mx?.provider || 'Inconnu'}</strong></div>
-            <div class="pill-row"><span>SPF Record :</span><span class="${pillars.domain.details.spf?.exists ? 'text-success' : 'text-error'}">${pillars.domain.details.spf?.exists ? '✅ ' + (pillars.domain.details.spf.policy || 'Valide') : '❌ Absent'}</span></div>
-            <div class="pill-row"><span>DMARC Record :</span><span class="${pillars.domain.details.dmarc?.exists ? 'text-success' : 'text-error'}">${pillars.domain.details.dmarc?.exists ? '✅ ' + (pillars.domain.details.dmarc.policy || 'Détecté') : '❌ Absent'}</span></div>
-            <div class="pill-row"><span>Type compte :</span><span>${pillars.domain.details.isFreeWebmail ? '⚠️ Webmail (@gmail.com)' : '🏢 Domaine Pro Dédié'}</span></div>
+            <div class="pill-row"><span>SPF Record :</span><span class="${pillars.domain.details.spf?.exists ? 'text-success' : 'text-error'}">${pillars.domain.details.spf?.exists ? '✅ Valide' : '❌ Absent'}</span></div>
+            <div class="pill-row"><span>DMARC Record :</span><span class="${pillars.domain.details.dmarc?.exists ? 'text-success' : 'text-error'}">${pillars.domain.details.dmarc?.exists ? '✅ Détecté' : '❌ Absent'}</span></div>
           </div>
         </div>
 
-        <!-- 2. Contenu & Mots Spam -->
         <div class="pillar-card">
-          <div class="pillar-header">
-            <span class="pillar-icon">✍️</span><strong>Linter Contenu & Copy</strong>
-            <span class="tab-pill ${pillars.copy.score >= 80 ? 'tab-pill-green' : 'tab-pill-amber'}">${pillars.copy.score}/100</span>
-          </div>
+          <div class="pillar-header"><span>✍️ <strong>Linter Copy</strong></span><span class="tab-pill ${pillars.copy.score >= 80 ? 'tab-pill-green' : 'tab-pill-amber'}">${pillars.copy.score}/100</span></div>
           <div class="pillar-body">
-            <div class="pill-row"><span>Opt-out RGPD :</span><span class="${pillars.copy.details.hasOptOut ? 'text-success' : 'text-error'}">${pillars.copy.details.hasOptOut ? '✅ Présent' : '❌ Absent (-25 pts)'}</span></div>
-            <div class="pill-row"><span>Mots à risque :</span><span class="${pillars.copy.details.detectedSpamWords?.length === 0 ? 'text-success' : 'text-error'}">${pillars.copy.details.detectedSpamWords?.length === 0 ? '✅ 0 mot détecté' : '⚠️ ' + pillars.copy.details.detectedSpamWords.join(', ')}</span></div>
-            <div class="pill-row"><span>Densité de liens :</span><span>${pillars.copy.details.totalLinks || 0} lien(s) (Max 1 conseillé)</span></div>
+            <div class="pill-row"><span>Opt-out RGPD :</span><span class="${copy.hasOptOut ? 'text-success' : 'text-error'}">${copy.hasOptOut ? '✅ Présent' : '❌ Absent (-25 pts)'}</span></div>
+            <div class="pill-row"><span>Mots à risque :</span><span class="${copy.detectedSpamWords?.length === 0 ? 'text-success' : 'text-error'}">${copy.detectedSpamWords?.length === 0 ? '✅ 0 mot' : '⚠️ ' + copy.detectedSpamWords.join(', ')}</span></div>
+            <div class="pill-row"><span>Empreinte HTML :</span><span>${copy.isCleanHtml ? '✅ Plain Text brut' : '⚠️ Balisage excessif'}</span></div>
           </div>
         </div>
 
-        <!-- 3. SpamAssassin (Postmark API) & Liens -->
         <div class="pillar-card">
-          <div class="pillar-header">
-            <span class="pillar-icon">🧪</span><strong>SpamAssassin & Liens</strong>
-            <span class="tab-pill ${sa.isPassing ? 'tab-pill-green' : 'tab-pill-amber'}">Score : ${sa.score} (Seuil &lt; 2.5)</span>
-          </div>
+          <div class="pillar-header"><span>🧪 <strong>SpamAssassin & URLs</strong></span><span class="tab-pill ${sa.isPassing ? 'tab-pill-green' : 'tab-pill-amber'}">${sa.score} (&lt; 2.5)</span></div>
           <div class="pillar-body">
-            <div class="pill-row"><span>Moteur Postmark :</span><span class="${sa.isPassing ? 'text-success' : 'text-error'}">${sa.isPassing ? '✅ Conforme (&lt; 2.5)' : '⚠️ Risque (' + sa.score + ')'}</span></div>
-            <div class="pill-row"><span>Pénalités actives :</span><span class="${penaltyRules.length > 0 ? 'text-error' : 'text-success'}">${penaltyRules.length === 0 ? '✅ 0 pénalité' : '⚠️ ' + penaltyRules.map(r => r.description).slice(0, 1).join(', ') + (penaltyRules.length > 1 ? ' (+' + (penaltyRules.length - 1) + ')' : '')}</span></div>
-            <div class="pill-row"><span>Santé des URLs :</span><span class="${links.brokenCount > 0 || links.hasShorteners ? 'text-error' : 'text-success'}">${links.hasShorteners ? '❌ Réducteur banni' : (links.brokenCount > 0 ? '❌ ' + links.brokenCount + ' lien mort' : '✅ 200 OK')}</span></div>
+            <div class="pill-row"><span>Score Postmark :</span><span class="${sa.isPassing ? 'text-success' : 'text-error'}">${sa.isPassing ? '✅ Conforme' : '⚠️ Risque (' + sa.score + ')'}</span></div>
+            <div class="pill-row"><span>URLs & Redirections :</span><span class="${links.brokenCount > 0 ? 'text-error' : 'text-success'}">${links.brokenCount > 0 ? '❌ Lien mort' : '✅ Direct 200'}</span></div>
+            <div class="pill-row"><span>Densité liens :</span><span>${copy.totalLinks || 0} lien (1 max)</span></div>
           </div>
         </div>
 
-        <!-- 4. Audience & Rebond -->
         <div class="pillar-card">
-          <div class="pillar-header">
-            <span class="pillar-icon">👥</span><strong>Audience & Rebond</strong>
-            <span class="tab-pill ${pillars.audience.score >= 80 ? 'tab-pill-green' : 'tab-pill-amber'}">${pillars.audience.score}/100</span>
-          </div>
+          <div class="pillar-header"><span>👥 <strong>Audience & Contacts</strong></span><span class="tab-pill ${pillars.audience.score >= 80 ? 'tab-pill-green' : 'tab-pill-amber'}">${pillars.audience.score}/100</span></div>
           <div class="pillar-body">
             <div class="pill-row"><span>Contacts totaux :</span><strong>${pillars.audience.total}</strong></div>
             <div class="pill-row"><span>Certifiés délivrables :</span><span class="text-success">✅ ${pillars.audience.verified}</span></div>
-            <div class="pill-row"><span>Invalides / Jetables :</span><span class="${pillars.audience.invalid > 0 ? 'text-error' : 'text-success'}">${pillars.audience.invalid > 0 ? '⚠️ ' + pillars.audience.invalid + ' (à purger)' : '✅ 0'}</span></div>
+            <div class="pill-row"><span>Invalides :</span><span class="${pillars.audience.invalid > 0 ? 'text-error' : 'text-success'}">${pillars.audience.invalid > 0 ? '⚠️ ' + pillars.audience.invalid : '✅ 0'}</span></div>
           </div>
         </div>
       </div>
 
-      <!-- Test Live Mail-Tester.com -->
-      <div class="smtp-box" style="margin-top:4px;">
+      <div class="smtp-box" style="margin-top:2px;">
         <div class="smtp-header">
           <div class="smtp-title"><span>📬 Test Réel d'Inbox Placement (Mail-Tester.com)</span></div>
           <a href="https://www.mail-tester.com" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration:none;">Ouvrir mail-tester.com ↗</a>
         </div>
-        <p class="text-secondary" style="font-size:12px; margin:0;">
-          Collez l'adresse temporaire générée par mail-tester.com (ex: test-abc1234@srv1.mail-tester.com) pour envoyer un tir réel et certifier votre note sur 10.
-        </p>
         <div class="smtp-inputs-row">
           <input type="email" id="mailtester-email-input" placeholder="ex: test-xxxx@srv1.mail-tester.com" class="input-text" />
-          <button class="btn btn-action btn-sm" id="btn-send-mailtester" style="white-space:nowrap;">🚀 Envoyer à Mail-Tester</button>
+          <button class="btn btn-action btn-sm" id="btn-send-mailtester" style="white-space:nowrap;">🚀 Envoyer le test</button>
         </div>
         <div id="mailtester-status-msg" style="font-size:12px; display:none;"></div>
       </div>
-
-      <!-- Actions de Remédiation en 1 Clic -->
-      ${actionableRemedies && actionableRemedies.length > 0 ? `
-        <div class="remedies-box">
-          <strong style="font-size:13.5px; font-family:var(--font-heading);">⚡ Actions recommandées pour atteindre 100/100 :</strong>
-          <div class="remedies-list" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-            ${actionableRemedies.map(rem => `
-              <div class="remedy-item">
-                <div><strong>${rem.label}</strong><p class="text-secondary" style="font-size:12px;">${rem.tip}</p></div>
-                <button class="btn btn-ghost btn-sm btn-apply-remedy" data-action="${rem.action}">Appliquer</button>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : `
-        <div class="remedies-box remedies-perfect">
-          <span style="font-size:18px;">🛡️</span>
-          <div>
-            <strong>Garde-fous 100% validés !</strong>
-            <p class="text-secondary" style="font-size:12.5px;">Votre domaine, votre copie, vos liens et votre cadence respectent toutes les règles d'or anti-spam.</p>
-          </div>
-        </div>
-      `}
     `;
 
     document.getElementById('btn-retest-deliverability')?.addEventListener('click', () => runFullAudit());
-    container.querySelectorAll('.btn-apply-remedy').forEach(btn => {
-      btn.onclick = () => handleRemedyAction(btn.getAttribute('data-action'));
-    });
+    document.getElementById('btn-run-preflight')?.addEventListener('click', () => runPreFlight());
     bindMailTesterAction();
+  }
+
+  async function runPreFlight() {
+    const btn = document.getElementById('btn-run-preflight');
+    const box = document.getElementById('preflight-results-box');
+    if (!btn || !box) return;
+    btn.disabled = true; btn.textContent = 'Scan en cours...';
+    try {
+      const cid = window.SniperState?.selectedCampaignId;
+      const res = await fetch('/api/campaign/preflight', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          campaign_id: cid,
+          campaign: {
+            subject: document.getElementById('edit-campaign-subject')?.value || '',
+            template_body: document.getElementById('edit-campaign-body')?.value || '',
+            target_url: document.getElementById('edit-campaign-cta-url')?.value || ''
+          }
+        })
+      });
+      const data = await res.json();
+      box.style.display = 'block';
+      if (data.status === 'CLEARED') {
+        box.style.background = '#ECFDF5'; box.style.border = '1px solid #10B981'; box.style.color = '#065F46';
+        box.innerHTML = `<strong>✅ Skylos Pre-Flight Validé</strong> : 0 variable orpheline, 0 credential fuité, ${data.contactsCount} contact(s) prêts.`;
+      } else if (data.status === 'WARNING') {
+        box.style.background = '#FEF3C7'; box.style.border = '1px solid #F59E0B'; box.style.color = '#92400E';
+        box.innerHTML = `<strong>⚠️ Attention Pre-Flight</strong> : ${data.warnings.map(w => w.message).join(' | ')}`;
+      } else {
+        box.style.background = '#FEF2F2'; box.style.border = '1px solid #EF4444'; box.style.color = '#991B1B';
+        box.innerHTML = `<strong>❌ Envoi Bloqué par Skylos</strong> : ${data.issues.map(i => i.message).join(' | ')}`;
+      }
+    } catch {
+      box.style.display = 'block'; box.style.background = '#FEF2F2'; box.style.color = '#991B1B';
+      box.textContent = 'Erreur lors du scan Skylos.';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Lancer le Pre-Flight';
+    }
   }
 
   function bindMailTesterAction() {
@@ -173,64 +201,27 @@
     const input = document.getElementById('mailtester-email-input');
     const statusEl = document.getElementById('mailtester-status-msg');
     if (!btn || !input) return;
-
     btn.onclick = async () => {
       const to = input.value.trim();
-      if (!to || !to.includes('@')) {
-        window.SniperUIContacts?.showToast('Adresse mail-tester invalide.', 'error');
-        return;
-      }
-      btn.disabled = true; btn.textContent = 'Envoi en cours...';
+      if (!to || !to.includes('@')) { window.SniperUIContacts?.showToast('Adresse invalide.', 'error'); return; }
+      btn.disabled = true; btn.textContent = 'Envoi...';
       try {
         const res = await fetch('/api/send-test', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to, campaign_id: window.SniperState?.selectedCampaignId,
-            sender_id: window.SniperState?.selectedSenderId
-          })
+          body: JSON.stringify({ to, campaign_id: window.SniperState?.selectedCampaignId, sender_id: window.SniperState?.selectedSenderId })
         });
         const data = await res.json();
         statusEl.style.display = 'block';
         if (data.success) {
           statusEl.className = 'text-success';
-          statusEl.innerHTML = `✅ Email envoyé ! Vérifiez votre score sur <a href="https://www.mail-tester.com" target="_blank">mail-tester.com</a>.`;
-          window.SniperUIContacts?.showToast('Email envoyé à Mail-Tester !', 'success');
+          statusEl.innerHTML = `✅ Email envoyé ! Vérifiez votre note sur <a href="https://www.mail-tester.com" target="_blank">mail-tester.com</a>.`;
         } else {
-          statusEl.className = 'text-error';
-          statusEl.textContent = '❌ Erreur : ' + (data.error || 'Échec d\'envoi');
+          statusEl.className = 'text-error'; statusEl.textContent = '❌ Erreur : ' + (data.error || 'Échec');
         }
-      } catch {
-        window.SniperUIContacts?.showToast('Erreur réseau lors de l\'envoi.', 'error');
-      } finally {
-        btn.disabled = false; btn.textContent = '🚀 Envoyer à Mail-Tester';
-      }
+      } catch { window.SniperUIContacts?.showToast('Erreur réseau.', 'error'); }
+      finally { btn.disabled = false; btn.textContent = '🚀 Envoyer le test'; }
     };
   }
 
-  async function handleRemedyAction(action) {
-    if (action === 'ADD_OPT_OUT') {
-      const bodyEl = document.getElementById('edit-campaign-body');
-      if (bodyEl) {
-        bodyEl.value = bodyEl.value.trim() + '\n\nSi vous ne souhaitez plus recevoir de messages de ma part, répondez simplement "stop".';
-        bodyEl.dispatchEvent(new Event('input'));
-        window.SniperUIContacts?.showToast('✅ Clause Opt-Out ajoutée ! Sauvegardez le message.', 'success');
-        await runFullAudit();
-      }
-    } else if (action === 'PURGE_INVALID_CONTACTS') {
-      await window.SniperUIContacts?.applyCleanListInPlace();
-      window.SniperUIContacts?.showToast('🧹 Contacts invalides purgés !', 'success');
-      await runFullAudit();
-    } else if (action === 'CLEAN_SPAM_WORDS') {
-      window.SniperUIContacts?.showToast('💡 Évitez les superlatifs et les promesses dans l\'éditeur.', 'info');
-      document.getElementById('tab-messages')?.click();
-    } else if (action === 'REMOVE_SHORTENER') {
-      const urlInput = document.getElementById('edit-campaign-cta-url');
-      if (urlInput) { urlInput.value = 'https://aevum.app'; urlInput.dispatchEvent(new Event('input')); }
-      window.SniperUIContacts?.showToast('✅ Réducteur remplacé par URL directe.', 'success');
-      await runFullAudit();
-    }
-  }
-
-  window.SniperUIScoreChecker = { runFullAudit, renderScoreCockpit, updateHeaderScoreBadge };
+  window.SniperUIScoreChecker = { runFullAudit, renderScoreCockpit, updateHeaderScoreBadge, runPreFlight };
 })();
-
