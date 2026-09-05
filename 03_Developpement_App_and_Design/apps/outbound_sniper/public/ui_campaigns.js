@@ -23,7 +23,7 @@ function renderCampaignsHomeGrid(campaigns, onOpenCampaign, onNewCampaign) {
       <div class="card-top"><span class="tab-pill ${c.lever ? 'tab-pill-green' : ''}">${c.lever || 'Campagne Directe'}</span><span class="badge-status">Prête</span></div>
       <h3 class="card-title">${c.name}</h3>
       <p class="card-subject"><strong>Objet :</strong> ${c.subject}</p>
-      <div class="card-footer"><span class="text-muted">Contacts isolés</span><button class="btn btn-primary btn-sm btn-open-camp" data-id="${c.id}">Ouvrir</button></div>
+      <div class="card-footer"><span class="text-muted" style="font-family:var(--font-mono); font-size:11.5px; font-weight:600;">📁 ${c.contact_count || 0} contacts</span><button class="btn btn-primary btn-sm btn-open-camp" data-id="${c.id}">Ouvrir</button></div>
     </div>`).join('');
   container.querySelectorAll('.btn-open-camp').forEach(btn => btn.onclick = (e) => { e.stopPropagation(); onOpenCampaign(btn.getAttribute('data-id')); });
   container.querySelectorAll('.campaign-home-card').forEach(card => card.onclick = () => onOpenCampaign(card.getAttribute('data-id')));
@@ -36,6 +36,13 @@ function renderSenderSelector(senders, selectedId, onSenderChange) {
     select.innerHTML = senders.map(s => `<option value="${s.id}" ${s.id === selectedId ? 'selected' : ''}>${s.name} (${s.send_as_email})</option>`).join('');
     select.onchange = (e) => onSenderChange(e.target.value);
   }
+}
+
+function cleanVarName(v) {
+  const map = { prenom: 'Prénom', nom: 'Nom', entreprise: 'Entreprise', role: 'Rôle', civilite: 'Civilité', telephone: 'Téléphone' };
+  const simple = v.replace(/_+/g, ' ').trim().toLowerCase();
+  if (map[simple]) return map[simple];
+  return simple.length > 15 ? simple.slice(0, 13) + '..' : simple;
 }
 
 async function loadSpintaxPresets() {
@@ -63,11 +70,13 @@ function renderDynamicVariableChips(contacts) {
   const custom = new Set();
   (contacts || []).slice(0, 15).forEach(c => {
     if (c.custom_fields) Object.keys(c.custom_fields).forEach(k => {
-      const lk = k.toLowerCase();
-      if (!standard.includes(lk) && !['email', 'id', 'status'].includes(lk)) custom.add(lk);
+      const lk = k.toLowerCase().replace(/_+/g, '_').replace(/^_|_$/g, '');
+      if (!standard.includes(lk) && !['email', 'id', 'status'].includes(lk) && !lk.includes('linkedin') && lk.length < 22) {
+        custom.add(lk);
+      }
     });
   });
-  const chips = [...standard, ...Array.from(custom)].map(v => `<button type="button" class="var-chip" data-var="{{${v}}}">+ ${v}</button>`);
+  const chips = [...standard, ...Array.from(custom).slice(0, 3)].map(v => `<button type="button" class="var-chip" data-var="{{${v}}}">+ ${cleanVarName(v)}</button>`);
   chips.push(`<button type="button" class="var-chip" style="color:var(--accent-primary);" data-var="{{prenom|Bonjour}}">+ Fallback</button>`);
   container.innerHTML = chips.join('');
 }
@@ -223,8 +232,7 @@ function setupTabs() {
       const tid = btn.getAttribute('data-target');
       document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
+      btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
       document.getElementById(tid)?.classList.add('active');
       if (tid === 'panel-score-checker' && window.SniperUIScoreChecker) window.SniperUIScoreChecker.runFullAudit();
     };

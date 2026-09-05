@@ -311,10 +311,10 @@
                   </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 14px; padding: 10px 14px; background: var(--bg-surface-elevated, #1A1D20); border: 1px solid var(--border-subtle, #2D3339); border-radius: var(--radius-sm, 8px);">
-                  <label class="switch-label" style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-primary, #F3F4F6);">
-                    <input type="checkbox" id="edit-campaign-stealth" checked style="width: 16px; height: 16px; accent-color: var(--accent-primary, #10B981); cursor: pointer;">
-                    <span>🥷 <strong>Mode Furtif Anti-Promotions</strong> <span class="text-muted" style="font-weight: 400; font-size: 12px;">(0 pixel espion, liens directs sans redirection — Boîte Principale Garantie)</span></span>
+                <div class="form-group stealth-toggle-card">
+                  <label class="switch-label" style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-primary);">
+                    <input type="checkbox" id="edit-campaign-stealth" checked style="width: 15px; height: 15px; accent-color: var(--accent-success); cursor: pointer;">
+                    <span>🥷 <strong>Mode Furtif Anti-Promotions</strong> <span style="font-weight: 400; font-size: 11px; color: var(--text-secondary);">(0 pixel espion, liens directs sans redirection)</span></span>
                   </label>
                 </div>
               </div>
@@ -349,8 +349,8 @@
                     <a id="preview-cta-btn" href="#" target="_blank" class="btn btn-primary btn-sm" style="text-decoration:none;">-</a>
                   </div>
                 </div>
-                <div style="margin-top: 12px;">
-                  <button id="btn-send-preview-test" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; gap: 8px;">
+                <div style="margin-top: 8px;">
+                  <button id="btn-send-preview-test" class="btn btn-primary btn-sm" style="width: 100%; justify-content: center; gap: 8px;">
                     📨 M'envoyer un email de test
                   </button>
                 </div>
@@ -437,7 +437,7 @@
                 <button class="btn btn-danger btn-sm" id="btn-stop-dispatch" style="display:none;">Mettre en pause</button>
               </div>
             </div>
-            <div class="dispatch-log" id="dispatch-log" tabindex="0">Prêt pour le lancement...</div>
+            <div class="dispatch-log" id="dispatch-log" tabindex="0">// 🎯 Console d'expédition en attente de démarrage...&#10;// Cadence : 1 tir toutes les 7 à 15 min avec dispersion gaussienne anti-détection.&#10;// Cliquez sur « Démarrer cette campagne » pour lancer la séquence.</div>
           </div>
         </section>
 

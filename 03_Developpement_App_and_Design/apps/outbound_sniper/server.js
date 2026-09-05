@@ -85,7 +85,10 @@ const server = http.createServer(async (req, res) => {
   }
 
   // 4. Campagnes & Contacts
-  if (pathname === '/api/campaigns' && req.method === 'GET') return sendJSON(res, 200, engine.campaigns);
+  if (pathname === '/api/campaigns' && req.method === 'GET') {
+    const enriched = engine.campaigns.map(c => ({ ...c, contacts_count: engine.getCampaignContacts(c.id).length }));
+    return sendJSON(res, 200, enriched);
+  }
   if (pathname === '/api/campaigns' && req.method === 'POST') {
     const body = await parseBody(req);
     const id = body.id || `camp_${Date.now()}`;
