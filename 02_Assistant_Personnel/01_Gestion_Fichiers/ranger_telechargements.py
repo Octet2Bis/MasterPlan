@@ -10,16 +10,32 @@ Conforme à l'architecture Antigravity (Couche 2 & 3) :
 import argparse
 import os
 import shutil
+import sys
 from pathlib import Path
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 CATEGORIES = {
     "01_Executables_et_Installateurs": [".exe", ".msi", ".iso", ".img", ".dmg"],
     "02_Documents_et_Admin": [".pdf", ".msg", ".eml", ".docx", ".doc", ".odt"],
     "03_Data_CSV_Excel": [".csv", ".xlsx", ".xls", ".ods"],
     "04_Images_et_Videos": [".jpg", ".jpeg", ".png", ".webp", ".avif", ".svg", ".gif", ".mp4", ".mov", ".mkv"],
-    "05_Archives_et_Projets": [".zip", ".tar", ".gz", ".7z", ".rar", ".pkpass", ".json", ".ics", ".psd", ".af", ".site", ".txt"],
+    "05_Archives_et_Projets": [".zip", ".tar", ".gz", ".7z", ".rar", ".pkpass", ".json", ".ics", ".psd", ".af", ".site", ".txt", ".html", ".htm"],
     "06_Presentations": [".pptx", ".ppt", ".key"]
 }
+
+
+def to_extended_path(p: Path) -> str:
+    """Gère les chemins longs (> 260 caractères) sous Windows avec le préfixe \\\\?\\."""
+    s = str(p.resolve())
+    if os.name == "nt" and not s.startswith("\\\\?\\"):
+        return "\\\\?\\" + s
+    return s
 
 
 def organize_downloads(target_dir: Path, dry_run: bool = False, verbose: bool = False) -> int:
@@ -59,11 +75,16 @@ def organize_downloads(target_dir: Path, dry_run: bool = False, verbose: bool = 
                 counter += 1
             
             if verbose or dry_run:
-                print(f"  {mode_prefix}Déplacement : {item.name} ➔ {target_folder_name}/{dest_path.name}")
+                print(f"  {mode_prefix}Déplacement : {item.name} -> {target_folder_name}/{dest_path.name}")
             
             if not dry_run:
                 dest_dir.mkdir(exist_ok=True)
-                shutil.move(str(item), str(dest_path))
+                src_ext = to_extended_path(item)
+                dst_ext = to_extended_path(dest_path)
+                try:
+                    shutil.move(src_ext, dst_ext)
+                except Exception:
+                    os.rename(src_ext, dst_ext)
                 
             moved_count += 1
             stats[target_folder_name] = stats.get(target_folder_name, 0) + 1
