@@ -56,6 +56,7 @@ class HardenedTelegramBot {
   }
 
   sendMessage(chatId, text) { return this.request('sendMessage', { chat_id: chatId, text, parse_mode: 'Markdown' }); }
+  sendChatAction(chatId, action = 'typing') { return this.request('sendChatAction', { chat_id: chatId, action }); }
   pinMessage(chatId, messageId) { return this.request('pinChatMessage', { chat_id: chatId, message_id: messageId, disable_notification: true }); }
   setCommands(commands) { return this.request('setMyCommands', { commands }); }
   async getFileInfo(fileId) {
@@ -146,29 +147,22 @@ class HardenedTelegramBot {
       if (text === '/scanremote') {
         await this.sendMessage(chatId, '🏢 *Scan direct des pages carrières 100% remote en cours...*');
         const res = await require('../../04_Productivite_Admin/career_ops/daily_remote_company_scanner').runDailyRemoteScanner({ sendReport: false });
-        await this.sendMessage(chatId, res.reportMd);
-        return true;
+        await this.sendMessage(chatId, res.reportMd); return true;
       }
       if (text.startsWith('/valider')) { await this.sendMessage(chatId, this.careerEngine.validateAndTailorJob(text.replace('/valider', '').trim())); return true; }
       if (text.startsWith('/remarque') || text.startsWith('/ajuster')) {
         const p = text.replace(/^\/(remarque|ajuster)/, '').trim().split(' ');
-        await this.sendMessage(chatId, this.careerEngine.recordRemarkAndAdjust(p[0] || '', p.slice(1).join(' ') || 'Ajustement'));
-        return true;
+        await this.sendMessage(chatId, this.careerEngine.recordRemarkAndAdjust(p[0] || '', p.slice(1).join(' ') || 'Ajustement')); return true;
       }
       if (text.startsWith('/cv') || text.startsWith('/pitch')) { await this.sendMessage(chatId, this.careerEngine.getTailoredCvAndPitch(text.replace(/^\/(cv|pitch)/, '').trim())); return true; }
-      if (text.startsWith('/postuler')) {
-        await this.sendMessage(chatId, this.careerEngine.applyToOneClick(text.replace('/postuler_live', '').replace('/postuler', '').trim(), text.includes('_live')));
-        return true;
-      }
+      if (text.startsWith('/postuler')) { await this.sendMessage(chatId, this.careerEngine.applyToOneClick(text.replace('/postuler_live', '').replace('/postuler', '').trim(), text.includes('_live'))); return true; }
       if (text.startsWith('/spontane')) {
         const arg = text.replace('/spontane', '').trim();
-        await this.sendMessage(chatId, (arg.startsWith('p') || !arg) ? this.careerEngine.getVerifiedRemoteCompanies(arg) : this.careerEngine.getSpontaneousApplicationAngle(arg));
-        return true;
+        await this.sendMessage(chatId, (arg.startsWith('p') || !arg) ? this.careerEngine.getVerifiedRemoteCompanies(arg) : this.careerEngine.getSpontaneousApplicationAngle(arg)); return true;
       }
       if (text.startsWith('/hermes')) {
         await this.sendMessage(chatId, '⚡ *Hermes réfléchit (IA Locale Qwen 2.5)...*');
-        await this.sendMessage(chatId, await this.careerEngine.chatWithHermes(text.replace('/hermes', '').trim()));
-        return true;
+        await this.sendMessage(chatId, await this.careerEngine.chatWithHermes(text.replace('/hermes', '').trim())); return true;
       }
     }
     if (this.coachEngine) {
@@ -187,6 +181,7 @@ class HardenedTelegramBot {
 
     const text = (msg.text || '').trim();
     const caption = (msg.caption || '').trim();
+    if (chatId) this.sendChatAction(chatId, 'typing');
 
     if (text.startsWith('/')) {
       const handled = await this.handleCommands(text, chatId, user);

@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "name": "Aevum Somatic & Physical Longevity Exercises Catalog",
+  "author": "Dr Darshan Shah MD, Lou Anxiety Release, Stanford Medicine",
+  "exercises": [
+    {
+      "id": "SOM-01",
+      "title": "Suspension Décompressive (Dead Hang)",
+      "category": "decompression",
+      "targetAnatomy": "Rachis lombaire, Ceinture scapulaire & Fléchisseurs des doigts",
+      "durationSeconds": 30,
+      "benefit": "Décompression des disques intervertébraux et renforcement du grip (biomarqueur n°1 de longévité)",
+      "instructions": "Suspendez-vous à une barre ou prise solide, pieds libres, épaules légèrement engagées. Laissez la gravité étirer la colonne.",
+      "clinicalEvidence": "Attia P. (Outlive) & Shah D. (Longevity MD) — La force de préhension et la suspension sont corrélées à une réduction de 30% de mortalité toutes causes confondues."
+    },
+    {
+      "id": "SOM-02",
+      "title": "Test Assis-Debout sans les mains (Sit-to-Stand)",
+      "category": "functional_mobility",
+      "targetAnatomy": "Quadriceps, Fessiers, Cheville & Système Vestibulaire",
+      "durationSeconds": 45,
+      "benefit": "Mesure et développement de la coordination neuromusculaire et de la mobilité articulaire",
+      "instructions": "Descendez au sol jusqu'à vous asseoir en tailleur, puis relevez-vous d'un mouvement fluide sans poser les mains, coudes ou genoux.",
+      "clinicalEvidence": "Barreto de Araújo et al. (EJPC) — Score de 8 à 10 associé à un coefficient de survie multiplié par 5 chez l'adulte."
+    },
+    {
+      "id": "SOM-03",
+      "title": "Soupir Physiologique (Double Inspiration Vagal Reset)",
+      "category": "vagal_reset",
+      "targetAnatomy": "Alvéoles pulmonaires, Nerf Vague & Diaphragme",
+      "durationSeconds": 30,
+      "benefit": "Réouverture des alvéoles affaissées et réduction immédiate du rythme cardiaque",
+      "instructions": "Deux inspirations rapides par le nez (une longue suivie d'une courte pour gonfler au maximum), puis longue expiration par la bouche entrouverte.",
+      "clinicalEvidence": "Stanford Neurobiology (Huberman Lab, Cell Reports Medicine) — Plus efficace que la méditation passive pour faire chuter l'anxiété en 30 secondes."
+    },
+    {
+      "id": "SOM-04",
+      "title": "Libération Somatique Nuque & Trapèzes",
+      "category": "postural_relief",
+      "targetAnatomy": "Muscles sous-occipitaux, Trapèze supérieur & Nerf accessoire (XI)",
+      "durationSeconds": 40,
+      "benefit": "Neutralisation du 'Tech Neck' et désamorçage de la boucle réflexe de tension d'écran",
+      "instructions": "Inclinez doucement la tête à droite, regardez vers le haut à gauche pendant 20s, respirez calmement. Changez de côté.",
+      "clinicalEvidence": "Protocole somatique Lou & Healing With T — Désactivation de l'hyperactivité de l'amygdale par décharge des mécanorécepteurs cervicaux."
+    },
+    {
+      "id": "SOM-05",
+      "title": "Respiration Carrée (Box Breathing 4-4-4-4)",
+      "category": "vagal_reset",
+      "targetAnatomy": "Barorécepteurs carotidiens & Cortex préfrontal",
+      "durationSeconds": 60,
+      "benefit": "Rétablissement de la variabilité de la fréquence cardiaque (HRV) et de la clarté attentionnelle",
+      "instructions": "Inspirez 4s, bloquez poumons pleins 4s, expirez 4s, bloquez poumons vides 4s. Répétez 3 à 4 cycles.",
+      "clinicalEvidence": "Mayo Clinic & Special Forces Tactical Protocols — Stabilisation du système nerveux autonome sous surcharge cognitive."
+    },
+    {
+      "id": "SOM-06",
+      "title": "Micro-Boost Zone 2 (Montées de Genoux Douces)",
+      "category": "mitochondrial_activation",
+      "targetAnatomy": "Mitochondries des fibres de type I & Système lymphatique",
+      "durationSeconds": 60,
+      "benefit": "Relance circulatoire, élimination du lactate stagnant et oxygénation cérébrale",
+      "instructions": "Montées de genoux souples sur place à cadence régulière en respirant exclusivement par le nez.",
+      "clinicalEvidence": "San-Millán I. — Amélioration de la clairance du lactate et stimulation de la production de BDNF."
+    }
+  ]
+}

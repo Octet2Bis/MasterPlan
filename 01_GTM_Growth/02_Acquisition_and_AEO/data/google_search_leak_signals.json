@@ -1,0 +1,55 @@
+{
+  "version": "2026.1",
+  "name": "Google Search Algorithm Leak — Core Ranking & AEO Signals",
+  "source": "US DOJ Antitrust Trial Document Unsealed (14,000+ Internal Ranking Attributes)",
+  "signals": {
+    "navboost": {
+      "id": "NAVBOOST_GLUE",
+      "description": "Système de réévaluation basé sur les logs de clics réels et le comportement post-clic",
+      "metrics": {
+        "good_clicks": "Dwell time > 90s ou session de recherche terminée sans retour aux SERPs (+Rank Boost)",
+        "bad_clicks": "Pogo-sticking : clic suivi d'un retour arrière SERP en < 15s (-Rank Penalty)",
+        "last_click_win": "Dernier document consulté qui stoppe la requête utilisateur (+Authority Score)"
+      },
+      "rule": "L'accroche et l'utilisabilité doivent retenir l'utilisateur plus de 90 secondes avec un contenu interactif"
+    },
+    "chrome_data": {
+      "id": "CHROME_TELEMETRY",
+      "description": "Signaux in-browser réels captés via Chrome",
+      "metrics": {
+        "scroll_depth_threshold": "Lecture effective à plus de 60% de la page",
+        "active_interaction_seconds": "Interactions réelles (clics, inputs, vidéos, timers)",
+        "repeat_visits_ratio": "Taux de retour direct des utilisateurs sur le domaine"
+      },
+      "rule": "Intégrer des widgets interactifs (calculatrices, micro-défis, vidéos de décompression)"
+    },
+    "entity_authority": {
+      "id": "TOPICAL_ENTITY_AUTHORITY",
+      "description": "Validation sémantique de l'autorité de marque et du cluster d'entités",
+      "metrics": {
+        "entity_grounding": "Correspondance directe avec les nœuds Schema.org (Organization, Person, SoftwareApplication)",
+        "non_link_citations": "Mentions textuelles d'entités par des tiers sans lien hypertexte (AEO/GEO)",
+        "topic_focus_ratio": "Densité de contenu ultra-spécialisée (zéro dilution sur des sujets hors-sujet)"
+      },
+      "rule": "Bannir les articles généralistes : 100% du contenu centré sur la longévité, le screen time et les protocoles Aevum"
+    },
+    "author_eeat": {
+      "id": "AUTHOR_CREDIBILITY_SCORE",
+      "description": "Validation de l'identité et de l'expertise de l'auteur",
+      "metrics": {
+        "person_schema_declared": "Présence obligatoire de l'entité Person avec les profils LinkedIn / GitHub / SameAs",
+        "peer_review_citation": "Citations de sources primaires médicales (PubMed, NCBI, Stanford) vérifiables"
+      },
+      "rule": "Chaque protocole Aevum doit citer son auteur et ses références cliniques exactes"
+    },
+    "freshness_integrity": {
+      "id": "FRESHNESS_DELTA_CHECK",
+      "description": "Traque des faux rafraîchissements de dates",
+      "metrics": {
+        "content_delta_required": "Toute mise à jour de date doit s'accompagner d'au moins 15% de modifications textuelles",
+        "ghost_date_penalty": "Pénalité algorithmique si seule la balise dateModified est falsifiée sans changement réel"
+      },
+      "rule": "Mises à jour substantielles déterministes obligatoires"
+    }
+  }
+}

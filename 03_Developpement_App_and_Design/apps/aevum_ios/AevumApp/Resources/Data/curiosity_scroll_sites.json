@@ -1,0 +1,52 @@
+{
+  "version": "1.0.0",
+  "name": "Aevum Curiosity Scroll Sites — Anti-Doomscrolling Sanctuaries",
+  "source": "DAFES Curated Independent Web Gems",
+  "sanctuaries": [
+    {
+      "id": "CURIOSITY-01",
+      "name": "Wikiverse (La Galaxie de la Connaissance)",
+      "url": "https://wikiverse.io",
+      "free": true,
+      "tagline": "Explorez Wikipedia sous la forme d'une constellation stellaire 3D interactive",
+      "benefit": "Remplacement du flux algorithmique anxiogène par une exploration spatiale méditative du savoir humain",
+      "focusDurationMinutes": 5
+    },
+    {
+      "id": "CURIOSITY-02",
+      "name": "Google Arts & Culture Ultra-Zoom",
+      "url": "https://artsandculture.google.com",
+      "free": true,
+      "tagline": "Plongez au micron près dans les coups de pinceau des plus grands chefs-d'œuvre mondiaux",
+      "benefit": "Contemplation lente et décélération du cortex visuel saturé par les micro-vidéos",
+      "focusDurationMinutes": 4
+    },
+    {
+      "id": "CURIOSITY-03",
+      "name": "The Public Domain Review & Matchbox Archives",
+      "url": "https://publicdomainreview.org",
+      "free": true,
+      "tagline": "Cabinet de curiosités visuelles, gravures historiques et typographies d'allumettes vintage",
+      "benefit": "Stimulation de l'inspiration créative pure sans bruit commercial ni notification",
+      "focusDurationMinutes": 5
+    },
+    {
+      "id": "CURIOSITY-04",
+      "name": "Radio Garden (Le Globe Sonore)",
+      "url": "https://radio.garden",
+      "free": true,
+      "tagline": "Faites tourner la planète et écoutez les stations de radio locales en direct à l'autre bout du monde",
+      "benefit": "Ouverture sensorielle et rupture de la bulle de résonance cognitive",
+      "focusDurationMinutes": 6
+    },
+    {
+      "id": "CURIOSITY-05",
+      "name": "WindowSwap (Regarder par la Fenêtre)",
+      "url": "https://www.window-swap.com",
+      "free": true,
+      "tagline": "Une vue paisible et le son ambiant réel d'une fenêtre à Tokyo, Buenos Aires ou Reykjavik",
+      "benefit": "Réduction du rythme cardiaque et évasion contemplative passive sans décharge de dopamine",
+      "focusDurationMinutes": 3
+    }
+  ]
+}

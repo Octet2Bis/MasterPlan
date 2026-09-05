@@ -121,7 +121,7 @@ if (fs.existsSync(appsDir)) {
 
 // 6. Poka-Yoke — Linter Anti-IA-Slop & Standard Visuel
 console.log('\n📌 6. Poka-Yoke — Linter Anti-IA-Slop & Standard Visuel (Bible Normative) :');
-['anti_slop_design_bible.md', 'ui_archetype_matrix.md', 'ui_design_heuristics.md'].forEach(rule => {
+['anti_slop_design_bible.md', 'ui_archetype_matrix.md', 'ui_design_heuristics.md', 'ui_layers_manus_craft.md'].forEach(rule => {
   check(`Règle de design canonique présente : .agents/rules/${rule}`, () => {
     if (!fs.existsSync(path.join(ROOT, '.agents/rules', rule))) throw new Error(`Règle manquante : ${rule}`);
   });
@@ -132,6 +132,14 @@ check('Bibliothèque de micro-icônes SVG intégrée', () => {
   if (!fs.existsSync(iconsDir) || fs.readdirSync(iconsDir).filter(f => f.endsWith('.svg')).length < 5) {
     throw new Error('Dossier icons incomplet ou introuvable');
   }
+});
+
+// 7. Skylos Scanner — Audit AST, Secrets & Anti-Hallucination
+console.log('\n📌 7. Poka-Yoke — Skylos Scanner (Secrets, AST & Anti-Hallucinations) :');
+check('Audit Skylos Scanner validé avec 0 erreur', () => {
+  const { runSkylos } = require('./skylos_scanner');
+  const res = runSkylos();
+  if (!res.success) throw new Error(`${res.totalErrors} violation(s) détectée(s) par Skylos`);
 });
 
 console.log('\n------------------------------------------------------------');
