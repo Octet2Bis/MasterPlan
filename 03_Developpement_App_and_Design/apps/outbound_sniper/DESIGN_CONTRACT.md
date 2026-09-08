@@ -17,7 +17,7 @@ design_system: kits/chamfer-paper-ink@1.0.0
 
 ## 2. 📐 Échelle Spatiale Grille 8pt
 Tous les espacements (`padding`, `margin`, `gap`) sont strictement restreints aux variables :
-* `--space-4` (4px), `--space-8` (8px), `--space-12` (12px), `--space-16` (16px), `--space-24` (24px), `--space-32` (32px), `--space-48` (48px).
+* `--space-4`, `--space-8`, `--space-12`, `--space-16`, `--space-20`, `--space-24`, `--space-32`.
 * **Zéro pixel arbitraire :** Interdiction des valeurs impaires ou hors échelle.
 
 ---
@@ -32,6 +32,7 @@ Tous les espacements (`padding`, `margin`, `gap`) sont strictement restreints au
 ---
 
 ## 4. ♿ Accessibilité WCAG 2.1 AA & Ergonomie
-* Cibles d'interaction : `min-height: 36px` à `44px` pour tous les éléments interactifs.
+* Cibles d'interaction : `min-height: var(--space-32)` au minimum pour tous les éléments interactifs.
+* Exception unique hors grille : cible tactile 44px (WCAG 2.5.5).
 * `aria-label` présent sur tous les boutons d'action et inputs.
 * Contraste texte/fond $\ge 4.5:1$ garanti.
