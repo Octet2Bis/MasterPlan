@@ -17,7 +17,7 @@ console.log('📦 Création de l\'archive autonome Outbound Sniper Studio...');
 
 // Éléments à inclure dans le package autonome
 const includeItems = [
-  'server.js', 'package.json', 'tokens.css',
+  'server.js', 'package.json',
   'start_windows.bat', 'start_mac_linux.sh',
   'README.md', 'AGENTS.md', 'ROADMAP.md', 'PRD.md', 'BRIEF.md',
   'data', 'engine', 'public'

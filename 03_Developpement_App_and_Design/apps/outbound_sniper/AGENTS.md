@@ -50,7 +50,6 @@ Si vous prenez la suite de ce projet sur une nouvelle machine ou dans un nouveau
 ```
 outbound_sniper/
 ├── server.js                          # Serveur HTTP natif & routeur d'API (< 210 L)
-├── tokens.css                         # Design tokens Swiss Craft scellés
 ├── package.json                       # Manifeste projet (zéro external dependencies)
 ├── start_windows.bat                  # Lanceur 1-clic pour Windows
 ├── start_mac_linux.sh                 # Lanceur 1-clic pour macOS et Linux
@@ -88,6 +87,7 @@ outbound_sniper/
 │
 └── public/                            # Frontend Web modulaire (< 250 L/fichier)
     ├── index.html                     # Structure HTML épurée en 5 onglets
+    ├── tokens.css                     # Design tokens Chamfer Paper & Ink scellés
     ├── styles.css                     # Styles Swiss Craft épurés
     ├── app.js                         # Orchestrateur UI principal
     ├── ui_contacts.js                 # Onglet 1 : Gestion & vérification de la liste

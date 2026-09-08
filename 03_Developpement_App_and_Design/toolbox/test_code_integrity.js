@@ -78,7 +78,9 @@ if (fs.existsSync(appsDir)) {
       });
     });
     check(`[${app}] Tokens de Design scellés (tokens.css ou Theme.swift)`, () => {
-      const hasTokens = fs.existsSync(path.join(appPath, 'tokens.css')) || fs.existsSync(path.join(appPath, 'AevumApp/UI/DesignSystem/Theme.swift'));
+      const hasTokens = fs.existsSync(path.join(appPath, 'tokens.css')) ||
+                        fs.existsSync(path.join(appPath, 'public', 'tokens.css')) ||
+                        fs.existsSync(path.join(appPath, 'AevumApp/UI/DesignSystem/Theme.swift'));
       if (!hasTokens) throw new Error('Tokens graphiques manquants (tokens.css ou Theme.swift)');
     });
 

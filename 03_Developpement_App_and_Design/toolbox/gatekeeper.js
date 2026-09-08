@@ -71,6 +71,7 @@ function auditAppGates(appName) {
   const designContract = path.join(appPath, 'DESIGN_CONTRACT.md');
   const hasTokens = [
     path.join(appPath, 'tokens.css'),
+    path.join(appPath, 'public', 'tokens.css'),
     path.join(appPath, 'web_preview', 'tokens.css'),
     path.join(appPath, 'web_preview', 'index.css'),
     path.join(appPath, 'AevumApp', 'UI', 'DesignSystem', 'Theme.swift')
