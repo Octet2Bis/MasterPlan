@@ -6,7 +6,7 @@
   <title>Campagnes Outbound — Studio Multi-Campagnes & Tracking</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -18,7 +18,7 @@
         <span class="badge-brand">SNIPER</span>
         <h1>Campagnes Outbound</h1>
         <div id="sender-selector-container" style="display:flex; align-items:center; gap:8px;">
-          <select id="select-sender" class="select-input" style="font-size:12px; height:32px; padding:2px 8px;" aria-label="Compte expéditeur"></select>
+          <select id="select-sender" class="select-input" style="font-size:13px; height:34px; padding:4px 8px;" aria-label="Compte expéditeur"></select>
         </div>
         <button type="button" class="tab-pill tab-pill-green" id="header-score-badge" style="cursor:pointer; display:none;" title="Cliquer pour inspecter le score de délivrabilité">
           🛡️ Délivrabilité : <strong>--/100</strong>
@@ -50,7 +50,23 @@
         </button>
       </div>
 
-      <div class="campaigns-grid" id="campaigns-grid-container"></div>
+      <div class="campaigns-grid" id="campaigns-grid-container">
+        <div class="campaigns-empty-state" id="campaigns-empty-state">
+          <div class="empty-state-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <h3>Aucune campagne créée</h3>
+          <p>Commencez par créer votre première campagne de prospection ciblée. Chaque campagne dispose de son audience isolée, son modèle et sa cadence.</p>
+          <button class="btn btn-primary" id="btn-create-campaign-empty">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Créer ma première campagne</span>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- 2. VUE WORKSPACE CAMPAGNE (Workflow 5 Étapes Chronologiques en Sidebar) -->
@@ -193,7 +209,7 @@
                 </button>
               </div>
               <div class="triage-bar-meta">
-                <span class="text-secondary" style="font-size:12px;">Filtrage déterministe anti-rebond</span>
+                <span class="text-secondary" style="font-size:13px;">Filtrage déterministe anti-rebond</span>
               </div>
             </div>
 
@@ -207,7 +223,7 @@
 
             <!-- Dropzone Compacte (quand contacts existants) -->
             <div id="contacts-dropzone-compact" style="display:none;" class="dropzone-compact">
-              <span class="text-secondary" style="font-size:12px;">📁 Déposez un autre fichier CSV pour compléter l'audience ou cliquez sur "Importer CSV"</span>
+              <span class="text-secondary" style="font-size:13px;">📁 Déposez un autre fichier CSV pour compléter l'audience ou cliquez sur "Importer CSV"</span>
             </div>
 
             <div class="error-banner" id="error-banner" style="display:none;" role="alert">
@@ -218,7 +234,7 @@
             <div class="table-card">
               <div class="table-toolbar">
                 <span><strong id="contacts-count">0</strong> contacts dans la campagne</span>
-                <span class="text-muted" style="font-size:11.5px;">Paquets de 8 contacts / page</span>
+                <span class="text-muted" style="font-size:13.5px;">Paquets de 8 contacts / page</span>
               </div>
               <div class="contacts-table-container">
                 <table class="data-table" id="contacts-table">
@@ -261,7 +277,7 @@
                 <p class="section-desc">Personnalisez l'objet, le texte et le bouton d'action. Utilisez le Spintax pour des empreintes uniques.</p>
               </div>
               <div class="header-actions" style="display:flex; align-items:center; gap:10px;">
-                <button type="button" id="deliverability-score-badge" class="tab-pill tab-pill-green" style="font-size:12px; padding:4px 10px; font-weight:700; cursor:pointer;" title="Cliquez pour inspecter le score">Score Délivrabilité : 100/100</button>
+                <button type="button" id="deliverability-score-badge" class="tab-pill tab-pill-green" style="font-size:13px; padding:4px 10px; font-weight:700; cursor:pointer;" title="Cliquez pour inspecter le score">Score Délivrabilité : 100/100</button>
                 <button class="btn btn-primary" id="btn-save-message">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                   <span>💾 Enregistrer</span>
@@ -281,12 +297,12 @@
 
                 <div class="variables-toolbar">
                   <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                    <span class="text-muted" style="font-size: 11.5px; font-weight: 700;">Variables :</span>
+                    <span class="text-secondary" style="font-size: 13px; font-weight: 700;">Variables :</span>
                     <div id="variables-toolbar-chips" style="display:inline-flex; gap:6px; flex-wrap:wrap;"></div>
                   </div>
                   <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
-                    <span class="text-muted" style="font-size: 11.5px; font-weight: 700;">🎲 Spintax Pro :</span>
-                    <select id="select-spintax-preset" class="select-input" style="font-size:11.5px; height:28px; padding:1px 6px; width:auto;">
+                    <span class="text-secondary" style="font-size: 13px; font-weight: 700;">🎲 Spintax Pro :</span>
+                    <select id="select-spintax-preset" class="select-input" style="font-size:13px; height:30px; padding:2px 8px; width:auto;">
                       <option value="">+ Insérer variation Spintax...</option>
                     </select>
                   </div>
@@ -295,7 +311,7 @@
                 <div class="form-group">
                   <div style="display:flex; justify-content:space-between; align-items:center;">
                     <label for="edit-campaign-body" style="margin-bottom:0;">Corps du message</label>
-                    <span id="body-word-counter" class="text-muted" style="font-size:11.5px; font-family:var(--font-mono);">0 mot (Idéal: 50-120)</span>
+                    <span id="body-word-counter" class="text-muted" style="font-size:13px; font-family:var(--font-mono);">0 mot (Idéal: 50-120)</span>
                   </div>
                   <textarea id="edit-campaign-body" class="input-text" rows="10" placeholder="Rédigez votre email... Utilisez {{prenom}} ou {{entreprise}} pour personnaliser."></textarea>
                 </div>
@@ -312,9 +328,9 @@
                 </div>
 
                 <div class="form-group stealth-toggle-card">
-                  <label class="switch-label" style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-primary);">
+                  <label class="switch-label" style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--text-primary);">
                     <input type="checkbox" id="edit-campaign-stealth" checked style="width: 15px; height: 15px; accent-color: var(--accent-success); cursor: pointer;">
-                    <span>🥷 <strong>Mode Furtif Anti-Promotions</strong> <span style="font-weight: 400; font-size: 11px; color: var(--text-secondary);">(0 pixel espion, liens directs sans redirection)</span></span>
+                    <span>🥷 <strong>Mode Furtif Anti-Promotions</strong> <span style="font-weight: 400; font-size: 13px; color: var(--text-secondary);">(0 pixel espion, liens directs sans redirection)</span></span>
                   </label>
                 </div>
               </div>
@@ -324,9 +340,9 @@
                 <div class="preview-header-bar">
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <span class="meta-label">Aperçu boîte</span>
-                    <span id="preview-stealth-badge" class="badge-status badge-verified" style="font-size: 11px;">🥷 Furtif</span>
+                    <span id="preview-stealth-badge" class="badge-status badge-verified" style="font-size: 12.5px;">🥷 Furtif</span>
                   </div>
-                  <select id="preview-contact-select" class="select-input" style="max-width: 220px; font-size: 12px; padding: 4px 8px;"></select>
+                  <select id="preview-contact-select" class="select-input" style="max-width: 220px; font-size: 13px; padding: 4px 8px;"></select>
                 </div>
                 <div id="preview-poka-warning" class="poka-warning-box" style="display: none;"></div>
                 <div class="campaign-preview-box lemlist-preview-box">
@@ -503,7 +519,7 @@
             <div style="margin-top:var(--space-16); display:flex; flex-direction:column; gap:var(--space-8);">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <strong style="font-size:13.5px; font-family:var(--font-heading);">🛰️ Flux d'activité en direct (Passerelle VM 24/7)</strong>
-                <span class="text-muted" id="events-count-label" style="font-size:12px;">0 événement</span>
+                <span class="text-muted" id="events-count-label" style="font-size:13px;">0 événement</span>
               </div>
               <div class="contacts-table-container" style="max-height: 260px;">
                 <table class="data-table" id="tracking-events-table">
@@ -563,10 +579,10 @@
           </div>
 
           <div id="google-auth-not-connected">
-            <p class="text-secondary" style="font-size:12.5px; margin-bottom:8px;">Connectez votre compte Google pour envoyer vos campagnes directement via l'API Gmail sécurisée, sans mot de passe d'application.</p>
+            <p class="text-secondary" style="font-size:13px; margin-bottom:8px;">Connectez votre compte Google pour envoyer vos campagnes directement via l'API Gmail sécurisée, sans mot de passe d'application.</p>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-              <input type="text" id="google-client-id" class="input-text" placeholder="Client ID Google Cloud" style="font-size:12px;" />
-              <input type="password" id="google-client-secret" class="input-text" placeholder="Client Secret Google Cloud" style="font-size:12px;" />
+              <input type="text" id="google-client-id" class="input-text" placeholder="Client ID Google Cloud" style="font-size:13px;" />
+              <input type="password" id="google-client-secret" class="input-text" placeholder="Client Secret Google Cloud" style="font-size:13px;" />
             </div>
             <button type="button" class="btn btn-google" id="btn-google-auth" style="width:100%;">
               <span>Se connecter avec Google</span>
@@ -576,7 +592,7 @@
 
         <div style="display:flex; align-items:center; gap:8px; margin: 4px 0;">
           <div style="flex:1; height:1px; background:var(--border-subtle);"></div>
-          <span style="font-size:11.5px; color:var(--text-muted); font-weight:700;">OU VIA SMTP CLASSIQUE</span>
+          <span style="font-size:13px; color:var(--text-muted); font-weight:700;">OU VIA SMTP CLASSIQUE</span>
           <div style="flex:1; height:1px; background:var(--border-subtle);"></div>
         </div>
 
@@ -596,7 +612,7 @@
             <input id="profile-app-password" type="password" class="input-text" placeholder="ex: abcd efgh ijkl mnop">
             <button type="button" class="btn btn-ghost btn-sm" id="btn-toggle-profile-pass" title="Afficher/Masquer">👁️</button>
           </div>
-          <small class="text-muted" style="font-size:11.5px; margin-top:2px;">Généré sur myaccount.google.com > Sécurité > Mots de passe des applications.</small>
+          <small class="text-muted" style="font-size:13px; margin-top:2px;">Généré sur myaccount.google.com > Sécurité > Mots de passe des applications.</small>
         </div>
 
         <div class="form-group">
@@ -612,11 +628,11 @@
         <div class="form-group" style="border-top: 1px solid var(--border-subtle); padding-top: var(--space-12);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
             <label for="profile-hunter-key" style="margin-bottom:0;">Clé API Hunter.io (Optionnel)</label>
-            <button type="button" class="btn btn-ghost btn-sm" id="btn-test-hunter" style="font-size:11.5px; padding:2px 8px;">🔍 Tester la clé & quotas</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-test-hunter" style="font-size:13px; padding:3px 10px;">🔍 Tester la clé & quotas</button>
           </div>
           <input id="profile-hunter-key" type="password" class="input-text" placeholder="Clé API Hunter.io (laisser vide pour mode 100% gratuit)">
           <div id="hunter-status-box" style="margin-top:6px;"></div>
-          <small class="text-muted" style="font-size:11.5px; margin-top:2px;">Garde-fou : Le résolveur DNS/MX local gratuit est toujours utilisé en priorité. Hunter n'est sollicité qu'en cas d'adresse introuvable.</small>
+          <small class="text-muted" style="font-size:13px; margin-top:2px;">Garde-fou : Le résolveur DNS/MX local gratuit est toujours utilisé en priorité. Hunter n'est sollicité qu'en cas d'adresse introuvable.</small>
         </div>
       </div>
 

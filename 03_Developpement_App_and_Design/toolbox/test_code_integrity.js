@@ -121,7 +121,7 @@ if (fs.existsSync(appsDir)) {
 
 // 6. Poka-Yoke — Linter Anti-IA-Slop & Standard Visuel
 console.log('\n📌 6. Poka-Yoke — Linter Anti-IA-Slop & Standard Visuel (Bible Normative) :');
-['anti_slop_design_bible.md', 'ui_archetype_matrix.md', 'ui_design_heuristics.md', 'ui_layers_manus_craft.md', 'venture_pipeline_standard.md'].forEach(rule => {
+['anti_slop_design_bible.md', 'ui_archetype_matrix.md', 'ui_design_heuristics.md', 'ui_layers_manus_craft.md', 'ui_editorial_eye_on_design_craft.md', 'ui_tactile_biomimetic_craft.md', 'ui_swiss_catalog_tbi_craft.md', 'venture_pipeline_standard.md'].forEach(rule => {
   check(`Règle de design canonique présente : .agents/rules/${rule}`, () => {
     if (!fs.existsSync(path.join(ROOT, '.agents/rules', rule))) throw new Error(`Règle manquante : ${rule}`);
   });

@@ -116,29 +116,29 @@ function renderContactsTable(contacts) {
     const typoBtn = c.typo_suggestion ? `<button class="btn-typo-fix" onclick="window.SniperUIContacts.applyTypoFix('${c.id}')" title="Appliquer la correction">🪄 Corriger : ${c.email}</button>` : '';
     const patternBtn = (c.status === 'INVALID_MAILBOX' && !c.pattern_resolved) ? `<button class="btn-typo-fix" onclick="window.SniperUIContacts.autoResolvePattern('${c.id}')" title="Tester les patterns">🔍 Trouver</button>` : '';
     const patternTag = c.hunter_verified
-      ? `<small style="display:block; font-size:11px; color:#6D28D9; font-weight:600;">🎯 Hunter.io (${c.score || 85}%)</small>`
-      : (c.pattern_label ? `<small style="display:block; font-size:11px; color:#1E6091; font-weight:600;">🎯 Pattern : ${c.pattern_label}</small>` : '');
+      ? `<small style="display:block; font-size:12.5px; color:#6D28D9; font-weight:600;">🎯 Hunter.io (${c.score || 85}%)</small>`
+      : (c.pattern_label ? `<small style="display:block; font-size:12.5px; color:#1E6091; font-weight:600;">🎯 Pattern : ${c.pattern_label}</small>` : '');
     const initials = `${(c.prenom || 'C')[0]}${(c.nom || '')[0] || ''}`.toUpperCase();
 
     return `
       <tr id="row-contact-${c.id}">
         <td>
           <div style="display:flex; align-items:center; gap:8px;">
-            <div class="lemlist-avatar" style="width:26px; height:26px; font-size:11px;">${initials}</div>
+            <div class="lemlist-avatar" style="width:28px; height:28px; font-size:12px;">${initials}</div>
             <div>
-              <strong style="color:var(--text-primary); display:block; font-size:12.5px;">${c.prenom || ''} ${c.nom || ''}</strong>
-              <small class="text-secondary" style="font-size:10.5px;">${c.role || '-'}</small>
+              <strong style="color:var(--text-primary); display:block; font-size:13.5px;">${c.prenom || ''} ${c.nom || ''}</strong>
+              <small class="text-secondary" style="font-size:12.5px;">${c.role || '-'}</small>
             </div>
           </div>
         </td>
-        <td><span style="font-size:12.5px;">${c.entreprise || '-'}</span></td>
+        <td><span style="font-size:13px;">${c.entreprise || '-'}</span></td>
         <td>
-          <span style="font-family:var(--font-mono); font-size:12px; color:var(--accent-primary);">${c.email}</span>
+          <span style="font-family:var(--font-mono); font-size:13px; color:var(--accent-primary);">${c.email}</span>
           ${patternTag} ${typoBtn} ${patternBtn}
         </td>
         <td>
-          <span class="badge-status ${getStatusBadgeClass(c.status)}" style="font-size:11px;">${getStatusLabel(c)}</span>
-          ${c.security_gateway ? `<small class="text-secondary" style="display:block; font-size:10px; margin-top:2px;">🛡️ ${c.security_gateway}</small>` : ''}
+          <span class="badge-status ${getStatusBadgeClass(c.status)}" style="font-size:12.5px;">${getStatusLabel(c)}</span>
+          ${c.security_gateway ? `<small class="text-secondary" style="display:block; font-size:12.5px; margin-top:2px;">🛡️ ${c.security_gateway}</small>` : ''}
         </td>
       </tr>
     `;

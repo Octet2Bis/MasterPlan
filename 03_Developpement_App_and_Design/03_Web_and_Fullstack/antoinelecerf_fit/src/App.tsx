@@ -7,18 +7,22 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AnimatedRoutes } from "@/components/AnimatedRoutes";
 
 
+import { SmoothScroll } from "@/components/SmoothScroll";
+
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AnimatedRoutes />
-      </BrowserRouter>
-    </TooltipProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <SmoothScroll>
+            <AnimatedRoutes />
+          </SmoothScroll>
+        </BrowserRouter>
+      </TooltipProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );

@@ -11,6 +11,7 @@ import { categoryColor } from "@/lib/categoryColors";
 import { cn } from "@/lib/utils";
 import { Mail, Linkedin, MapPin, ArrowDown, ArrowRight, Circle, ChevronDown, GraduationCap, Award } from "lucide-react";
 import { HeroIconCycler } from "@/components/portfolio/HeroIconCycler";
+import { HeroCascade } from "@/components/portfolio/HeroCascade";
 import { HERO_CYCLE, useHeroCycleIndex } from "@/components/portfolio/heroCycle";
 import magnifier from "@/assets/hero-icons/magnifier.png";
 import arrow from "@/assets/hero-icons/arrow.png";
@@ -178,76 +179,7 @@ const ParisClock = () => {
 
 
 
-const Hero = ({ onSkillClick }: { onSkillClick: () => void }) => {
-  const cycleIndex = useHeroCycleIndex();
-  const { t } = useLanguage();
-  const { profile } = usePortfolioData();
-  return (
-  <header className="relative w-full bg-background overflow-hidden border-b border-border/50">
-    <div className="absolute inset-0 grid-paper opacity-60 pointer-events-none" />
-
-    <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 lg:px-16 pt-10 md:pt-16 pb-10 md:pb-14">
-
-      <div className="flex items-stretch gap-6 md:gap-10">
-        <div className="flex-1 min-w-0">
-          <h1 className="font-black text-foreground leading-[0.85] tracking-tight">
-            <span className="block text-[clamp(2.5rem,9vw,7.5rem)]">ANTOINE</span>
-            <span className="block text-[clamp(2.5rem,9vw,7.5rem)]">LECERF</span>
-            <span className="block text-[clamp(1.5rem,5vw,3.5rem)] mt-3 md:mt-5">
-              {t("hero.profil")} <RotatingWord index={cycleIndex} />
-            </span>
-          </h1>
-
-          <p
-            className="mt-8 max-w-2xl text-lg md:text-2xl italic text-foreground/80"
-            style={{ fontFamily: "'Alegreya Sans', sans-serif" }}
-          >
-            {t("hero.subtitle")}<br />
-            {t("hero.subtitle2")}
-          </p>
-        </div>
-
-        <div className="flex shrink-0 items-center justify-center">
-          <HeroIconCycler
-            index={cycleIndex}
-            className="!w-[20vw] sm:!w-[28vw] !h-full !max-w-[420px] !min-w-[80px] sm:!min-w-[160px]"
-          />
-        </div>
-      </div>
-
-      <div className="mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <button
-          onClick={onSkillClick}
-          className="group inline-flex items-center justify-between gap-4 bg-primary text-primary-foreground px-5 py-3 border border-foreground shadow-[4px_4px_0_0_hsl(var(--foreground))] hover:shadow-[2px_2px_0_0_hsl(var(--foreground))] hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-background hover:text-primary transition-all duration-150"
-        >
-          <span className="text-sm font-bold uppercase tracking-widest">
-            {t("hero.explore")}
-          </span>
-          <ArrowDown className="size-4 group-hover:translate-y-1 transition-transform" />
-        </button>
-        <a
-          href={`mailto:${profile.email}`}
-          className="inline-flex items-center gap-3 px-5 py-3 border border-foreground bg-background shadow-[4px_4px_0_0_hsl(var(--foreground))] hover:shadow-[2px_2px_0_0_hsl(var(--foreground))] hover:translate-x-[2px] hover:translate-y-[2px] hover:text-primary transition-all duration-150 text-sm font-bold uppercase tracking-widest"
-        >
-          <Mail className="size-4" /> {t("hero.contact")}
-        </a>
-      </div>
-
-      <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground">
-        <a href={`mailto:${profile.email}`} className="flex items-center gap-2 hover:text-primary">
-          <Mail className="size-3.5" /> {profile.email}
-        </a>
-        <a href={profile.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary">
-          <Linkedin className="size-3.5" /> LinkedIn
-        </a>
-        <span className="flex items-center gap-2">
-          <MapPin className="size-3.5" /> {profile.location}
-        </span>
-      </div>
-    </div>
-  </header>
-  );
-};
+const Hero = HeroCascade;
 
 /* ---------- Experience detail dialog ---------- */
 

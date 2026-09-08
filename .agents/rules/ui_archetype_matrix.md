@@ -45,3 +45,21 @@ Ce document régit le choix du squelette structurel de toute interface développ
   - Barre d'entrée flottante en bas de page.
 * **Composants Clés :** Blocs d'artéfacts extensibles, citations documentaires avec liens, badges de confiance.
 * **Références de Patterns :** *Vercel AI UI Patterns*.
+
+### 5. 🏛️ Archétype 5 : Portfolio d'Ingénieur, Studio Lab & Manifeste Éditorial
+* **Cas d'Usage :** Portfolio personnel `antoinelecerf.fit`, vitrines d'innovation, manifestes de marque et galeries de lab.
+* **Squelette de Navigation (Shell) :**
+  - Header minimaliste (Identité typographique + statut live de disponibilité + navigation épurée).
+  - Section Hero monumentale asymétrique (H1 56px-72px + ratio 4:1 + visualiseur interactif WebGL/ASCII/Brik).
+  - Grille éditoriale à grand souffle (Negative Space >= 40%) mettant en scène les projets réels sans cartes génériques.
+* **Composants Clés :** Titrages éditoriaux acérés (`Space Grotesk`, `Instrument Serif`, `Syne`), bichromies ou accords rares, micro-interactions cinétiques douces.
+* **Références de Patterns :** *AIGA Eye on Design / Swiss International Style / Layers.to*.
+
+### 6. 📦 Archétype 6 : Catalogue d'Artéfacts, Studio Store & Galerie Produit
+* **Cas d'Usage :** Boutiques de templates, catalogues d'outils digitaux, vitrines de livrables et galeries d'assets pour le Master Plan.
+* **Squelette de Navigation (Shell) :**
+  - Sélecteur typographique continu (*Inline Editorial Row*) avec catégories en phrase horizontale (`Favourites, Mockups, Decks, Tools, All`).
+  - Grille rigoureuse 3 colonnes desktop (`border-radius: 0px`, ratio 4:3 strict).
+  - Footer institutionnel sobre.
+* **Composants Clés :** Cartes d'artéfacts 4:3 à fond studio `#E5E5E5` avec micro-interaction de survol (backstage crossfade), triade titre / créateur / prix, zéro ombre floue.
+* **Références de Patterns :** *The Brand Identity Store (TBI) / Swiss Modernist Catalog*.

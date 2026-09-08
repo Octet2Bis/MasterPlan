@@ -114,11 +114,11 @@
         ? `<span class="badge-status badge-disposable" title="Robot de sécurité ou pré-scanner">🤖 Bot Filtré</span>`
         : `<span class="badge-status badge-verified">✅ Humain Réel</span>`;
 
-      const detail = ev.target_url ? `<a href="${ev.target_url}" target="_blank" class="text-secondary" style="font-size:11px;">${ev.target_url}</a>` : `<span class="text-muted" style="font-size:11px;">Pixel 1x1</span>`;
+      const detail = ev.target_url ? `<a href="${ev.target_url}" target="_blank" class="text-secondary" style="font-size:12.5px;">${ev.target_url}</a>` : `<span class="text-muted" style="font-size:12.5px;">Pixel 1x1</span>`;
 
       return `
         <tr>
-          <td style="font-family:var(--font-mono); font-size:11.5px;">${dateStr}</td>
+          <td style="font-family:var(--font-mono); font-size:12.5px;">${dateStr}</td>
           <td>${typeBadge}</td>
           <td><strong>${contactDisplay}</strong></td>
           <td>${botBadge}</td>

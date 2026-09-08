@@ -1,11 +1,36 @@
 {
-  "version": "1.4.0",
-  "name": "Neo-Brutalist Swiss Craft Typography",
+  "version": "1.5.0",
+  "name": "Swiss Craft & Editorial Typography Spec",
   "pairings": {
     "neo_brutalist_swiss": {
       "display_heading": "Bricolage Grotesque, -apple-system, sans-serif",
       "body_interface": "Plus Jakarta Sans, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
       "monospace_data": "JetBrains Mono, SFMono-Regular, Consolas, monospace"
+    },
+    "editorial_swiss_grotesk": {
+      "display_heading": "Space Grotesk, -apple-system, sans-serif",
+      "body_interface": "Plus Jakarta Sans, -apple-system, sans-serif",
+      "monospace_data": "JetBrains Mono, monospace"
+    },
+    "editorial_high_fashion": {
+      "display_heading": "Instrument Serif, Georgia, serif",
+      "body_interface": "Inter, -apple-system, sans-serif",
+      "monospace_data": "JetBrains Mono, monospace"
+    },
+    "editorial_constructivist": {
+      "display_heading": "Syne, -apple-system, sans-serif",
+      "body_interface": "Work Sans, sans-serif",
+      "monospace_data": "Space Mono, monospace"
+    },
+    "editorial_aevum_humanist": {
+      "display_heading": "Epilogue, -apple-system, sans-serif",
+      "body_interface": "Plus Jakarta Sans, sans-serif",
+      "monospace_data": "JetBrains Mono, monospace"
+    },
+    "tactile_craft_sculptural": {
+      "display_heading": "Fraunces, Georgia, serif",
+      "body_interface": "Plus Jakarta Sans, sans-serif",
+      "monospace_data": "JetBrains Mono, monospace"
     }
   },
   "opentype_features": {
@@ -14,10 +39,11 @@
     "single_story_a": "'cv11' 1"
   },
   "scale": {
-    "h1": { "size": "22px", "weight": 800, "letter_spacing": "-0.02em" },
-    "h2": { "size": "17px", "weight": 700, "letter_spacing": "-0.01em" },
+    "display_hero": { "size": "56px", "weight": 800, "letter_spacing": "-0.04em", "line_height": 1.05 },
+    "h1": { "size": "24px", "weight": 800, "letter_spacing": "-0.03em" },
+    "h2": { "size": "18px", "weight": 700, "letter_spacing": "-0.02em" },
     "body": { "size": "15px", "weight": 400, "line_height": 1.65 },
-    "badge": { "size": "12.5px", "weight": 600, "letter_spacing": "0.02em" },
-    "caption": { "size": "13px", "weight": 400, "color": "text_secondary" }
+    "badge": { "size": "12.5px", "weight": 700, "letter_spacing": "0.05em" },
+    "caption": { "size": "13.5px", "weight": 400, "color": "text_secondary" }
   }
 }

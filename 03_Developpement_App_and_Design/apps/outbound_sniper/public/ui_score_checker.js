@@ -70,20 +70,20 @@
 
         <div class="bento-dark-card">
           <div class="bento-dark-header">
-            <span style="font-size:11px; font-weight:700; color:var(--text-on-dark-secondary); text-transform:uppercase; letter-spacing:0.5px;">Télémétrie Google Inbox</span>
+            <span style="font-size:12.5px; font-weight:700; color:var(--text-on-dark-secondary); text-transform:uppercase; letter-spacing:0.5px;">Télémétrie Google Inbox</span>
             <span class="bento-pill-badge" style="color:${isPrimary ? '#10B981' : '#F59E0B'};">${isPrimary ? '↗' : '⚠️'}</span>
           </div>
           <div>
-            <div style="font-size:11px; color:var(--text-on-dark-secondary);">Placement Estimé</div>
+            <div style="font-size:12.5px; color:var(--text-on-dark-secondary);">Placement Estimé</div>
             <div class="bento-dark-metric" style="color:${isPrimary ? '#10B981' : '#F59E0B'}; font-size:22px;">${placementLabel}</div>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:6px; border-top:1px solid var(--surface-dark-border); font-size:11.5px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:6px; border-top:1px solid var(--surface-dark-border); font-size:12.5px;">
             <div>
-              <span style="color:var(--text-on-dark-secondary); font-size:10.5px;">Reply-Trigger :</span>
+              <span style="color:var(--text-on-dark-secondary); font-size:12.5px;">Reply-Trigger :</span>
               <strong style="font-family:var(--font-mono); color:#FFF; display:block;">${copy.replyTriggerScore || 90}%</strong>
             </div>
             <div>
-              <span style="color:var(--text-on-dark-secondary); font-size:10.5px;">Longueur :</span>
+              <span style="color:var(--text-on-dark-secondary); font-size:12.5px;">Longueur :</span>
               <strong style="font-family:var(--font-mono); color:#FFF; display:block;">${copy.wordCount || 0} mots</strong>
             </div>
           </div>
@@ -95,12 +95,12 @@
           <span style="font-size:15px;">🛡️</span>
           <div>
             <strong>Skylos Pre-Flight Scanner</strong>
-            <span class="text-secondary" style="font-size:11px; display:block;">Contrôle déterministe pré-vol (0 variable orpheline, 0 secret fuité).</span>
+            <span class="text-secondary" style="font-size:12.5px; display:block;">Contrôle déterministe pré-vol (0 variable orpheline, 0 secret fuité).</span>
           </div>
         </div>
         <button class="btn btn-primary btn-sm" id="btn-run-preflight">Lancer le Pre-Flight</button>
       </div>
-      <div id="preflight-results-box" style="display:none; padding:10px 14px; border-radius:var(--radius-sm); font-size:12px;"></div>
+      <div id="preflight-results-box" style="display:none; padding:10px 14px; border-radius:var(--radius-sm); font-size:13px;"></div>
 
       <div class="pillars-bento-grid">
         <div class="pillar-card">
@@ -149,7 +149,7 @@
           <input type="email" id="mailtester-email-input" placeholder="ex: test-xxxx@srv1.mail-tester.com" class="input-text" />
           <button class="btn btn-action btn-sm" id="btn-send-mailtester" style="white-space:nowrap;">🚀 Envoyer le test</button>
         </div>
-        <div id="mailtester-status-msg" style="font-size:12px; display:none;"></div>
+        <div id="mailtester-status-msg" style="font-size:13px; display:none;"></div>
       </div>
     `;
 

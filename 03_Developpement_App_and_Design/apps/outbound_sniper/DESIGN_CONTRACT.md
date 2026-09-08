@@ -2,7 +2,7 @@
 
 **Application :** Outbound Sniper Studio  
 **Archétype UI/UX :** 📊 **Archétype 1 : SaaS B2B, Dashboards & Analytics**  
-**Norme Graphique :** Swiss Craft / Dark Charcoal (Grille 8pt stricte)  
+**Norme Graphique :** Chamfer Craft — Warm Paper & Ink (Angles biseautés 45°, Grille 8pt stricte)  
 **Statut :** 🟢 Scellé & Non Négociable
 
 ---

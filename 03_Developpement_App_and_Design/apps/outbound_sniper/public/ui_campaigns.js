@@ -5,30 +5,29 @@
 
 function renderCampaignsHomeGrid(campaigns, onOpenCampaign, onNewCampaign) {
   const container = document.getElementById('campaigns-grid-container');
+  const emptyState = document.getElementById('campaigns-empty-state');
   if (!container) return;
   if (!campaigns || campaigns.length === 0) {
-    container.innerHTML = `
-      <div style="grid-column: 1 / -1; background: var(--surface-card); border: 1.5px dashed var(--border-interactive); border-radius: var(--radius-card); padding: var(--space-32); text-align: center;">
-        <div style="font-size: 36px;">🎯</div>
-        <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 800;">Aucune campagne active</h3>
-        <p class="text-secondary" style="font-size: 13.5px; margin: 8px 0 16px;">Créez votre première campagne pour configurer votre message et importer vos contacts.</p>
-        <button class="btn btn-primary" id="btn-create-first-camp">Créer ma première campagne</button>
-      </div>`;
-    document.getElementById('btn-create-first-camp')?.addEventListener('click', onNewCampaign);
+    if (emptyState) emptyState.style.display = 'flex';
+    document.getElementById('btn-create-campaign-empty')?.addEventListener('click', onNewCampaign);
     document.getElementById('btn-create-campaign-home')?.addEventListener('click', onNewCampaign);
     return;
   }
-  container.innerHTML = campaigns.map(c => `
+  if (emptyState) emptyState.style.display = 'none';
+  const cardsHTML = campaigns.map(c => `
     <div class="campaign-home-card" data-id="${c.id}">
       <div class="card-top"><span class="tab-pill ${c.lever ? 'tab-pill-green' : ''}">${c.lever || 'Campagne Directe'}</span><span class="badge-status">Prête</span></div>
       <h3 class="card-title">${c.name}</h3>
       <p class="card-subject"><strong>Objet :</strong> ${c.subject}</p>
-      <div class="card-footer"><span class="text-muted" style="font-family:var(--font-mono); font-size:11.5px; font-weight:600;">📁 ${c.contact_count || 0} contacts</span><button class="btn btn-primary btn-sm btn-open-camp" data-id="${c.id}">Ouvrir</button></div>
+      <div class="card-footer"><span class="text-secondary" style="font-family:var(--font-mono); font-size:12.5px; font-weight:600;">📁 ${c.contact_count || 0} contacts</span><button class="btn btn-primary btn-sm btn-open-camp" data-id="${c.id}">Ouvrir</button></div>
     </div>`).join('');
+  container.innerHTML = (emptyState ? emptyState.outerHTML.replace('style="display: flex"', 'style="display:none"').replace('style="display:flex"', 'style="display:none"') : '') + cardsHTML;
+  if (document.getElementById('campaigns-empty-state')) document.getElementById('campaigns-empty-state').style.display = 'none';
   container.querySelectorAll('.btn-open-camp').forEach(btn => btn.onclick = (e) => { e.stopPropagation(); onOpenCampaign(btn.getAttribute('data-id')); });
   container.querySelectorAll('.campaign-home-card').forEach(card => card.onclick = () => onOpenCampaign(card.getAttribute('data-id')));
   document.getElementById('btn-create-campaign-home')?.addEventListener('click', onNewCampaign);
 }
+
 
 function renderSenderSelector(senders, selectedId, onSenderChange) {
   const select = document.getElementById('select-sender');
@@ -145,9 +144,9 @@ function renderDeliverabilityWidget(audit) {
 
   if (details) {
     if (audit.issues.length === 0) {
-      details.innerHTML = `<span style="color:var(--accent-success); font-size:12px; font-weight:600;">✅ Contenu optimisé : Opt-out présent, 0 spam word, 1 lien propre.</span>`;
+      details.innerHTML = `<span style="color:var(--accent-success); font-size:13px; font-weight:600;">✅ Contenu optimisé : Opt-out présent, 0 spam word, 1 lien propre.</span>`;
     } else {
-      details.innerHTML = audit.issues.map(iss => `<div style="font-size:12px; color:${iss.severity === 'HIGH' ? 'var(--accent-error-text)' : '#92400E'}; margin-top:2px;">⚠️ <strong>${iss.message}</strong> ${iss.tip}</div>`).join('');
+      details.innerHTML = audit.issues.map(iss => `<div style="font-size:13px; color:${iss.severity === 'HIGH' ? 'var(--accent-error-text)' : '#92400E'}; margin-top:2px;">⚠️ <strong>${iss.message}</strong> ${iss.tip}</div>`).join('');
     }
   }
 }

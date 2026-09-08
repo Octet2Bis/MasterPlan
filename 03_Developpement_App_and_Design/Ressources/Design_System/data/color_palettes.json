@@ -34,6 +34,60 @@
       "step_2_border": "#F6C1BD",
       "step_9_solid": "#C23B38",
       "step_11_text": "#8C2220"
+    },
+    "swiss_international": {
+      "canvas_paper": "#F7F7F5",
+      "canvas_carbon": "#0E1015",
+      "accent_flame": "#FF3B00",
+      "ink_primary": "#111318",
+      "ink_secondary": "#525866",
+      "border_clean": "rgba(17, 19, 24, 0.08)"
+    },
+    "acid_olive_obsidian": {
+      "canvas_obsidian": "#0B0D11",
+      "surface_card": "#161B22",
+      "accent_acid": "#D4F63C",
+      "accent_olive_neon": "#A3E635",
+      "text_titane": "#F9FAFB",
+      "border_glow": "rgba(212, 246, 60, 0.15)"
+    },
+    "bordeaux_merlot_creme": {
+      "canvas_creme": "#F9F8F6",
+      "surface_merlot": "#4A1525",
+      "accent_carmin": "#D9383A",
+      "accent_champagne": "#D4AF37",
+      "text_dark": "#1C0A10"
+    },
+    "cobalt_risograph": {
+      "canvas_chalk": "#F4F5F8",
+      "canvas_night": "#070B14",
+      "accent_cobalt": "#1D4ED8",
+      "accent_lilac": "#C4B5FD",
+      "text_navy": "#0F172A"
+    },
+    "verdigris_juniper": {
+      "canvas_chalk": "#FCF6E9",
+      "canvas_peat": "#1C1E0D",
+      "surface_linen": "#FFF7E3",
+      "accent_verdigris": "#A2EBD1",
+      "accent_juniper": "#006250",
+      "border_subtle": "rgba(0, 98, 80, 0.12)"
+    },
+    "terracotta_driftwood": {
+      "canvas_dust": "#F6F3EB",
+      "canvas_crow": "#141512",
+      "surface_sandal": "#EDE7DA",
+      "accent_terracotta": "#AD2C0C",
+      "accent_salmon": "#F78F6E",
+      "text_driftwood": "#817D6D"
+    },
+    "tbi_monochrome_studio": {
+      "canvas_backdrop": "#F4F4F4",
+      "surface_studio": "#E5E5E5",
+      "ink_solid": "#000000",
+      "ink_muted": "#666666",
+      "filter_inactive": "rgba(0, 0, 0, 0.35)",
+      "accent_alert": "#E02424"
     }
   }
 }

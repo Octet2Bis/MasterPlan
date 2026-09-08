@@ -94,7 +94,7 @@ window.SniperUIProfile = (function() {
     if (boxNotConnected) boxNotConnected.style.display = isConn ? 'none' : 'block';
     if (boxConnected) boxConnected.style.display = isConn ? 'flex' : 'none';
     if (isConn) {
-      if (statusText) statusText.innerHTML = `<strong>${auth.user.name || 'Compte Google'}</strong> <span style="color:var(--text-secondary); font-size:12px;">(${auth.user.email})</span>`;
+      if (statusText) statusText.innerHTML = `<strong>${auth.user.name || 'Compte Google'}</strong> <span style="color:var(--text-secondary); font-size:13px;">(${auth.user.email})</span>`;
       if (avatarEl) { avatarEl.src = auth.user.picture || ''; avatarEl.style.display = auth.user.picture ? 'block' : 'none'; }
       setUIState('SUCCESS', `Connecté via Google OAuth2 (${auth.user.email}). Envois via Gmail API.`);
     }
@@ -151,7 +151,7 @@ window.SniperUIProfile = (function() {
         document.getElementById('profile-hunter-key').value = hKey;
         const hbox = document.getElementById('hunter-status-box');
         if (hKey) testHunterKey();
-        else if (hbox) hbox.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">Clé absente. Repli transparent sur les MX DNS locaux (100% gratuit).</span>`;
+        else if (hbox) hbox.innerHTML = `<span style="color:var(--text-muted); font-size:13px;">Clé absente. Repli transparent sur les MX DNS locaux (100% gratuit).</span>`;
       }
 
       renderGoogleOAuthCard(auth);
@@ -197,25 +197,25 @@ window.SniperUIProfile = (function() {
     const key = document.getElementById('profile-hunter-key')?.value.trim();
     const box = document.getElementById('hunter-status-box');
     if (!key) {
-      if (box) box.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">Clé absente. Repli transparent sur les MX DNS locaux (100% gratuit).</span>`;
+      if (box) box.innerHTML = `<span style="color:var(--text-muted); font-size:13px;">Clé absente. Repli transparent sur les MX DNS locaux (100% gratuit).</span>`;
       updateTopHunterBadge(null);
       return;
     }
-    if (box) box.innerHTML = `<span style="font-size:12px; color:var(--text-secondary);">⏳ Interrogation des quotas Hunter.io...</span>`;
+    if (box) box.innerHTML = `<span style="font-size:13px; color:var(--text-secondary);">⏳ Interrogation des quotas Hunter.io...</span>`;
     await fetch('/api/hunter/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ api_key: key }) });
     const res = await fetch('/api/hunter/account');
     const data = await res.json();
     if (box) {
       if (data.success) {
         const resetStr = data.reset_date ? ` · Renouvellement : ${data.reset_date}` : '';
-        box.innerHTML = `<div style="background:#ECFDF5; border:1px solid #10B981; border-radius:4px; padding:6px 10px; font-size:12px; color:#065F46;">
+        box.innerHTML = `<div style="background:#ECFDF5; border:1px solid #10B981; border-radius:4px; padding:6px 10px; font-size:13px; color:#065F46;">
           <strong>✅ Hunter.io connecté (${data.plan_name})</strong><br>
           🔍 Recherches : <strong>${data.searches_available}</strong> dispo (${data.searches_used} utilisées)<br>
           🛡️ Vérifications : <strong>${data.verifications_available}</strong> dispo (${data.verifications_used} utilisées)${resetStr}
         </div>`;
         updateTopHunterBadge(data);
       } else {
-        box.innerHTML = `<span style="color:var(--accent-error); font-weight:600; font-size:12px;">❌ Échec : ${data.error || 'Clé rejetée'}</span>`;
+        box.innerHTML = `<span style="color:var(--accent-error); font-weight:600; font-size:13px;">❌ Échec : ${data.error || 'Clé rejetée'}</span>`;
         updateTopHunterBadge(null);
       }
     }

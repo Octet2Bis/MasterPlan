@@ -1,0 +1,38 @@
+{
+  "presets": [
+    {
+      "id": "brik-electric",
+      "name": "Brik Electric",
+      "bgColor": "#1C145C",
+      "liquidColor": "#FD4612",
+      "outerFrameColor": "#FF70D8",
+      "textColor": "#FFFFFF",
+      "gooey": true,
+      "blur": 20,
+      "speed": 1.2
+    },
+    {
+      "id": "editorial-craft",
+      "name": "Editorial Red",
+      "bgColor": "#0A0A0C",
+      "liquidColor": "#C2412A",
+      "outerFrameColor": "#E25A3F",
+      "textColor": "#FDFBF7",
+      "gooey": true,
+      "blur": 16,
+      "speed": 0.9
+    },
+    {
+      "id": "obsidian-cyber",
+      "name": "Obsidian Cyber",
+      "bgColor": "#05070A",
+      "liquidColor": "#10B981",
+      "outerFrameColor": "#064E3B",
+      "textColor": "#E2E8F0",
+      "gooey": true,
+      "blur": 18,
+      "speed": 1.0
+    }
+  ],
+  "defaultText": "ANTOINE LECERF • LAB LIVE • GROWTH & PRODUCT • SYSTEM ARCHITECTURE • "
+}

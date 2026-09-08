@@ -1,59 +1,119 @@
 /**
- * OUTBOUND CAMPAIGNS — TOKENS NEO-BRUTALIST SWISS & WARM PAPER
- * Palette Papier Lin #F8F6F1 & Typographie Bricolage Grotesque (< 70 lignes)
+ * OUTBOUND SNIPER — TOKENS CHAMFER AUTHENTIQUE (WARM PAPER & INK)
+ * Standard : Uiverse Chamfer Design System (Layered Stationery + 45° Notches)
+ * Matérialité : Papier Vélin Lin #F2ECE4 + Encre de Chine #1C1917 + Instrument Serif
  */
 
 :root {
-  /* Surfaces Étagées Papier Chaud & Lin */
-  --bg-canvas: #F8F6F1;
-  --surface-card: #FFFFFF;
-  --surface-card-hover: #F5F2EC;
-  --surface-input: #FDFCFA;
-  --surface-skeleton: #EAE6DF;
+  /* ═══ MATÉRIALITÉ PAPETERIE (Warm Stationery Layers) ═══ */
+  --bg-canvas: #F2ECE4;               /* Papier vélin lin chaud (Toile globale) */
+  --surface-header: #E8E1D5;           /* Tête de lettre lin pressé */
+  --surface-sidebar: #EBE4D8;          /* Dossier de classement latéral */
+  --surface-tab-inactive: #E2DACB;     /* Intercalaire dossier au repos */
+  --surface-tab-active: #FCFAF7;       /* Dossier ouvert (fusionne avec le panneau) */
+  
+  --surface-card: #FCFAF7;             /* Fiche cartonnée ivoire */
+  --surface-card-hover: #FFFFFF;       /* Fiche cartonnée survolée */
+  --surface-input: #ECE5DB;            /* Champ encastré papier vélin */
+  --surface-skeleton: #E2DACB;         /* Trame de chargement papier */
+  --surface-pill: #E2DACB;             /* Étiquette de classement */
 
-  /* Bordures Hairlines Délicates */
-  --border-subtle: #E4DFD6;
-  --border-interactive: #C9C2B5;
-  --border-focus: #1E1B18;
-  --border-success: #B8DEC4;
+  /* ═══ BORDURES DE PAPETERIE (Liserés d'Encre & Tranches) ═══ */
+  --border-subtle: #D6CEBE;            /* Tranche papier lin fine */
+  --border-strong: #BAAF9C;            /* Liseré de reliure */
+  --border-interactive: #1C1917;       /* Liseré d'encre noire typographique */
+  --border-focus: #1C1917;
+  --border-success: #7DA68D;
 
-  /* Accents Nobles & Carbone */
-  --accent-primary: #1E1B18;
-  --accent-primary-hover: #36322D;
-  --accent-primary-text: #FFFFFF;
-  --accent-success: #2D7A4F;
-  --accent-success-text: #1D5436;
-  --accent-success-bg: #EDF5F0;
-  --accent-warning: #B8621B;
-  --accent-warning-text: #82400C;
-  --accent-warning-bg: #FDF5ED;
-  --accent-error: #C23B38;
-  --accent-error-text: #8C2220;
-  --accent-error-bg: #FDEEEC;
-  --accent-info: #4A6572;
+  /* ═══ ENCRE & TYPOGRAPHIE (Ink Contrast) ═══ */
+  --text-primary: #1C1917;             /* Encre de Chine pure (#1C1917) */
+  --text-secondary: #5E5850;           /* Encre graphite diluée */
+  --text-muted: #8A8275;              /* Crayon de repérage */
+  --text-inverse: #FCFAF7;             /* Encre blanche sur bloc d'encre */
 
-  /* Textes Carbone Haute Lisibilité */
-  --text-primary: #1E1B18;
-  --text-secondary: #6E685F;
-  --text-muted: #8F877B;
+  /* ═══ SHELL UNIFIÉ WARM PAPER ═══ */
+  --shell-bg: #E8E1D5;
+  --shell-surface: #DFD7C9;
+  --shell-surface-hover: #D5CCBD;
+  --shell-border: #D6CEBE;
+  --shell-text: #1C1917;
+  --shell-text-secondary: #5E5850;
+  --shell-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 
-  /* Pairing Typographique : Bricolage Grotesque + Plus Jakarta Sans + JetBrains Mono */
-  --font-heading: 'Bricolage Grotesque', -apple-system, sans-serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  /* ═══ SIGNAUX CHROMATIQUES NATURELS (Accords Minéraux 60-30-10) ═══ */
+  --accent-primary: #1C1917;
+  --accent-primary-hover: #322D29;
+  --accent-primary-text: #FCFAF7;
+  
+  --accent-success: #235937;           /* Vert sauge profond */
+  --accent-success-text: #1B452B;
+  --accent-success-bg: #E5EFE8;
+  
+  --accent-warning: #944D12;           /* Ocre ambrée */
+  --accent-warning-text: #6E380B;
+  --accent-warning-bg: #F8EFE4;
+  
+  --accent-error: #9E2B25;             /* Sanguine d'archive */
+  --accent-error-text: #781E19;
+  --accent-error-bg: #F8E8E6;
 
-  /* Échelle Spatiale Grille 8pt */
-  --space-4: 4px;
-  --space-8: 8px;
-  --space-12: 12px;
-  --space-16: 16px;
-  --space-20: 20px;
-  --space-24: 24px;
-  --space-32: 32px;
+  /* ═══ TYPOGRAPHIE CHAMFER ═══ */
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-heading: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
-  /* Rayons & Ombres Feutrées */
-  --radius-card: 12px;
-  --radius-sm: 8px;
-  --radius-pill: 9999px;
-  --shadow-card: 0 2px 14px rgba(30, 27, 24, 0.05);
+  /* Échelle Typographique */
+  --text-2xs: 12px;
+  --text-xs: 13px;
+  --text-sm: 14px;
+  --text-base: 15px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 26px;
+  --text-2xl: 34px;
+
+  /* ═══ GÉOMÉTRIE CHAMFER AFFIRMÉE (Coins 45° de 8px à 14px) ═══ */
+  --chamfer-xs: 4px;
+  --chamfer-sm: 6px;
+  --chamfer-md: 10px;
+  --chamfer-lg: 14px;
+
+  /* Découpe 4 coins de carte */
+  --clip-chamfer-card: polygon(
+    var(--chamfer-lg) 0%, calc(100% - var(--chamfer-lg)) 0%,
+    100% var(--chamfer-lg), 100% calc(100% - var(--chamfer-lg)),
+    calc(100% - var(--chamfer-lg)) 100%, var(--chamfer-lg) 100%,
+    0% calc(100% - var(--chamfer-lg)), 0% var(--chamfer-lg)
+  );
+
+  /* Découpe onglet chemise (Notched Folder Tab) */
+  --clip-notched-tab: polygon(
+    0% 0%, calc(100% - var(--chamfer-lg)) 0%,
+    100% var(--chamfer-lg), 100% 100%,
+    0% 100%
+  );
+
+  /* Découpe bouton franc */
+  --clip-chamfer-btn: polygon(
+    var(--chamfer-sm) 0%, calc(100% - var(--chamfer-sm)) 0%,
+    100% var(--chamfer-sm), 100% calc(100% - var(--chamfer-sm)),
+    calc(100% - var(--chamfer-sm)) 100%, var(--chamfer-sm) 100%,
+    0% calc(100% - var(--chamfer-sm)), 0% var(--chamfer-sm)
+  );
+
+  --radius-card: 0px;
+  --radius-sm: 0px;
+  --radius-pill: 0px;
+
+  /* ═══ ESPACEMENT & GRILLE ═══ */
+  --space-4: 4px; --space-8: 8px; --space-12: 12px;
+  --space-16: 16px; --space-20: 20px; --space-24: 24px; --space-32: 32px;
+
+  /* ═══ OMBRES DE PAPETERIE ÉTAGÉE ═══ */
+  --shadow-stationery: 0 1px 3px rgba(28, 25, 23, 0.05), 0 1px 1px rgba(28, 25, 23, 0.03);
+  --filter-chamfer-shadow: drop-shadow(0 3px 8px rgba(28, 25, 23, 0.07));
+  --filter-chamfer-hover: drop-shadow(0 8px 20px rgba(28, 25, 23, 0.12));
+  --transition-craft: 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
