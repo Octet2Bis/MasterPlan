@@ -46,7 +46,7 @@ Génère les structures conformes sans improvisation de squelette.
 | :--- | :--- |
 | **Entrée** | Nom de la nouvelle app ou cible d'audit |
 | **Outils** | 1. `node 03_Developpement_App_and_Design/toolbox/scaffold_app.js --name=<app_name>`<br>2. `python 03_Developpement_App_and_Design/toolbox/repo_mapper.py` (cartographie des modules) |
-| **Sortie** | Arborescence standardisée (`BRIEF.md`, `PRD.md`, `data/`, `ui/`, `app.js`) |
+| **Sortie** | Arborescence standardisée (`BRIEF.md`, `PRD.md`, `data/`, `ui/`, `app.js`)<br>Copier `templates/DESIGN_CONTRACT.stub.md` vers `apps/<app>/DESIGN_CONTRACT.md` puis épingler un kit avant l'étape 4 |
 | **Qui l'invoque** | Manuel (agent en phase d'initialisation) |
 
 ---
