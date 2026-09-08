@@ -57,8 +57,8 @@ Applique une identité visuelle sans styles ad-hoc.
 | Paramètre | Spécification Opérationnelle |
 | :--- | :--- |
 | **Entrée** | Spécifications d'écrans ou captures de référence |
-| **Outils** | 1. `node 03_Developpement_App_and_Design/toolbox/pixel_rag_engine.js` (analyse de spécimens visuels)<br>2. [Ressources/Design_System/data/](Ressources/Design_System/data/) (`color_palettes.json`, `typography_spec.json`)<br>3. [Ressources/Component_Library/](Ressources/Component_Library/) (The Essential 7 en HTML/Swift) |
-| **Slot réservé** | **Kit design épinglé dans le `DESIGN_CONTRACT.md` de l'app** (ex: `design_system: kits/<nom_du_kit>@version`) |
+| **Procédure d'injection** | a) Lire `DESIGN_CONTRACT.md` de l'app cible → extraire `design_system: kits/<nom>@<version>` (ex: Outbound Sniper → `kits/chamfer-paper-ink@1.0.0`)<br>b) Charger UNIQUEMENT `Ressources/Design_System/kits/<nom>/prompt_pack.json` (pas `tokens.css`, pas la bible anti-slop, pas `color_palettes.json`)<br>c) Appliquer le pack. Si la clé `design_system` est absente : stop, ne pas styler. |
+| **Outils d'appui** | 1. `node 03_Developpement_App_and_Design/toolbox/pixel_rag_engine.js` (analyse de spécimens visuels)<br>2. [Ressources/Component_Library/](Ressources/Component_Library/) (The Essential 7 en HTML/Swift)<br>*(Outils d'appui uniquement, PAS comme source du thème)* |
 | **Sortie** | `DESIGN_CONTRACT.md` de l'app scellé + vues consommant les tokens sans valeur en dur |
 | **Qui l'invoque** | Manuel (agent en phase d'assemblage d'interface) |
 
@@ -120,7 +120,7 @@ Pour toute action dans le pilier 03, applique cette table de décision :
 | Je commence une tâche et dois router le besoin | `node 03_Developpement_App_and_Design/toolbox/harness_graph_router.js` | Agent / Développeur |
 | Je dois cadrer le plan technique | Rédiger `implementation_plan.md` | **Humain uniquement** |
 | Je crée une nouvelle application | `node 03_Developpement_App_and_Design/toolbox/scaffold_app.js --name=<app>` | Structure générée |
-| Je stylise une interface | Consulter le kit épinglé dans le `DESIGN_CONTRACT.md` | Respect des tokens |
+| Je stylise une interface | Charger le `prompt_pack.json` du kit épinglé dans le DESIGN_CONTRACT | Respect des `rules_p0` + `forbidden` du pack |
 | J'ai terminé d'écrire mon code | 1. `python 03_Developpement_App_and_Design/toolbox/aci_precommit_linter.py`<br>2. `node 03_Developpement_App_and_Design/toolbox/skylos_scanner.js`<br>3. `node 03_Developpement_App_and_Design/toolbox/gatekeeper.js --check`<br>4. `node 03_Developpement_App_and_Design/toolbox/dag_validator.js`<br>5. `node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js` | **Precommit (0 erreur)** |
 | Je prépare une livraison PR | Vérifier le passage de `.github/workflows/quality_gates.yml` | **CI GitHub** |
 | Je mesure l'état global du pilier | `python 03_Developpement_App_and_Design/toolbox/state_scorer.py` | Rapport de score |
