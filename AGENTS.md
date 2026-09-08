@@ -1,5 +1,10 @@
 # MASTER PLAN — CONTRAT D'EXÉCUTION DU SYSTÈME MULTI-AGENTS (AGENTS.md)
 
+> Pilier 03 (`03_Developpement_App_and_Design`) : 1 session = 1 scope.
+> Lire uniquement `03_Developpement_App_and_Design/MECHANICS.md`.
+> Pour styler : étape 4 → `DESIGN_CONTRACT.md` de l'app → `prompt_pack.json` du kit épinglé.
+> Ne pas charger `.agents/rules/` ni `01_Core_Standards/` pour du design.
+
 Ce document constitue la **Loi Fondamentale** régissant tous les agents Antigravity intervenant sur le repository `Master Plan`.
 Ces règles s'appliquent avec un caractère d'obligation absolue et sans exception.
 
