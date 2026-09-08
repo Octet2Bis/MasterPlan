@@ -1,0 +1,12 @@
+{
+  "name": "chamfer-paper-ink",
+  "version": "1.0.0",
+  "archetype": "Chamfer Warm Paper & Ink",
+  "platforms": ["web"],
+  "capabilities": {
+    "smoothScroll": false,
+    "webgl": false,
+    "springs": false
+  },
+  "pin": "kits/chamfer-paper-ink@1.0.0"
+}
