@@ -1,5 +1,10 @@
 # AGENTS.md — CONTRAT D'EXÉCUTION & ARCHITECTURE POUR ANTIGRAVITY (OUTBOUND SNIPER)
 
+> Design : lire `DESIGN_CONTRACT.md` → extraire `design_system` → charger
+> `03_Developpement_App_and_Design/Ressources/Design_System/kits/chamfer-paper-ink/prompt_pack.json`
+> et rien d'autre pour le thème.
+> Si tu styles sans ce pack, tu es hors contrat.
+
 Ce document constitue la **Loi Fondamentale et le Manuel Opérationnel** pour tout agent Antigravity (ou développeur) intervenant sur l'application **Outbound Sniper Studio**.
 Si vous prenez la suite de ce projet sur une nouvelle machine ou dans un nouveau workspace, ce document vous donne toutes les clés pour comprendre, exécuter et faire évoluer le système sans régression.
 
