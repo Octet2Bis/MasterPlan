@@ -1,0 +1,19 @@
+{
+  "name": "BentoCard",
+  "purpose": "Conteneur hiérarchique de niveau 1 pour regrouper et structurer des informations ou modules fonctionnels.",
+  "platforms": [
+    "html",
+    "swift"
+  ],
+  "required_tokens": [
+    "--surface-1",
+    "--border-subtle",
+    "--text-primary",
+    "--text-secondary"
+  ],
+  "anti_patterns": [
+    "Interdiction d'insérer plus de deux actions interactives ou boutons au sein de la carte.",
+    "Interdiction d'imbriquer une BentoCard à l'intérieur d'une autre BentoCard.",
+    "Interdiction d'utiliser des styles inline ou des valeurs brutes en dur non issues des tokens."
+  ]
+}
