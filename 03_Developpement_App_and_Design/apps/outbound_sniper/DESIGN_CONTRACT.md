@@ -3,7 +3,8 @@
 **Application :** Outbound Sniper Studio  
 **Archétype UI/UX :** 📊 **Archétype 1 : SaaS B2B, Dashboards & Analytics**  
 **Norme Graphique :** Chamfer Craft — Warm Paper & Ink (Angles biseautés 45°, Grille 8pt stricte)  
-**Statut :** 🟢 Scellé & Non Négociable
+**Statut :** 🟢 Scellé & Non Négociable  
+design_system: kits/chamfer-paper-ink@1.0.0
 
 ---
 

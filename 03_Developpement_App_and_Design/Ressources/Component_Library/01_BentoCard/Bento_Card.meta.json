@@ -6,7 +6,7 @@
     "swift"
   ],
   "required_tokens": [
-    "--surface-1",
+    "--surface-card",
     "--border-subtle",
     "--text-primary",
     "--text-secondary"
