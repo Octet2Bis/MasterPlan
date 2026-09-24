@@ -8,6 +8,10 @@
   const pill = (ok) => (ok ? 'tab-pill-green' : 'tab-pill-amber');
   const row = (label, value, ok) => `<div class="pill-row"><span>${label}</span><span class="${ok === undefined ? '' : (ok ? 'text-success' : 'text-error')}">${value}</span></div>`;
 
+  /** Contrôle DNS à trois états : présent, absent, indéterminé (panne DNS, sans pénalité). */
+  const dnsCell = (domain, rec, okText, koText) => (!domain ? '—' : (rec?.exists === null ? '⚪ Indéterminé (erreur DNS)' : (rec?.exists ? okText : koText)));
+  const dnsOk = (rec) => (rec?.exists === null || rec?.exists === undefined ? undefined : rec.exists);
+
   /** Contenu courant de l'éditeur (éventuellement non enregistré). */
   function editorCampaign() {
     const v = (id) => document.getElementById(id)?.value || '';
@@ -72,9 +76,9 @@
           <div class="pillar-header"><span>🌐 <strong>Domaine d'envoi</strong></span><span class="tab-pill ${pill(pillars.domain.score >= 80)}">${pillars.domain.score}/100</span></div>
           <div class="pillar-body">
             ${row('Domaine :', e(d.domain || 'Google non connecté'))}
-            ${row('SPF :', d.spf?.exists ? `✅ ${e(d.spf.policy)}` : '❌ Absent', d.spf?.exists)}
-            ${row('DKIM (google) :', !d.domain ? '—' : (!d.dkim?.checked ? 'Géré par le fournisseur' : (d.dkim.exists ? '✅ Présent' : '❌ Introuvable')), d.dkim?.checked ? d.dkim.exists : undefined)}
-            ${row('DMARC :', d.dmarc?.exists ? `✅ p=${e(d.dmarc.policy)}` : '❌ Absent', d.dmarc?.exists)}
+            ${row('SPF :', dnsCell(d.domain, d.spf, `✅ ${e(d.spf?.policy)}`, '❌ Absent'), dnsOk(d.spf))}
+            ${row('DKIM (google) :', d.domain && !d.dkim?.checked ? 'Géré par le fournisseur' : dnsCell(d.domain, d.dkim, '✅ Présent', '❌ Introuvable'), d.dkim?.checked ? dnsOk(d.dkim) : undefined)}
+            ${row('DMARC :', dnsCell(d.domain, d.dmarc, `✅ p=${e(d.dmarc?.policy)}`, '❌ Absent'), dnsOk(d.dmarc))}
           </div>
         </div>
         <div class="pillar-card">

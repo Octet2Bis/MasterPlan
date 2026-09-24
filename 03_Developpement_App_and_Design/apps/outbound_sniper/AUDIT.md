@@ -102,7 +102,7 @@ Cible proposée (12 → 6) :
 
 Arbitrages : envoi via Google OAuth uniquement, Hunter.io conservé, suivi des clics conservé.
 Règle appliquée : **ce qui prétend fonctionner est rendu fonctionnel, remplacé, ou retiré.**
-Chaque correctif P0 est couvert par un test (`tests/`, 21 tests, exécutés en CI).
+Chaque correctif P0 est couvert par un test (`tests/`, 23 tests, exécutés en CI).
 
 | # | Traitement |
 |---|---|
@@ -128,3 +128,10 @@ Chaque correctif P0 est couvert par un test (`tests/`, 21 tests, exécutés en C
 | §6 | « Télémétrie Google Leak » et placement prédit retirés ; DKIM (sélecteur google) ajouté au diagnostic ; spintax conservé (fonctionnel) |
 
 Reste ouvert (voir `STATE.md`) : détection des rebonds et réponses, qui exige le scope `gmail.readonly`.
+
+### Correctifs de revérification (2026-09-24)
+| Défaut repéré après la v2 | Traitement |
+|---|---|
+| Diagnostic DNS : une panne DNS affichée « absent » (reproduit sur google.com : réponse TXT tronquée, TCP bloqué) | État « indéterminé » sans pénalité, secours sur le résolveur système, testé |
+| Sonde SMTP : un refus de politique (550 5.7.x) lu comme « boîte inexistante » | Classement du refus par code étendu et texte (`smtp_reply_patterns`), testé |
+| README : OAuth en mode « Externe / test » (accès expiré au bout de 7 jours) | Recommandation « Interne » (Workspace) ou « En production » (Gmail personnel) |

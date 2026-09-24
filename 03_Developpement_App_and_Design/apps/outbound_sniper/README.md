@@ -20,7 +20,9 @@ Les valeurs par défaut viennent de `data/config.example.json` ; `config.json` n
 ## 🔐 Connecter le compte Google (seul canal d'envoi)
 
 1. Google Cloud Console → créer un projet → activer **Gmail API**.
-2. Écran de consentement OAuth : type « Externe » en mode test, ajoutez votre adresse comme utilisateur test.
+2. Écran de consentement OAuth (type d'utilisateur) :
+   - **Adresse Google Workspace → « Interne »** (recommandé) : aucune validation Google, aucune expiration de l'accès.
+   - **Gmail personnel → « Externe »** : en statut « Test », Google fait expirer l'accès au bout de **7 jours** (il faut se reconnecter ; l'app met la campagne en pause en attendant). Pour éviter cela, passez le statut à « En production » : sans validation Google, un écran « application non validée » s'affiche à la connexion, que vous pouvez accepter pour votre propre compte.
 3. Identifiants → **ID client OAuth** de type « Application Web ».
    URI de redirection autorisée : `http://localhost:3500/api/auth/google/callback` (affichée dans « Profil & connexions »).
 4. Dans l'app : « Profil & connexions » → Client ID + Client Secret → « Se connecter avec Google ».
@@ -32,12 +34,12 @@ Portées demandées : `gmail.send`, `userinfo.email`, `userinfo.profile`. Les je
 | Statut | Signification | Envoyé ? |
 |---|---|---|
 | `VERIFIED` | Le serveur mail a accepté la boîte **et** refusé une adresse aléatoire (ou Hunter.io l'a validée) | Oui |
-| `UNVERIFIED` | MX valide mais boîte non prouvable (port 25 sortant bloqué, réponse non concluante, DNS indisponible) | Seulement si « Inclure les adresses non prouvées » |
+| `UNVERIFIED` | MX valide mais boîte non prouvable (port 25 sortant bloqué, refus lié à votre IP, réponse non concluante, DNS indisponible) | Seulement si « Inclure les adresses non prouvées » |
 | `CATCH_ALL` | Le domaine accepte n'importe quelle adresse : existence non prouvée | Idem |
 | `ROLE_ACCOUNT`, `RISKY` | Adresse générique (contact@…) ou ancien domaine FAI | Non |
 | `INVALID_MAILBOX`, `NO_MX`, `DISPOSABLE`, `INVALID` | Boîte refusée, domaine sans MX, jetable, syntaxe | Non |
 
-La sonde SMTP n'envoie jamais de message (`RCPT TO` puis `QUIT`). La plupart des FAI et des clouds **bloquent le port 25 sortant** : dans ce cas tout sort en `UNVERIFIED`, c'est normal. Cochez alors « Compléter avec Hunter.io » (clé dans le profil, consomme des crédits).
+La sonde SMTP n'envoie jamais de message (`RCPT TO` puis `QUIT`). Un refus n'est lu comme « boîte inexistante » que si le serveur le dit explicitement (code 5.1.x ou message clair) ; un refus lié à votre IP (liste noire, 5.7.x) reste `UNVERIFIED`. La plupart des FAI et des clouds **bloquent le port 25 sortant** : dans ce cas tout sort en `UNVERIFIED`, c'est normal. Cochez alors « Compléter avec Hunter.io » (clé dans le profil, consomme des crédits).
 
 ## 🖱️ Suivi des clics
 
@@ -51,6 +53,8 @@ La sonde SMTP n'envoie jamais de message (`RCPT TO` puis `QUIT`). La plupart des
 - Le filtre anti-robots (user-agent) est indicatif : certains scanners de sécurité imitent un navigateur.
 
 ## 🛡️ Garde-fous à l'envoi
+
+Le diagnostic DNS (MX, SPF, DKIM, DMARC) distingue « absent » (prouvé par le DNS, pénalisé) et « indéterminé » (panne ou délai DNS, sans pénalité).
 
 Le **contrôle avant envoi** est rejoué par le serveur au lancement. Il bloque si :
 - aucun compte Google n'est connecté (sauf en simulation) ;

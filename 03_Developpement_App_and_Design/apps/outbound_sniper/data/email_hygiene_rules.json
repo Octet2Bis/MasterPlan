@@ -1,23 +1,85 @@
 {
   "role_accounts": [
-    "admin", "administrator", "contact", "support", "sales", "commercial",
-    "info", "information", "help", "aide", "billing", "facturation",
-    "comptabilite", "jobs", "recrutement", "careers", "hr", "rh",
-    "hello", "bonjour", "team", "equipe", "marketing", "press",
-    "presse", "legal", "juridique", "security", "securite", "office",
-    "postmaster", "hostmaster", "webmaster", "abuse", "no-reply", "noreply"
+    "admin",
+    "administrator",
+    "contact",
+    "support",
+    "sales",
+    "commercial",
+    "info",
+    "information",
+    "help",
+    "aide",
+    "billing",
+    "facturation",
+    "comptabilite",
+    "jobs",
+    "recrutement",
+    "careers",
+    "hr",
+    "rh",
+    "hello",
+    "bonjour",
+    "team",
+    "equipe",
+    "marketing",
+    "press",
+    "presse",
+    "legal",
+    "juridique",
+    "security",
+    "securite",
+    "office",
+    "postmaster",
+    "hostmaster",
+    "webmaster",
+    "abuse",
+    "no-reply",
+    "noreply"
   ],
   "free_mail_providers": [
-    "gmail.com", "googlemail.com", "yahoo.com", "yahoo.fr", "hotmail.com",
-    "hotmail.fr", "outlook.com", "outlook.fr", "live.com", "live.fr",
-    "msn.com", "icloud.com", "me.com", "mac.com", "orange.fr", "wanadoo.fr",
-    "free.fr", "sfr.fr", "neuf.fr", "laposte.net", "bbox.fr", "numericable.fr",
-    "gmx.com", "gmx.fr", "protonmail.com", "proton.me", "zoho.com", "mail.com"
+    "gmail.com",
+    "googlemail.com",
+    "yahoo.com",
+    "yahoo.fr",
+    "hotmail.com",
+    "hotmail.fr",
+    "outlook.com",
+    "outlook.fr",
+    "live.com",
+    "live.fr",
+    "msn.com",
+    "icloud.com",
+    "me.com",
+    "mac.com",
+    "orange.fr",
+    "wanadoo.fr",
+    "free.fr",
+    "sfr.fr",
+    "neuf.fr",
+    "laposte.net",
+    "bbox.fr",
+    "numericable.fr",
+    "gmx.com",
+    "gmx.fr",
+    "protonmail.com",
+    "proton.me",
+    "zoho.com",
+    "mail.com"
   ],
   "legacy_fai_domains": [
-    "9business.fr", "neuf.fr", "libertysurf.fr", "cegetel.net",
-    "club-internet.fr", "numericable.fr", "tele2.fr", "infonie.fr",
-    "aliceadsl.fr", "noos.fr", "worldonline.fr", "tiscali.fr"
+    "9business.fr",
+    "neuf.fr",
+    "libertysurf.fr",
+    "cegetel.net",
+    "club-internet.fr",
+    "numericable.fr",
+    "tele2.fr",
+    "infonie.fr",
+    "aliceadsl.fr",
+    "noos.fr",
+    "worldonline.fr",
+    "tiscali.fr"
   ],
   "typo_mappings": {
     "gmai.com": "gmail.com",
@@ -42,28 +104,59 @@
   },
   "security_gateways": {
     "Mailinblack": {
-      "signatures": ["mailinblack.com", "mibc-fr"],
+      "signatures": [
+        "mailinblack.com",
+        "mibc-fr"
+      ],
       "tip": "🛡️ Filtre Mailinblack : Nécessite une validation anti-spam / captcha."
     },
     "Vade Secure": {
-      "signatures": ["vadesecure.com", "vaderetro.com"],
+      "signatures": [
+        "vadesecure.com",
+        "vaderetro.com"
+      ],
       "tip": "🛡️ Filtre IA Vade Secure : Privilégiez un message personnalisé sans tracking agressif."
     },
     "Proofpoint": {
-      "signatures": ["pphosted.com", "proofpoint.com"],
+      "signatures": [
+        "pphosted.com",
+        "proofpoint.com"
+      ],
       "tip": "🛡️ Passerelle Proofpoint : Privilégiez un email court en texte brut sans lien."
     },
     "Mimecast": {
-      "signatures": ["mimecast.com"],
+      "signatures": [
+        "mimecast.com"
+      ],
       "tip": "🛡️ Passerelle Mimecast : Évitez les images et pièces jointes."
     },
     "Barracuda": {
-      "signatures": ["barracuda.com", "barracudanetworks.com"],
+      "signatures": [
+        "barracuda.com",
+        "barracudanetworks.com"
+      ],
       "tip": "🛡️ Filtre Barracuda : Limitez les liens multiples."
     },
     "Cisco IronPort": {
-      "signatures": ["iphmx.com", "ironport.com"],
+      "signatures": [
+        "iphmx.com",
+        "ironport.com"
+      ],
       "tip": "🛡️ Pare-feu Cisco : Privilégiez un format épuré."
     }
+  },
+  "smtp_reply_patterns": {
+    "_doc": "Classement des refus SMTP 5xx sur RCPT TO. Code étendu 5.1.x = boîte inexistante, 5.7.x = refus de politique (IP, réputation). Sans code étendu, on lit le texte ; si rien ne correspond, le résultat reste non concluant.",
+    "mailbox_unknown": [
+      "\\b5\\.1\\.\\d+\\b",
+      "no such (user|mailbox|recipient)",
+      "(user|mailbox|recipient|address)\\b.*\\b(unknown|not found|does not exist|doesn't exist|unavailable|invalid|inconnu|inexistant)",
+      "unknown (user|recipient|mailbox)",
+      "undeliverable address"
+    ],
+    "policy_block": [
+      "\\b5\\.7\\.\\d+\\b",
+      "block ?list|blacklist|blocked|spamhaus|dnsbl|\\brbl\\b|reputation|policy|client host|access denied|not permitted|relay"
+    ]
   }
 }

@@ -24,6 +24,9 @@ class DeepEmailVerifier {
     this.legacyFaiDomains = new Set(hygiene.legacy_fai_domains || []);
     this.typoMappings = hygiene.typo_mappings || {};
     this.securityGateways = hygiene.security_gateways || {};
+    const replyRules = hygiene.smtp_reply_patterns || {};
+    this.mailboxUnknownRx = (replyRules.mailbox_unknown || []).map(p => new RegExp(p, 'i'));
+    this.policyBlockRx = (replyRules.policy_block || []).map(p => new RegExp(p, 'i'));
     this.heloDomain = heloDomain || os.hostname() || 'localhost';
     this.smtpPort = smtpPort;
     this.mxCache = new Map();
@@ -69,18 +72,18 @@ class DeepEmailVerifier {
 
   /**
    * Ouvre UNE session SMTP sur le MX et teste chaque destinataire (RCPT TO), sans jamais envoyer de DATA.
-   * @returns {Promise<{reachable: boolean, codes: number[]}>} reachable=false si connexion impossible (port 25 bloqué).
+   * @returns {Promise<{reachable: boolean, replies: {code: number, line: string}[]}>} reachable=false si connexion impossible (port 25 bloqué).
    */
   smtpSession(mxHost, recipients) {
     return new Promise((resolve) => {
-      const codes = [];
+      const replies = [];
       let connected = false, buffer = '', step = 'BANNER', done = false, socket;
       const finish = (reachable) => {
         if (done) return;
         done = true;
         clearTimeout(timer);
         try { socket.write('QUIT\r\n'); socket.destroy(); } catch {}
-        resolve({ reachable, codes });
+        resolve({ reachable, replies });
       };
       const timer = setTimeout(() => finish(connected), SESSION_TIMEOUT_MS);
       socket = net.createConnection({ host: mxHost, port: this.smtpPort });
@@ -105,9 +108,9 @@ class DeepEmailVerifier {
             if (code !== 250) return finish(true);
             step = 'RCPT'; socket.write(`RCPT TO:<${recipients[0]}>\r\n`);
           } else if (step === 'RCPT') {
-            codes.push(code);
-            if (codes.length >= recipients.length) return finish(true);
-            socket.write(`RCPT TO:<${recipients[codes.length]}>\r\n`);
+            replies.push({ code, line });
+            if (replies.length >= recipients.length) return finish(true);
+            socket.write(`RCPT TO:<${recipients[replies.length]}>\r\n`);
           }
         }
       });
@@ -123,7 +126,17 @@ class DeepEmailVerifier {
       return { reachable: false };
     }
     this.connectFailures = 0;
-    return { reachable: true, code: res.codes[0], randomCode: res.codes[1] };
+    return { reachable: true, code: res.replies[0]?.code, line: res.replies[0]?.line || '', randomCode: res.replies[1]?.code };
+  }
+
+  /**
+   * Un refus 5xx ne prouve l'inexistence de la boîte que si le serveur le dit (code 5.1.x ou texte explicite).
+   * Un refus de politique (IP en liste noire, 5.7.x) ne dit rien de la boîte : non concluant.
+   */
+  classifyRejection(line) {
+    if (this.policyBlockRx.some(rx => rx.test(line)) && !/\b5\.1\.\d+\b/.test(line)) return 'POLICY';
+    if (this.mailboxUnknownRx.some(rx => rx.test(line))) return 'MAILBOX_UNKNOWN';
+    return 'UNKNOWN';
   }
 
   async verify(contact) {
@@ -149,7 +162,12 @@ class DeepEmailVerifier {
 
     const probe = await this.probeMailbox(mxHost, email, cleanDomain);
     if (!probe.reachable) return { ...contact, ...meta, status: 'UNVERIFIED', reason: 'MX valide, boîte non vérifiable (port 25 sortant bloqué)' };
-    if (probe.code >= 550 && probe.code <= 553) return { ...contact, ...meta, status: 'INVALID_MAILBOX', reason: `Boîte refusée par le serveur (${probe.code})` };
+    if (probe.code >= 500 && probe.code < 600) {
+      const kind = this.classifyRejection(probe.line);
+      if (kind === 'MAILBOX_UNKNOWN') return { ...contact, ...meta, status: 'INVALID_MAILBOX', reason: `Boîte inexistante selon le serveur (${probe.code})` };
+      if (kind === 'POLICY') return { ...contact, ...meta, status: 'UNVERIFIED', reason: `Serveur qui refuse la sonde (IP ou politique, ${probe.code}) : boîte non vérifiable` };
+      return { ...contact, ...meta, status: 'UNVERIFIED', reason: `Refus SMTP sans motif explicite (${probe.code})` };
+    }
     if (probe.code === 250 && probe.randomCode === 250) return { ...contact, ...meta, status: 'CATCH_ALL', reason: 'Domaine catch-all : accepte toute adresse, boîte non prouvée' };
     if (probe.code === 250 && probe.randomCode >= 550) return { ...contact, ...meta, status: isRole ? 'ROLE_ACCOUNT' : 'VERIFIED', reason: isRole ? 'Adresse générique (rôle) acceptée' : 'Boîte acceptée, adresse aléatoire refusée' };
     if (probe.code === 250) return { ...contact, ...meta, status: 'UNVERIFIED', reason: 'Boîte acceptée mais catch-all non déterminé' };

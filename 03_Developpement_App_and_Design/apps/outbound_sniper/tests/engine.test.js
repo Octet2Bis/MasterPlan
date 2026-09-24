@@ -15,6 +15,7 @@ const { composeEmail } = require('../engine/mail_composer');
 const { verifyClick, assessTrackingUrl } = require('../engine/tracking');
 const { runPreFlightScan } = require('../engine/preflight_scanner');
 const googleOAuth = require('../engine/google_oauth');
+const { auditDomain } = require('../engine/domain_deliverability_checker');
 
 const CONFIG = store.loadConfig();
 const CAMPAIGN = { id: 'camp_t', subject: 'Question pour {{entreprise}}', body: 'Bonjour {{prenom}},\nUn échange ?\nSi vous ne souhaitez plus recevoir de messages, répondez stop.', cta_label: 'Voir', target_url: 'https://example.com/page', track_clicks: true };
@@ -59,6 +60,33 @@ module.exports = () => run('Moteur Outbound Sniper', [
     const none = await verifierAgainst(() => 550);
     assert.strictEqual((await none.v.verify({ email: 'jean@example.com' })).status, 'INVALID_MAILBOX');
     none.close();
+  }],
+  ['Sonde SMTP : un refus de politique (IP) n\'est pas lu comme « boîte inexistante »', async () => {
+    const cases = [
+      ['550 5.7.1 Client host [1.2.3.4] blocked using zen.spamhaus.org', 'UNVERIFIED'],
+      ['550 Rejected', 'UNVERIFIED'],
+      ['550 5.1.1 The email account that you tried to reach does not exist', 'INVALID_MAILBOX'],
+      ['550 User unknown in local recipient table', 'INVALID_MAILBOX']
+    ];
+    for (const [reply, expected] of cases) {
+      const { v, close } = await verifierAgainst(() => reply);
+      assert.strictEqual((await v.verify({ email: 'jean@example.com' })).status, expected, reply);
+      close();
+    }
+  }],
+  ['Diagnostic DNS : panne = indéterminé sans pénalité ; secours sur 2e résolveur ; absence prouvée pénalisée', async () => {
+    const fail = (code) => ({ resolveMx: async () => { throw Object.assign(new Error(code), { code }); }, resolveTxt: async () => { throw Object.assign(new Error(code), { code }); } });
+    const ok = { resolveMx: async () => [{ exchange: 'aspmx.l.google.com', priority: 1 }], resolveTxt: async (n) => (n.startsWith('_dmarc') ? [['v=DMARC1; p=none']] : (n.startsWith('google._domainkey') ? [['v=DKIM1; p=abc']] : [['v=spf1 include:_spf.google.com ~all']])) };
+    const down = await auditDomain('me@acme-test.fr', { resolvers: [fail('ETIMEOUT')] });
+    assert.strictEqual(down.spf.exists, null);
+    assert.strictEqual(down.dmarc.exists, null);
+    assert.strictEqual(down.score, 100);
+    assert.ok(down.issues.some(i => i.includes('indéterminé')));
+    const fallback = await auditDomain('me@acme-test.fr', { resolvers: [fail('ETIMEOUT'), ok] });
+    assert.ok(fallback.spf.exists && fallback.dmarc.exists && fallback.dkim.exists && fallback.mx.exists);
+    const absent = await auditDomain('me@acme-test.fr', { resolvers: [fail('ENODATA')] });
+    assert.strictEqual(absent.spf.exists, false);
+    assert.ok(absent.score < 50);
   }],
   ['P0-3 : résolveur de patterns — aucune permutation « confirmée » sur un catch-all', async () => {
     const { v, close } = await verifierAgainst(() => 250);

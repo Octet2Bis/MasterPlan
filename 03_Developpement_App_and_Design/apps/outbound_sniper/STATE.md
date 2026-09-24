@@ -5,15 +5,15 @@ Statut : 🟡 Base assainie (v2.0.0). Aucun envoi réel n'a encore été validé
 
 ---
 
-## 🏁 Fonctionnel et testé (`npm test`, 21 tests)
+## 🏁 Fonctionnel et testé (`npm test`, 23 tests)
 - [x] Import CSV robuste (guillemets, `;` `,` tabulation, BOM), sans valeur inventée.
-- [x] Vérification en cascade : syntaxe, typo, jetable, MX, sonde SMTP réelle avec détection catch-all. `VERIFIED` seulement sur preuve.
+- [x] Vérification en cascade : syntaxe, typo, jetable, MX, sonde SMTP réelle avec détection catch-all. `VERIFIED` seulement sur preuve ; un refus lié à l'IP n'est pas lu comme « boîte inexistante ».
 - [x] Hunter.io en option : vérification des adresses non prouvées, recherche d'adresse (Email Finder).
 - [x] Recherche de format d'adresse (prenom.nom…), retenu seulement s'il est prouvé.
 - [x] Envoi via l'API Gmail (OAuth2), MIME texte + HTML, en-tête `List-Unsubscribe`.
 - [x] Contrôle avant envoi bloquant, quota journalier (simulation hors quota), cadence, horaires, coupe-circuit sur erreur Gmail fatale.
 - [x] Suivi des clics signés (HMAC), passerelle VM autonome, synchronisation protégée par secret.
-- [x] Diagnostic DNS réel (MX, SPF, DKIM Google, DMARC), liens, SpamAssassin (Postmark, sans conformité par défaut en cas de panne).
+- [x] Diagnostic DNS réel (MX, SPF, DKIM Google, DMARC ; panne DNS = « indéterminé », jamais « absent »), liens, SpamAssassin (Postmark, sans conformité par défaut en cas de panne).
 - [x] API locale protégée (Host / Origin / Content-Type), aucun secret exposé, échappement HTML partout.
 
 ## 🎯 Prochaine étape

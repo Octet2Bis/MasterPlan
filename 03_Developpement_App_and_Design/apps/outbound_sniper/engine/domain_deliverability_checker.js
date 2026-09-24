@@ -9,33 +9,55 @@ const { loadRef } = require('./store');
 const { auditMessage } = require('./deliverability_linter');
 const { auditLinks, runPostmarkSpamcheck } = require('./link_and_spamcheck_engine');
 
-// Résolveur dédié (n'altère pas le DNS du reste du process).
-const resolver = new Resolver();
-try { resolver.setServers(['8.8.8.8', '1.1.1.1']); } catch {}
+// Résolveurs dédiés (n'altèrent pas le DNS du reste du process) : public d'abord, système en secours.
+const publicResolver = new Resolver({ timeout: 4000, tries: 2 });
+try { publicResolver.setServers(['8.8.8.8', '1.1.1.1']); } catch {}
+const DEFAULT_RESOLVERS = [publicResolver, new Resolver({ timeout: 4000, tries: 2 })];
+const DEFINITIVE_ABSENCE = ['ENODATA', 'ENOTFOUND'];
 
-async function txtRecords(name) {
-  try { return (await resolver.resolveTxt(name)).map(chunks => chunks.join('')); } catch { return []; }
+/**
+ * @returns {Promise<{records: any[]|null, error: string|null}>}
+ * records = [] : absence prouvée par le DNS ; records = null : panne DNS, résultat indéterminé.
+ */
+async function lookup(resolvers, method, name) {
+  let lastError = null;
+  for (const r of resolvers) {
+    try { return { records: await r[method](name), error: null }; } catch (e) {
+      if (DEFINITIVE_ABSENCE.includes(e.code)) return { records: [], error: null };
+      lastError = e.code || e.message;
+    }
+  }
+  return { records: null, error: lastError };
 }
 
-async function auditDomain(email) {
+async function txtLookup(resolvers, name, prefix) {
+  const { records, error } = await lookup(resolvers, 'resolveTxt', name);
+  if (records === null) return { exists: null, error };
+  const found = records.map(chunks => chunks.join('')).find(t => prefix.test(t));
+  return { exists: Boolean(found), raw: found || null };
+}
+
+async function auditDomain(email, { resolvers = DEFAULT_RESOLVERS } = {}) {
   const domain = String(email || '').trim().toLowerCase().split('@')[1] || '';
   if (!domain) return { domain: null, score: 0, issues: ['Aucun expéditeur : connectez votre compte Google.'], recommendations: [], mx: {}, spf: {}, dmarc: {}, dkim: {} };
 
   const freeProviders = new Set(loadRef('email_hygiene_rules.json', {}).free_mail_providers || []);
   const isFreeWebmail = freeProviders.has(domain);
-  const result = { domain, isFreeWebmail, mx: { exists: false, provider: null }, spf: { exists: false, policy: null }, dmarc: { exists: false, policy: null }, dkim: { checked: false, exists: false }, score: 100, issues: [], recommendations: [] };
+  const result = { domain, isFreeWebmail, mx: {}, spf: {}, dmarc: {}, dkim: { checked: false }, score: 100, issues: [], recommendations: [] };
+  const undetermined = (label, error) => result.issues.push(`${label} indéterminé : erreur DNS (${error}). Relancez le test ; aucune pénalité appliquée.`);
 
-  try {
-    const mx = await resolver.resolveMx(domain);
-    result.mx.exists = mx.length > 0;
-    const joined = mx.map(r => r.exchange).join(' ').toLowerCase();
-    result.mx.provider = /google/.test(joined) ? 'Google Workspace' : (/outlook|microsoft/.test(joined) ? 'Microsoft 365' : 'Autre');
-  } catch {}
-  if (!result.mx.exists) { result.score -= 25; result.issues.push('Aucun MX : le domaine ne peut pas recevoir les réponses.'); }
+  const mx = await lookup(resolvers, 'resolveMx', domain);
+  if (mx.records === null) { result.mx = { exists: null }; undetermined('MX', mx.error); } else {
+    const joined = mx.records.map(r => r.exchange).join(' ').toLowerCase();
+    result.mx = { exists: mx.records.some(r => r.exchange), provider: /google/.test(joined) ? 'Google Workspace' : (/outlook|microsoft/.test(joined) ? 'Microsoft 365' : 'Autre') };
+    if (!result.mx.exists) { result.score -= 25; result.issues.push('Aucun MX : le domaine ne peut pas recevoir les réponses.'); }
+  }
 
-  const spf = (await txtRecords(domain)).find(r => r.startsWith('v=spf1'));
-  if (spf) {
-    result.spf = { exists: true, raw: spf, policy: /-all/.test(spf) ? '-all' : (/~all/.test(spf) ? '~all' : 'neutre'), includesGoogle: spf.includes('_spf.google.com') };
+  const spf = await txtLookup(resolvers, domain, /^v=spf1/);
+  result.spf = spf;
+  if (spf.exists === null) undetermined('SPF', spf.error);
+  else if (spf.exists) {
+    Object.assign(result.spf, { policy: /-all/.test(spf.raw) ? '-all' : (/~all/.test(spf.raw) ? '~all' : 'neutre'), includesGoogle: spf.raw.includes('_spf.google.com') });
     if (!result.spf.includesGoogle && !isFreeWebmail) result.recommendations.push('Le SPF n\'inclut pas include:_spf.google.com alors que vous envoyez via Gmail.');
   } else {
     result.score -= 25;
@@ -43,11 +65,11 @@ async function auditDomain(email) {
     result.recommendations.push(`Ajoutez sur ${domain} : v=spf1 include:_spf.google.com ~all`);
   }
 
-  const dmarc = (await txtRecords(`_dmarc.${domain}`)).find(r => r.startsWith('v=DMARC1'));
-  if (dmarc) {
-    const p = (dmarc.match(/p=([a-z]+)/i) || [])[1] || 'none';
-    result.dmarc = { exists: true, raw: dmarc, policy: p.toLowerCase() };
-  } else {
+  const dmarc = await txtLookup(resolvers, `_dmarc.${domain}`, /^v=DMARC1/);
+  result.dmarc = dmarc;
+  if (dmarc.exists === null) undetermined('DMARC', dmarc.error);
+  else if (dmarc.exists) result.dmarc.policy = ((dmarc.raw.match(/p=([a-z]+)/i) || [])[1] || 'none').toLowerCase();
+  else {
     result.score -= 25;
     result.issues.push('Enregistrement DMARC absent (exigé par Gmail et Yahoo).');
     result.recommendations.push(`Ajoutez sur _dmarc.${domain} : v=DMARC1; p=none; rua=mailto:dmarc@${domain}`);
@@ -55,9 +77,10 @@ async function auditDomain(email) {
 
   // DKIM : le sélecteur n'est pas découvrable par DNS ; on teste celui de Google Workspace par défaut.
   if (!isFreeWebmail) {
-    const dkim = (await txtRecords(`google._domainkey.${domain}`)).find(r => /v=DKIM1|p=/.test(r));
-    result.dkim = { checked: true, exists: Boolean(dkim), selector: 'google' };
-    if (!dkim) {
+    const dkim = await txtLookup(resolvers, `google._domainkey.${domain}`, /v=DKIM1|p=/);
+    result.dkim = { ...dkim, checked: true, selector: 'google' };
+    if (dkim.exists === null) undetermined('DKIM', dkim.error);
+    else if (!dkim.exists) {
       result.score -= 15;
       result.issues.push('DKIM Google (sélecteur « google ») introuvable.');
       result.recommendations.push('Activez DKIM dans la console Admin Google (Applications > Gmail > Authentifier les e-mails).');

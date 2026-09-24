@@ -10,7 +10,7 @@ const path = require('node:path');
 
 if (!process.env.SNIPER_DATA_DIR) process.env.SNIPER_DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'sniper-test-'));
 
-/** Faux MX : `rcptCode(address)` renvoie le code SMTP à répondre pour chaque RCPT TO. */
+/** Faux MX : `rcptCode(address)` renvoie le code SMTP (nombre) ou la ligne complète à répondre pour chaque RCPT TO. */
 function startFakeSmtp(rcptCode) {
   const server = net.createServer((sock) => {
     sock.write('220 fake.mx ESMTP\r\n');
@@ -22,7 +22,10 @@ function startFakeSmtp(rcptCode) {
       for (const line of lines) {
         if (/^EHLO/i.test(line)) sock.write('250-fake.mx\r\n250 OK\r\n');
         else if (/^MAIL FROM/i.test(line)) sock.write('250 OK\r\n');
-        else if (/^RCPT TO/i.test(line)) { const code = rcptCode(line.match(/<([^>]+)>/)[1]); sock.write(`${code} ${code === 250 ? 'OK' : 'No such user'}\r\n`); }
+        else if (/^RCPT TO/i.test(line)) {
+          const r = rcptCode(line.match(/<([^>]+)>/)[1]);
+          sock.write(`${typeof r === 'number' ? `${r} ${r === 250 ? 'OK' : 'No such user'}` : r}\r\n`);
+        }
         else if (/^QUIT/i.test(line)) sock.end('221 Bye\r\n');
       }
     });
