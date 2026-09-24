@@ -1,106 +1,64 @@
 /**
- * SKYLOS PRE-FLIGHT SCANNER — OUTBOUND SNIPER (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine (< 160 lignes)
- * 
- * Rôle :
- * Audit statique déterministe pré-vol avant expédition :
- * - Zéro variable orpheline ({{var}} absente chez des contacts)
- * - Zéro fuite de secret / mot de passe dans le corps ou l'objet
- * - Télémétrie Google Inbox & Placement (Boîte Principale vs Promotions)
+ * PRE-FLIGHT SCANNER — CONTRÔLE BLOQUANT AVANT TOUT ENVOI (Node.js 20+)
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine
+ * Exécuté par l'UI (bouton) ET par le serveur au lancement d'une campagne : un statut BLOCKED interdit l'envoi.
+ * Bloquant : expéditeur absent, opt-out absent, variable non résolue, secret dans le contenu, lien de tracking injoignable.
  */
 const { auditMessage } = require('./deliverability_linter');
+const { VariableResolver } = require('./variable_resolver');
+const { tracksClicks } = require('./mail_composer');
+const { assessTrackingUrl } = require('./tracking');
 
-function extractPlaceholders(text) {
-  const matches = String(text || '').match(/\{\{([^\}]+)\}\}/g) || [];
-  return [...new Set(matches.map(m => m.replace(/[{}]/g, '').trim().toLowerCase()))];
+const SECRET_PATTERNS = [
+  /(?:api[_-]?key|secret|token|password|pass|bearer)\s*[:=]\s*['"]?[a-zA-Z0-9_\-]{16,}/i,
+  /ghp_[a-zA-Z0-9]{36}/,
+  /sk-[a-zA-Z0-9]{32,}/
+];
+
+function findOrphans(campaign, contacts) {
+  const orphans = [];
+  contacts.forEach((contact, idx) => {
+    const missing = new Set();
+    for (const field of ['subject', 'body', 'cta_label']) {
+      VariableResolver.resolveTemplate(campaign[field] || '', contact, {}, { applySpintax: false }).unresolvedVars.forEach(v => missing.add(v));
+    }
+    if (missing.size > 0) orphans.push({ contactIndex: idx + 1, email: contact.email || `Contact #${idx + 1}`, missingVars: [...missing] });
+  });
+  return orphans;
 }
 
-function runPreFlightScan(campaign, contacts = [], senderEmail = '') {
-  const subject = campaign.subject || '';
-  const body = campaign.template_body || '';
-  const targetUrl = campaign.target_url || '';
-
+/**
+ * @param {{campaign: object, contacts: object[], config: object, senderEmail: string|null}} p
+ */
+function runPreFlightScan({ campaign = {}, contacts = [], config = {}, senderEmail = null }) {
   const issues = [];
   const warnings = [];
 
-  // 1. Détection des variables utilisées
-  const neededVars = [...new Set([...extractPlaceholders(subject), ...extractPlaceholders(body)])];
+  if (!senderEmail) issues.push({ code: 'NO_SENDER', message: 'Aucun compte Google connecté pour l\'envoi.' });
+  if (!String(campaign.subject || '').trim() || !String(campaign.body || '').trim()) issues.push({ code: 'EMPTY_MESSAGE', message: 'Objet ou corps du message vide.' });
 
-  // 2. Audit des contacts : Détection de variables orphelines
-  const orphanDetails = [];
-  contacts.forEach((contact, idx) => {
-    neededVars.forEach(v => {
-      const val = contact[v] || contact[v.toLowerCase()] || (v === 'nom' ? contact.last_name : null) || (v === 'prenom' ? contact.first_name : null);
-      if (!val || String(val).trim().length === 0) {
-        orphanDetails.push({
-          contactIndex: idx + 1,
-          email: contact.email || `Contact #${idx + 1}`,
-          missingVar: v
-        });
-      }
-    });
-  });
+  const audit = auditMessage(campaign);
+  if (!audit.hasOptOut) issues.push({ code: 'MISSING_OPT_OUT', message: 'Phrase d\'opposition absente (ex. « répondez stop »).' });
+  if (audit.score < 80) warnings.push({ code: 'SUBOPTIMAL_CONTENT', message: `Score de contenu ${audit.score}/100 : ${audit.issues.map(i => i.message).join(' ')}` });
 
-  if (orphanDetails.length > 0) {
-    issues.push({
-      code: 'ORPHAN_VARIABLES_DETECTED',
-      severity: 'HIGH',
-      message: `${orphanDetails.length} variable(s) orpheline(s) détectée(s) sur ${contacts.length} contact(s).`,
-      details: orphanDetails.slice(0, 5)
-    });
+  const orphans = findOrphans(campaign, contacts);
+  if (orphans.length > 0) {
+    const sample = orphans.slice(0, 3).map(o => `${o.email} (${o.missingVars.join(', ')})`).join(' ; ');
+    issues.push({ code: 'ORPHAN_VARIABLES', message: `${orphans.length} contact(s) avec variable manquante : ${sample}. Complétez le fichier ou utilisez {{variable|texte par défaut}}.`, details: orphans.slice(0, 20) });
   }
 
-  // 3. Scanner anti-fuite de secrets (Tokens, Passwords, API Keys)
-  const secretPatterns = [
-    /(?:api[_-]?key|secret|token|password|pass|auth|bearer)\s*[:=]\s*['"][a-zA-Z0-9_\-]{16,}['"]/i,
-    /ghp_[a-zA-Z0-9]{36}/,
-    /[0-9]{9,10}:[a-zA-Z0-9_-]{35}/,
-    /sk-[a-zA-Z0-9]{32,}/
-  ];
-  const combinedText = `${subject} ${body}`;
-  secretPatterns.forEach(pattern => {
-    if (pattern.test(combinedText)) {
-      issues.push({
-        code: 'CREDENTIAL_LEAK_IN_CONTENT',
-        severity: 'CRITICAL',
-        message: 'Détection d\'un secret ou d\'une clé d\'API dans le contenu de l\'email.'
-      });
-    }
-  });
+  const text = `${campaign.subject || ''} ${campaign.body || ''}`;
+  if (SECRET_PATTERNS.some(rx => rx.test(text))) issues.push({ code: 'CREDENTIAL_LEAK', message: 'Un secret ou une clé d\'API semble présent dans le message.' });
 
-  // 4. Audit Télémétrique & Délivrabilité
-  const deliverabilityAudit = auditMessage({ subject, body, target_url: targetUrl });
-  if (deliverabilityAudit.score < 80) {
-    warnings.push({
-      code: 'SUBOPTIMAL_DELIVERABILITY',
-      message: `Score de délivrabilité sous le seuil optimal (${deliverabilityAudit.score}/100).`
-    });
+  if (tracksClicks(campaign) && String(campaign.target_url || '').trim()) {
+    const t = assessTrackingUrl(config.tracking?.vm_tracking_url);
+    if (t.level === 'BLOCKED') issues.push({ code: 'TRACKING_URL', message: `${t.message} Désactivez le suivi des clics ou configurez la passerelle.` });
+    if (t.level === 'WARNING') warnings.push({ code: 'TRACKING_URL', message: t.message });
   }
+  if (contacts.length === 0) issues.push({ code: 'NO_CONTACTS', message: 'Aucun contact éligible à l\'envoi.' });
 
-  // 5. Statut Global
-  let status = 'CLEARED';
-  let badgeColor = 'green';
-  if (issues.length > 0) {
-    status = 'BLOCKED';
-    badgeColor = 'red';
-  } else if (warnings.length > 0 || deliverabilityAudit.predictedPlacement !== 'PRIMARY_INBOX') {
-    status = 'WARNING';
-    badgeColor = 'amber';
-  }
-
-  return {
-    status,
-    badgeColor,
-    timestamp: new Date().toISOString(),
-    campaignId: campaign.id || 'unknown',
-    contactsCount: contacts.length,
-    neededVariables: neededVars,
-    orphanCount: orphanDetails.length,
-    deliverability: deliverabilityAudit,
-    issues,
-    warnings,
-    isCleared: status === 'CLEARED'
-  };
+  const status = issues.length > 0 ? 'BLOCKED' : (warnings.length > 0 ? 'WARNING' : 'CLEARED');
+  return { status, contactsCount: contacts.length, orphanCount: orphans.length, issues, warnings, isCleared: status !== 'BLOCKED' };
 }
 
-module.exports = { runPreFlightScan, extractPlaceholders };
+module.exports = { runPreFlightScan };

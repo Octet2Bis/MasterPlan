@@ -1,153 +1,87 @@
 /**
- * UI PERFORMANCE & ORACLE VM TRACKING COCKPIT (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / UI (< 200 lignes)
- * Gère la synchronisation 24/7 avec la passerelle VM Oracle (88.96.57.168) et les KPIs.
+ * UI PERFORMANCES — CLICS DE LA CAMPAGNE & PASSERELLE PUBLIQUE
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / UI
+ * Seuls les clics sont mesurés (pas d'ouvertures). Le filtre anti-bot par user-agent est indicatif.
  */
 (function() {
-  async function pingVmGateway() {
-    const statusEl = document.getElementById('vm-sync-status');
-    const inputUrl = document.getElementById('vm-tracking-url');
-    const targetUrl = inputUrl ? inputUrl.value.trim() : 'http://88.96.57.168:3000';
-    if (!statusEl) return;
+  const $ = (id) => document.getElementById(id);
+  const e = (v) => window.SniperUIHelpers.esc(v);
+  const api = (path, body) => window.SniperUIHelpers.api(path, body);
+  let lastStats = null;
 
-    statusEl.innerHTML = `⏳ Test de liaison vers la VM Oracle (${targetUrl})...`;
+  async function pingVmGateway() {
+    const statusEl = $('vm-sync-status');
+    const url = $('vm-tracking-url')?.value.trim();
+    if (!statusEl) return;
+    if (!url) { statusEl.textContent = 'Aucune passerelle configurée : le suivi des clics est impossible.'; return; }
+    statusEl.textContent = `Test de liaison vers ${url}…`;
     try {
-      const res = await fetch(`/api/tracking/ping-vm?url=${encodeURIComponent(targetUrl)}`);
-      const data = await res.json();
-      if (data.success) {
-        statusEl.innerHTML = `<span class="text-success" style="font-weight:700;">🟢 Passerelle VM Active (${data.ip || '88.96.57.168'}:3000)</span> — Prête à capter les ouvertures et clics 24/7.`;
-      } else {
-        statusEl.innerHTML = `<span class="text-error">⚠️ Passerelle VM non joignable</span> (${data.error || 'Erreur réseau'}).`;
-      }
-    } catch {
-      statusEl.innerHTML = `<span class="text-error">⚠️ Échec du ping vers la passerelle VM</span>.`;
-    }
+      const data = await api(`/api/tracking/ping-vm?url=${encodeURIComponent(url)}`);
+      statusEl.innerHTML = data.success
+        ? `<span class="text-success" style="font-weight:700;">🟢 Passerelle joignable</span> (${e(data.service || 'service inconnu')}).`
+        : `<span class="text-error">⚠️ Passerelle non joignable</span> (${e(data.error || 'erreur réseau')}).`;
+    } catch { statusEl.textContent = '⚠️ Échec du test de liaison.'; }
   }
 
   async function syncVmEvents() {
-    const btn = document.getElementById('btn-sync-vm');
-    const statusEl = document.getElementById('vm-sync-status');
-    if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Synchronisation...'; }
-
+    const btn = $('btn-sync-vm');
+    btn.disabled = true;
     try {
-      const inputUrl = document.getElementById('vm-tracking-url');
-      const vm_url = inputUrl ? inputUrl.value.trim() : 'http://88.96.57.168:3000';
-      const res = await fetch('/api/tracking/sync-vm', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vm_url })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        window.SniperUIContacts?.showToast(`✅ Synchronisé : +${data.addedCount} événement(s) depuis la VM !`, 'success');
-        if (statusEl) statusEl.innerHTML = `<span class="text-success">✅ Synchronisé avec succès</span> — ${data.totalEvents} événement(s) archivé(s).`;
-        renderPerformanceStats(data.store || {});
-      } else {
-        window.SniperUIContacts?.showToast(`❌ Échec synchro : ${data.error || 'VM inaccessible'}`, 'error');
-      }
-    } catch {
-      window.SniperUIContacts?.showToast('❌ Erreur réseau lors de la synchro VM.', 'error');
-    } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg><span>Synchroniser VM</span>`;
-      }
-    }
+      const data = await api('/api/tracking/sync-vm', { vm_url: $('vm-tracking-url')?.value.trim() });
+      if (data.success) window.SniperUIContacts.showToast(`✅ Synchronisé : ${data.addedCount} nouveau(x) clic(s).`, 'success');
+      else window.SniperUIContacts.showToast(`❌ Synchronisation impossible : ${data.error || 'passerelle injoignable'}`, 'error');
+      await loadAndRenderStats();
+    } catch { window.SniperUIContacts.showToast('❌ Erreur réseau lors de la synchronisation.', 'error'); }
+    btn.disabled = false;
   }
 
   async function loadAndRenderStats() {
+    const cid = window.SniperState?.selectedCampaignId;
+    if (!cid) return;
     try {
-      const res = await fetch('/api/stats');
-      const stats = await res.json();
-      renderPerformanceStats(stats);
+      lastStats = await api(`/api/stats?cid=${encodeURIComponent(cid)}`);
+      renderPerformanceStats(lastStats);
     } catch {}
   }
 
   function renderPerformanceStats(stats) {
-    const events = stats.events || [];
-    const humanEvents = events.filter(e => !e.is_bot);
-    const cid = window.SniperState?.selectedCampaignId;
-
-    const campEvents = cid ? humanEvents.filter(e => e.campaign_id === cid) : humanEvents;
-    const opens = new Set(campEvents.filter(e => e.type === 'OPEN').map(e => e.contact_id)).size;
-    const clicks = new Set(campEvents.filter(e => e.type === 'CLICK').map(e => e.contact_id)).size;
-
-    const statOpens = document.getElementById('stat-opens');
-    const statClicks = document.getElementById('stat-clicks');
-    const statCtr = document.getElementById('stat-ctr');
-    const badgeCtr = document.getElementById('tab-stat-ctr');
-
-    if (statOpens) statOpens.textContent = opens;
-    if (statClicks) statClicks.textContent = clicks;
-
-    const ctrVal = opens > 0 ? Math.round((clicks / opens) * 100) : 0;
-    if (statCtr) statCtr.textContent = `${ctrVal}%`;
-    if (badgeCtr) badgeCtr.textContent = `${ctrVal}% CTR`;
-
-    renderEventsTable(events);
+    const set = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+    set('stat-sent', stats.sent);
+    set('stat-clicks', stats.unique_clickers);
+    set('stat-ctr', `${stats.click_rate}%`);
+    set('tab-stat-ctr', `${stats.unique_clickers} clic${stats.unique_clickers > 1 ? 's' : ''}`);
+    renderEventsTable(stats.events || []);
   }
 
   function renderEventsTable(events) {
-    const tbody = document.getElementById('tracking-events-tbody');
-    const countLabel = document.getElementById('events-count-label');
-    if (!tbody) return;
-
-    if (countLabel) countLabel.textContent = `${events.length} événement(s) total`;
-
-    if (!events || events.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="text-muted" style="text-align:center; padding:24px;">Aucun événement capté pour le moment. Cliquez sur "Synchroniser VM".</td></tr>`;
+    const tbody = $('tracking-events-tbody');
+    const label = $('events-count-label');
+    if (label) label.textContent = `${events.length} clic(s) récent(s)`;
+    if (events.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="text-muted" style="text-align:center; padding:24px;">Aucun clic pour le moment. Cliquez sur « Synchroniser ».</td></tr>';
       return;
     }
-
-    const contactsMap = new Map((window.SniperState?.contacts || []).map(c => [c.id, c]));
-    const reversed = [...events].reverse().slice(0, 30);
-
-    tbody.innerHTML = reversed.map(ev => {
-      const dateStr = new Date(ev.timestamp).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      const contact = contactsMap.get(ev.contact_id);
-      const contactDisplay = contact ? `${contact.prenom || ''} ${contact.nom || ''} (${contact.email || ''})` : ev.contact_id;
-      const typeBadge = ev.type === 'OPEN'
-        ? `<span class="badge-status badge-verified">👁️ Ouverture</span>`
-        : `<span class="badge-status" style="background:#E0E7FF; color:#3730A3; border:1px solid #C7D2FE;">🖱️ Clic</span>`;
-
-      const botBadge = ev.is_bot
-        ? `<span class="badge-status badge-disposable" title="Robot de sécurité ou pré-scanner">🤖 Bot Filtré</span>`
-        : `<span class="badge-status badge-verified">✅ Humain Réel</span>`;
-
-      const detail = ev.target_url ? `<a href="${ev.target_url}" target="_blank" class="text-secondary" style="font-size:12.5px;">${ev.target_url}</a>` : `<span class="text-muted" style="font-size:12.5px;">Pixel 1x1</span>`;
-
-      return `
-        <tr>
-          <td style="font-family:var(--font-mono); font-size:12.5px;">${dateStr}</td>
-          <td>${typeBadge}</td>
-          <td><strong>${contactDisplay}</strong></td>
-          <td>${botBadge}</td>
-          <td>${detail}</td>
-        </tr>
-      `;
+    const contacts = new Map((window.SniperState?.contacts || []).map(c => [c.id, c]));
+    tbody.innerHTML = events.map(ev => {
+      const c = contacts.get(ev.contact_id);
+      const who = c ? `${c.prenom || ''} ${c.nom || ''} (${c.email})` : ev.contact_id;
+      const date = new Date(ev.timestamp).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+      const bot = ev.is_bot ? '<span class="badge-status badge-disposable">🤖 Probable robot</span>' : '<span class="badge-status badge-verified">Probable humain</span>';
+      return `<tr><td style="font-family:var(--font-mono); font-size:12.5px;">${e(date)}</td><td><strong>${e(who)}</strong></td><td>${bot}</td><td style="font-size:12.5px;">${e(ev.target_url)}</td></tr>`;
     }).join('');
   }
 
-  function init() {
-    document.getElementById('btn-sync-vm')?.addEventListener('click', syncVmEvents);
-    document.getElementById('btn-refresh-stats')?.addEventListener('click', () => {
-      loadAndRenderStats();
-      pingVmGateway();
-    });
-
-    document.getElementById('tab-performance')?.addEventListener('click', () => {
-      loadAndRenderStats();
-      pingVmGateway();
-    });
-
-    // Auto-ping de la passerelle au chargement initial
-    setTimeout(pingVmGateway, 800);
+  function exportClickers() {
+    const ids = new Set(lastStats?.clicker_ids || []);
+    const rows = (window.SniperState?.contacts || []).filter(c => ids.has(c.id));
+    window.SniperUIContacts.downloadCSV(`${window.SniperState?.selectedCampaignId}_cliqueurs.csv`, rows);
   }
 
-  window.SniperUIPerformance = {
-    init,
-    syncVmEvents,
-    loadAndRenderStats,
-    pingVmGateway
-  };
+  function init() {
+    $('btn-sync-vm')?.addEventListener('click', syncVmEvents);
+    $('btn-refresh-stats')?.addEventListener('click', () => { loadAndRenderStats(); pingVmGateway(); });
+    $('tab-performance')?.addEventListener('click', () => { loadAndRenderStats(); pingVmGateway(); });
+  }
+
+  window.SniperUIPerformance = { init, syncVmEvents, loadAndRenderStats, pingVmGateway, exportClickers };
 })();

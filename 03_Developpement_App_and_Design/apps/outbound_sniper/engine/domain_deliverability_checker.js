@@ -1,190 +1,138 @@
 /**
- * DOMAIN DELIVERABILITY & DNS AUDITOR ENGINE (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine (< 235 lignes)
- * Analyse en direct SPF, DKIM, DMARC, MX, SpamAssassin et statut des liens HTTP.
+ * DOMAIN DELIVERABILITY & DNS AUDITOR (Node.js 20+)
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine
+ * Contrôles réels : MX, SPF, DMARC, DKIM (sélecteur Google « google »), liens, SpamAssassin (Postmark).
+ * L'indice global est une pondération indicative de ces contrôles, pas une prédiction de placement.
  */
-const dns = require('node:dns');
-const path = require('node:path');
-const fs = require('node:fs');
+const { Resolver } = require('node:dns').promises;
+const { loadRef } = require('./store');
 const { auditMessage } = require('./deliverability_linter');
 const { auditLinks, runPostmarkSpamcheck } = require('./link_and_spamcheck_engine');
 
-try { dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']); } catch {}
-const dnsP = dns.promises;
-const DATA_DIR = path.join(__dirname, '../data');
+// Résolveur dédié (n'altère pas le DNS du reste du process).
+const resolver = new Resolver();
+try { resolver.setServers(['8.8.8.8', '1.1.1.1']); } catch {}
 
-function loadJSON(file, fallback = {}) {
-  try {
-    const p = path.join(DATA_DIR, file);
-    if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf-8'));
-  } catch {}
-  return fallback;
+async function txtRecords(name) {
+  try { return (await resolver.resolveTxt(name)).map(chunks => chunks.join('')); } catch { return []; }
 }
 
-function extractDomain(emailOrDomain) {
-  if (!emailOrDomain) return '';
-  const str = String(emailOrDomain).trim().toLowerCase();
-  if (str.includes('@')) return str.split('@')[1];
-  return str.replace(/^https?:\/\//, '').split('/')[0];
-}
+async function auditDomain(email) {
+  const domain = String(email || '').trim().toLowerCase().split('@')[1] || '';
+  if (!domain) return { domain: null, score: 0, issues: ['Aucun expéditeur : connectez votre compte Google.'], recommendations: [], mx: {}, spf: {}, dmarc: {}, dkim: {} };
 
-async function auditDomain(emailOrDomain) {
-  const domain = extractDomain(emailOrDomain);
-  if (!domain) return { valid: false, score: 0, issues: ['Domaine introuvable.'], details: {} };
-
-  const hygiene = loadJSON('email_hygiene_rules.json', {});
-  const freeProviders = new Set(hygiene.free_mail_providers || ['gmail.com', 'outlook.com', 'yahoo.com', 'hotmail.com']);
+  const freeProviders = new Set(loadRef('email_hygiene_rules.json', {}).free_mail_providers || []);
   const isFreeWebmail = freeProviders.has(domain);
+  const result = { domain, isFreeWebmail, mx: { exists: false, provider: null }, spf: { exists: false, policy: null }, dmarc: { exists: false, policy: null }, dkim: { checked: false, exists: false }, score: 100, issues: [], recommendations: [] };
 
-  const result = {
-    domain, isFreeWebmail,
-    mx: { exists: false, records: [], provider: 'Inconnu' },
-    spf: { exists: false, raw: null, isValid: false, policy: null },
-    dmarc: { exists: false, raw: null, policy: null, isEnforced: false },
-    score: 100, issues: [], recommendations: []
-  };
-
-  // 1. Audit MX
   try {
-    const mxRecords = await dnsP.resolveMx(domain);
-    if (Array.isArray(mxRecords) && mxRecords.length > 0) {
-      result.mx.exists = true;
-      result.mx.records = mxRecords.map(r => r.exchange);
-      const mxJoined = result.mx.records.join(' ').toLowerCase();
-      if (/google|aspmx/i.test(mxJoined)) result.mx.provider = 'Google Workspace';
-      else if (/outlook|microsoft/i.test(mxJoined)) result.mx.provider = 'Microsoft 365';
-      else if (/ovh/i.test(mxJoined)) result.mx.provider = 'OVHcloud';
-      else result.mx.provider = 'Serveur Dédié / SMTP tiers';
-    }
-  } catch {
-    result.score -= 35;
-    result.issues.push('Aucun enregistrement MX valide trouvé : le domaine ne peut pas recevoir de réponses.');
+    const mx = await resolver.resolveMx(domain);
+    result.mx.exists = mx.length > 0;
+    const joined = mx.map(r => r.exchange).join(' ').toLowerCase();
+    result.mx.provider = /google/.test(joined) ? 'Google Workspace' : (/outlook|microsoft/.test(joined) ? 'Microsoft 365' : 'Autre');
+  } catch {}
+  if (!result.mx.exists) { result.score -= 25; result.issues.push('Aucun MX : le domaine ne peut pas recevoir les réponses.'); }
+
+  const spf = (await txtRecords(domain)).find(r => r.startsWith('v=spf1'));
+  if (spf) {
+    result.spf = { exists: true, raw: spf, policy: /-all/.test(spf) ? '-all' : (/~all/.test(spf) ? '~all' : 'neutre'), includesGoogle: spf.includes('_spf.google.com') };
+    if (!result.spf.includesGoogle && !isFreeWebmail) result.recommendations.push('Le SPF n\'inclut pas include:_spf.google.com alors que vous envoyez via Gmail.');
+  } else {
+    result.score -= 25;
+    result.issues.push('Enregistrement SPF absent.');
+    result.recommendations.push(`Ajoutez sur ${domain} : v=spf1 include:_spf.google.com ~all`);
   }
 
-  // 2. Audit SPF
-  try {
-    const txtRecords = await dnsP.resolveTxt(domain);
-    const flat = txtRecords.map(chunks => chunks.join(''));
-    const spfRecord = flat.find(r => r.startsWith('v=spf1'));
-    if (spfRecord) {
-      result.spf.exists = true;
-      result.spf.raw = spfRecord;
-      result.spf.isValid = true;
-      result.spf.policy = spfRecord.includes('-all') ? 'STRICT (-all)' : (spfRecord.includes('~all') ? 'SOFTFAIL (~all)' : 'NEUTRE (?all)');
-    } else {
-      result.score -= 25;
-      result.issues.push('Enregistrement SPF absent.');
-      result.recommendations.push(`Ajoutez : "v=spf1 include:_spf.google.com ~all" sur ${domain}`);
-    }
-  } catch {
+  const dmarc = (await txtRecords(`_dmarc.${domain}`)).find(r => r.startsWith('v=DMARC1'));
+  if (dmarc) {
+    const p = (dmarc.match(/p=([a-z]+)/i) || [])[1] || 'none';
+    result.dmarc = { exists: true, raw: dmarc, policy: p.toLowerCase() };
+  } else {
     result.score -= 25;
-    result.issues.push('Impossible de résoudre SPF pour ce domaine.');
+    result.issues.push('Enregistrement DMARC absent (exigé par Gmail et Yahoo).');
+    result.recommendations.push(`Ajoutez sur _dmarc.${domain} : v=DMARC1; p=none; rua=mailto:dmarc@${domain}`);
   }
 
-  // 3. Audit DMARC
-  try {
-    const dmarcRecords = await dnsP.resolveTxt(`_dmarc.${domain}`);
-    const flat = dmarcRecords.map(chunks => chunks.join(''));
-    const dmarcRecord = flat.find(r => r.startsWith('v=DMARC1'));
-    if (dmarcRecord) {
-      result.dmarc.exists = true;
-      result.dmarc.raw = dmarcRecord;
-      const pMatch = dmarcRecord.match(/p=([a-z]+)/i);
-      result.dmarc.policy = pMatch ? pMatch[1].toLowerCase() : 'non spécifié';
-      result.dmarc.isEnforced = ['quarantine', 'reject'].includes(result.dmarc.policy);
-    } else {
-      result.score -= 25;
-      result.issues.push('Enregistrement DMARC absent (obligatoire Google/Yahoo).');
-      result.recommendations.push(`Ajoutez : "v=DMARC1; p=none; rua=mailto:dmarc@${domain}"`);
+  // DKIM : le sélecteur n'est pas découvrable par DNS ; on teste celui de Google Workspace par défaut.
+  if (!isFreeWebmail) {
+    const dkim = (await txtRecords(`google._domainkey.${domain}`)).find(r => /v=DKIM1|p=/.test(r));
+    result.dkim = { checked: true, exists: Boolean(dkim), selector: 'google' };
+    if (!dkim) {
+      result.score -= 15;
+      result.issues.push('DKIM Google (sélecteur « google ») introuvable.');
+      result.recommendations.push('Activez DKIM dans la console Admin Google (Applications > Gmail > Authentifier les e-mails).');
     }
-  } catch {
-    result.score -= 25;
-    result.issues.push('DMARC absent sur _dmarc.' + domain);
   }
 
   if (isFreeWebmail) {
     result.score = Math.min(result.score, 75);
-    result.issues.push(`Webmail gratuit (@${domain}) détecté.`);
-    result.recommendations.push('Pour une délivrabilité maximale (98%+), utilisez un domaine pro dédié.');
+    result.issues.push(`Adresse webmail gratuite (@${domain}) : SPF/DKIM/DMARC gérés par le fournisseur, domaine non personnalisable.`);
   }
-
   result.score = Math.max(0, Math.min(100, result.score));
   return result;
 }
 
-/**
- * Calcule le Score Global de Délivrabilité & Légitimité (0 - 100)
- */
-async function computeFullDeliverabilityScore({ senderEmail, campaign, contacts = [], dispatchConfig = {} }) {
-  const [domainAudit, copyAudit, linksAudit, spamcheckResult] = await Promise.all([
+function audienceHealth(contacts) {
+  const pending = contacts.filter(c => c.status !== 'SENT');
+  const count = (statuses) => pending.filter(c => statuses.includes(c.status)).length;
+  const total = pending.length;
+  const verified = count(['VERIFIED']);
+  const invalid = count(['INVALID', 'INVALID_MAILBOX', 'NO_MX', 'DISPOSABLE']);
+  const unverified = count(['UNVERIFIED', 'CATCH_ALL', 'RISKY', 'ROLE_ACCOUNT', 'PENDING']) + pending.filter(c => !c.status).length;
+  let score = total === 0 ? 0 : 100 - Math.min(60, (invalid / total) * 200) - (unverified / total) * 30;
+  return { score: Math.max(0, Math.round(score)), total, verified, invalid, unverified };
+}
+
+async function computeFullDeliverabilityScore({ senderEmail, campaign = {}, contacts = [], dispatchConfig = {} }) {
+  const [domainAudit, linksAudit, spamcheck] = await Promise.all([
     auditDomain(senderEmail),
-    Promise.resolve(auditMessage(campaign || {})),
-    auditLinks({ body: campaign?.body || '', target_url: campaign?.target_url || '' }),
-    runPostmarkSpamcheck({ subject: campaign?.subject || '', body: campaign?.body || '', from: senderEmail })
+    auditLinks({ body: campaign.body || '', target_url: campaign.target_url || '' }),
+    runPostmarkSpamcheck({ subject: campaign.subject || '', body: campaign.body || '', from: senderEmail || 'expediteur@example.com' })
   ]);
+  const copyAudit = auditMessage(campaign);
+  const audience = audienceHealth(contacts);
 
-  // 1. Santé de l'audience (Anti-Rebond)
-  const total = contacts.length;
-  const verified = contacts.filter(c => c.status === 'VERIFIED').length;
-  const invalid = contacts.filter(c => ['INVALID', 'DISPOSABLE'].includes(c.status)).length;
-  let audienceScore = total === 0 ? 80 : 100;
-  if (total > 0) {
-    const verifiedRatio = verified / total;
-    if (invalid > 0) audienceScore -= Math.min(40, (invalid / total) * 100 * 2);
-    if (verifiedRatio < 0.8) audienceScore -= (1 - verifiedRatio) * 30;
-  }
-  audienceScore = Math.max(0, Math.min(100, Math.round(audienceScore)));
-
-  // 2. Sécurité de Cadence & Quotas Google
   let pacingScore = 100;
-  const dailyLimit = dispatchConfig.daily_send_limit || 28;
-  const minDelay = dispatchConfig.min_delay_seconds || 420;
-  if (dailyLimit > 40) pacingScore -= 30;
-  if (minDelay < 180) pacingScore -= 30;
-  pacingScore = Math.max(0, Math.min(100, pacingScore));
+  if (dispatchConfig.daily_send_limit > 40) pacingScore -= 40;
+  if (dispatchConfig.min_delay_seconds < 180) pacingScore -= 40;
 
-  // 3. Pénalité SpamAssassin & Liens cassés
-  let spamPenalty = 0;
-  if (spamcheckResult.success && spamcheckResult.score > 2.5) {
-    spamPenalty += Math.min(25, Math.round((spamcheckResult.score - 2.5) * 8));
-  }
-  if (linksAudit.brokenCount > 0) spamPenalty += 20;
-  if (linksAudit.hasShorteners) spamPenalty += 25;
+  let techScore = 100;
+  if (spamcheck.success && spamcheck.score > 2.5) techScore -= Math.min(60, Math.round((spamcheck.score - 2.5) * 20));
+  if (linksAudit.brokenCount > 0) techScore -= 40;
+  if (linksAudit.hasShorteners) techScore -= 50;
+  techScore = Math.max(0, techScore);
 
-  // Pondération globale : Domaine (25%), Copie (25%), Audience (25%), Cadence (15%), SpamAssassin/Liens (10%)
-  let rawGlobal = (domainAudit.score * 0.25) + (copyAudit.score * 0.25) + (audienceScore * 0.25) + (pacingScore * 0.15) + (10 - spamPenalty);
-  const globalScore = Math.max(0, Math.min(100, Math.round(rawGlobal)));
-
-  let status = globalScore >= 85 ? 'OPTIMAL' : (globalScore >= 60 ? 'WARNING' : 'CRITICAL');
-  let badgeColor = status === 'OPTIMAL' ? 'green' : (status === 'WARNING' ? 'amber' : 'red');
-  let verdict = status === 'OPTIMAL' ? 'Excellente configuration : vous pouvez lancer votre campagne en toute sérénité.' :
-    (status === 'WARNING' ? 'Configuration acceptable mais perfectible. Résolvez les points d\'attention.' :
-    'Risque critique de passage en spam. Résolvez les points bloquants avant tout envoi.');
+  // Pondération indicative : Domaine 25 %, Contenu 25 %, Audience 25 %, Cadence 10 %, SpamAssassin & liens 15 %.
+  const globalScore = Math.round(domainAudit.score * 0.25 + copyAudit.score * 0.25 + audience.score * 0.25 + pacingScore * 0.10 + techScore * 0.15);
+  const status = globalScore >= 85 ? 'OPTIMAL' : (globalScore >= 60 ? 'WARNING' : 'CRITICAL');
+  const verdicts = {
+    OPTIMAL: 'Contrôles au vert. Confirmez avec un test réel Mail-Tester avant le lancement.',
+    WARNING: 'Configuration perfectible : traitez les points signalés.',
+    CRITICAL: 'Risque élevé : corrigez les points bloquants avant tout envoi.'
+  };
 
   const remedies = [
-    ...(!copyAudit.hasOptOut ? [{ action: 'ADD_OPT_OUT', label: 'Ajouter la mention Opt-Out RGPD (+25 pts)', tip: 'Insère une phrase d\'opposition légale à la fin de l\'email.' }] : []),
-    ...(copyAudit.detectedSpamWords.length > 0 ? [{ action: 'CLEAN_SPAM_WORDS', label: `Éliminer les ${copyAudit.detectedSpamWords.length} mots à risque (+${copyAudit.detectedSpamWords.length * 10} pts)`, tip: 'Remplace les formules commerciales par des tournures sobres.' }] : []),
-    ...(linksAudit.hasShorteners ? [{ action: 'REMOVE_SHORTENER', label: 'Supprimer le réducteur d\'URL (+25 pts)', tip: 'Utilisez votre URL directe en nom de domaine propre.' }] : []),
-    ...(linksAudit.brokenCount > 0 ? [{ action: 'FIX_BROKEN_LINKS', label: `Corriger les ${linksAudit.brokenCount} lien(s) inaccessible(s)`, tip: 'Assurez-vous que l\'URL de destination renvoie HTTP 200.' }] : []),
-    ...(invalid > 0 ? [{ action: 'PURGE_INVALID_CONTACTS', label: `Purger les ${invalid} contacts invalides (+15 pts)`, tip: 'Élimine les adresses jetables et domaines morts pour éviter tout rebond dur.' }] : []),
-    ...(domainAudit.isFreeWebmail ? [{ action: 'SETUP_CUSTOM_DOMAIN', label: 'Conseil : configurer un domaine dédié', tip: 'Un sous-domaine pro avec SPF/DMARC garantit 98%+ de délivrabilité.' }] : [])
+    ...(!senderEmail ? [{ label: 'Connecter le compte Google d\'envoi' }] : []),
+    ...(!copyAudit.hasOptOut ? [{ label: 'Ajouter une phrase d\'opposition (ex. « répondez stop »)' }] : []),
+    ...(copyAudit.detectedSpamWords.length > 0 ? [{ label: `Reformuler ${copyAudit.detectedSpamWords.length} terme(s) à risque` }] : []),
+    ...(linksAudit.hasShorteners ? [{ label: 'Supprimer le raccourcisseur d\'URL' }] : []),
+    ...(linksAudit.brokenCount > 0 ? [{ label: `Corriger ${linksAudit.brokenCount} lien(s) inaccessible(s)` }] : []),
+    ...(audience.invalid > 0 ? [{ label: `Retirer ${audience.invalid} contact(s) invalide(s)` }] : []),
+    ...domainAudit.recommendations.map(label => ({ label }))
   ];
 
   return {
-    globalScore, status, badgeColor, verdict,
+    globalScore, status, badgeColor: { OPTIMAL: 'green', WARNING: 'amber', CRITICAL: 'red' }[status], verdict: verdicts[status],
     pillars: {
-      domain: { score: domainAudit.score, label: 'Authentification Domaine & DNS', details: domainAudit },
-      copy: { score: copyAudit.score, label: 'Contenu & Linter Anti-Spam', details: copyAudit },
-      audience: { score: audienceScore, label: 'Hygiène de l\'Audience (Anti-Rebond)', total, verified, invalid },
-      pacing: { score: pacingScore, label: 'Cadencement Humain & Sécurité Google', dailyLimit, minDelay },
-      spamassassin: {
-        score: spamcheckResult.score, isPassing: spamcheckResult.isPassing,
-        rules: spamcheckResult.rules || [], report: spamcheckResult.report || ''
-      },
+      domain: { score: domainAudit.score, details: domainAudit },
+      copy: { score: copyAudit.score, details: copyAudit },
+      audience: { ...audience },
+      pacing: { score: pacingScore, dailyLimit: dispatchConfig.daily_send_limit, minDelay: dispatchConfig.min_delay_seconds, maxDelay: dispatchConfig.max_delay_seconds },
+      spamassassin: { available: spamcheck.success, score: spamcheck.score, isPassing: spamcheck.isPassing, error: spamcheck.error || null, rules: spamcheck.rules || [] },
       links: linksAudit
     },
     actionableRemedies: remedies
   };
 }
 
-module.exports = { auditDomain, computeFullDeliverabilityScore };
+module.exports = { auditDomain, computeFullDeliverabilityScore, audienceHealth };

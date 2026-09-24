@@ -1,8 +1,7 @@
 /**
- * HUNTER.IO API V2 CLIENT (Node.js 24)
+ * HUNTER.IO API V2 CLIENT (Node.js 20+)
  * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine
  * Permet la vérification d'email et la recherche de décideur via l'API Hunter.io.
- * Plafond strict : < 140 lignes (AGENTS.md).
  */
 
 const https = require('node:https');
@@ -72,31 +71,15 @@ class HunterClient {
     };
   }
 
+  /** Mappe le verdict Hunter (champ `status`) vers les statuts internes, sans extrapolation. */
   async verifyEmail(email) {
     if (!email || !email.includes('@')) return { success: false, error: 'Email invalide.' };
     const res = await this.request('/email-verifier', { email });
     if (!res.success) return res;
-
     const d = res.data || {};
-    let status = 'INVALID_MAILBOX';
-    if (d.result === 'deliverable') status = 'VERIFIED';
-    else if (d.result === 'risky') status = d.accept_all ? 'CATCH_ALL' : 'RISKY';
-    else if (d.disposable) status = 'DISPOSABLE';
-
-    return {
-      success: true,
-      email: d.email,
-      status,
-      score: d.score || (d.result === 'deliverable' ? 95 : 40),
-      reason: `Hunter.io : ${d.result} (${d.status})`,
-      is_deliverable: d.result === 'deliverable',
-      details: {
-        smtp_check: d.smtp_check,
-        mx_records: d.mx_records,
-        accept_all: d.accept_all,
-        disposable: d.disposable
-      }
-    };
+    const map = { valid: 'VERIFIED', invalid: 'INVALID_MAILBOX', accept_all: 'CATCH_ALL', disposable: 'DISPOSABLE' };
+    const status = map[d.status] || (d.status === 'webmail' && d.result === 'deliverable' ? 'VERIFIED' : 'UNVERIFIED');
+    return { success: true, email: d.email, status, hunter_score: d.score ?? null, reason: `Hunter.io : ${d.status || d.result || 'inconnu'}` };
   }
 
   async findEmail(domain, firstName, lastName) {
@@ -112,7 +95,8 @@ class HunterClient {
     return {
       success: true,
       email: d.email,
-      score: d.score || 80,
+      hunter_score: d.score ?? null,
+      verification_status: d.verification?.status || null,
       domain: d.domain,
       position: d.position
     };

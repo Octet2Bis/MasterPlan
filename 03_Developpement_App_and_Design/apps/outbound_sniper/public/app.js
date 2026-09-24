@@ -1,48 +1,55 @@
 /**
- * SNIPER STUDIO — LOGIQUE APPLICATIVE & CONTRÔLEUR CENTRAL (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / UI (< 230 lignes)
+ * SNIPER STUDIO — CONTRÔLEUR CENTRAL DE L'INTERFACE
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / UI
  */
 const state = {
-  selectedCampaignId: 'camp_loss_aversion',
-  selectedSenderId: 'snd_director',
+  selectedCampaignId: null,
   previewContactIndex: 0,
   campaigns: [],
-  senders: [],
   contacts: [],
-  stats: {},
+  config: null,
+  sender: null,
   isVerifying: false
 };
+const H = () => window.SniperUIHelpers;
+const toast = (msg, type) => window.SniperUIContacts.showToast(msg, type);
 
 async function init() {
-  window.SniperUICampaigns.setupTabs();
-  if (window.SniperUIProfile) window.SniperUIProfile.init();
   window.SniperState = state;
-  window.SniperAppReloadSenders = loadSenders;
-  await Promise.all([loadSenders(), loadCampaigns(), loadStats(), loadConfig()]);
+  window.SniperApp = { loadSenderAndConfig };
+  window.SniperUICampaigns.setupTabs();
+  window.SniperUIProfile?.init();
+  await Promise.all([loadSenderAndConfig(), loadCampaigns()]);
   setupEvents();
-  setInterval(loadStats, 5000);
   setInterval(pollQueueStatus, 1500);
 }
 
-async function loadSenders() {
+/** Expéditeur = compte Google connecté ; nom et signature = profil. */
+async function loadSenderAndConfig() {
   try {
-    const res = await fetch('/api/senders');
-    state.senders = await res.json();
-    if (state.senders.length > 0) state.selectedSenderId = state.senders[0].id;
-    window.SniperUICampaigns.renderSenderSelector(state.senders, state.selectedSenderId, (id) => {
-      state.selectedSenderId = id;
-      refreshPreview();
-      window.SniperUIScoreChecker?.runFullAudit();
-    });
+    const [cfg, auth] = await Promise.all([H().api('/api/config'), H().api('/api/auth/google/status')]);
+    state.config = cfg;
+    state.sender = auth.connected ? { email: auth.user?.email, name: cfg.sender?.name || auth.user?.name || '' } : null;
+    const hs = document.getElementById('header-sender');
+    if (hs) { hs.textContent = state.sender ? `✉️ ${state.sender.email}` : 'Google non connecté'; hs.className = `tab-pill ${state.sender ? 'tab-pill-green' : 'tab-pill-amber'}`; }
+    const ds = document.getElementById('dispatch-sender-status');
+    if (ds) ds.textContent = state.sender ? `Envoi depuis ${state.sender.email} (API Gmail).` : 'Aucun compte Google connecté : ouvrez « Profil & connexions ». La simulation reste possible.';
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('cfg-delay', `${Math.round(cfg.min_delay_seconds / 60)} à ${Math.round(cfg.max_delay_seconds / 60)} min`);
+    set('cfg-limit', `${cfg.daily_send_limit} emails / jour`);
+    const wh = cfg.working_hours || {};
+    set('cfg-hours', wh.enabled ? `${wh.start} – ${wh.end}, jours ${(wh.days || []).join(', ')} (1 = lundi)` : 'Aucune restriction');
+    const vm = document.getElementById('vm-tracking-url');
+    if (vm) vm.value = cfg.tracking?.vm_tracking_url || '';
+    refreshPreview();
   } catch {}
 }
 
 async function loadCampaigns() {
   try {
-    const res = await fetch('/api/campaigns');
-    state.campaigns = await res.json();
+    state.campaigns = await H().api('/api/campaigns');
     window.SniperUICampaigns.renderCampaignsHomeGrid(state.campaigns, openCampaign, createNewCampaign);
-  } catch {}
+  } catch { toast('Erreur de chargement des campagnes.', 'error'); }
 }
 
 async function openCampaign(cid) {
@@ -52,82 +59,82 @@ async function openCampaign(cid) {
   window.SniperUICampaigns.showWorkspaceView(camp?.name);
   window.SniperUICampaigns.populateMessageEditor(camp);
   await loadCampaignContacts(cid);
-  window.SniperUICampaigns.renderDynamicVariableChips(state.contacts);
-  window.SniperUICampaigns.renderContactPicker(state.contacts, (idx) => {
-    state.previewContactIndex = idx;
-    refreshPreview();
-  });
-  refreshPreview();
+  refreshContactViews();
   window.SniperUIScoreChecker?.runFullAudit(cid);
+  window.SniperUIPerformance?.loadAndRenderStats();
 }
 
 async function createNewCampaign() {
-  const name = prompt("Nom de la nouvelle campagne :", "Nouvelle Campagne QVT");
+  const name = prompt('Nom de la nouvelle campagne :');
   if (!name?.trim()) return;
-  const res = await (await fetch('/api/campaigns', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: name.trim(), subject: "Collaboration — {{entreprise}}", body: "Bonjour {{prenom}},\n\nSeriez-vous disponible pour un échange ?\n\nSi vous ne souhaitez plus recevoir de messages, répondez 'stop'.", cta_label: "En savoir plus", target_url: "https://aevum.app" })
-  })).json();
+  const res = await H().api('/api/campaigns', { name: name.trim(), subject: '', body: '', cta_label: '', target_url: '', track_clicks: false });
   if (res.success) { await loadCampaigns(); openCampaign(res.campaign.id); }
 }
 
 async function loadCampaignContacts(cid) {
   try {
-    const res = await fetch(`/api/campaign/contacts?cid=${cid}`);
-    state.contacts = await res.json();
+    state.contacts = await H().api(`/api/campaign/contacts?cid=${encodeURIComponent(cid)}`);
     window.SniperUIContacts.renderContactsTable(state.contacts);
-  } catch { window.SniperUIContacts.showError("Erreur chargement contacts."); }
+  } catch { window.SniperUIContacts.showError('Erreur de chargement des contacts.'); }
+}
+
+function refreshContactViews() {
+  window.SniperUIContacts.renderContactsTable(state.contacts);
+  window.SniperUICampaigns.renderDynamicVariableChips(state.contacts);
+  window.SniperUICampaigns.renderContactPicker(state.contacts, (idx) => { state.previewContactIndex = idx; refreshPreview(); });
+  refreshPreview();
 }
 
 function refreshPreview() {
   const camp = state.campaigns.find(c => c.id === state.selectedCampaignId);
-  const sender = state.senders.find(s => s.id === state.selectedSenderId);
-  const contact = state.contacts[state.previewContactIndex || 0];
-  window.SniperUICampaigns.renderCampaignCardPreview(camp, contact, sender);
-  const pendingCount = (state.contacts || []).filter(c => c.status === 'VERIFIED').length;
+  window.SniperUICampaigns.renderCampaignCardPreview(camp, state.contacts[state.previewContactIndex || 0], state.sender);
+  const includeUnverified = document.getElementById('toggle-include-unverified')?.checked;
+  const allowed = includeUnverified ? ['VERIFIED', 'UNVERIFIED', 'CATCH_ALL'] : ['VERIFIED'];
+  const eligible = state.contacts.filter(c => allowed.includes(c.status)).length;
   const etaEl = document.getElementById('dispatch-eta-banner');
-  if (etaEl && window.SniperUICampaigns.calculateETA) etaEl.textContent = window.SniperUICampaigns.calculateETA(pendingCount);
-}
-
-async function loadStats() {
-  try {
-    const res = await fetch('/api/stats');
-    state.stats = await res.json();
-    document.getElementById('stat-opens').textContent = state.stats.total_opens || 0;
-    document.getElementById('stat-clicks').textContent = state.stats.total_clicks || 0;
-    const ctrStr = `${state.stats.ctr_percent || 0}%`;
-    document.getElementById('stat-ctr').textContent = ctrStr;
-    document.getElementById('tab-stat-ctr').textContent = `${ctrStr} CTR`;
-  } catch {}
-}
-
-async function loadConfig() {
-  try {
-    const res = await fetch('/api/config');
-    const cfg = await res.json();
-    if (cfg.sender?.email) document.getElementById('smtp-email').value = cfg.sender.email;
-    if (cfg.tracking?.vm_tracking_url) document.getElementById('vm-tracking-url').value = cfg.tracking.vm_tracking_url;
-  } catch {}
+  if (etaEl) etaEl.textContent = H().calculateETA(eligible, state.config);
 }
 
 async function pollQueueStatus() {
   try {
-    const res = await fetch('/api/dispatch/status');
-    const { global_sent_today, campaigns_status, logs } = await res.json();
-    document.getElementById('header-quota').innerHTML = `Quota : <strong>${global_sent_today || 0} / 28</strong> (Max 30/j)`;
-    const currentWorker = campaigns_status[state.selectedCampaignId];
-    const isRunning = currentWorker?.isRunning;
-    document.getElementById('btn-launch-dispatch').style.display = isRunning ? 'none' : 'inline-flex';
-    document.getElementById('btn-stop-dispatch').style.display = isRunning ? 'inline-flex' : 'none';
-    document.getElementById('countdown-row').style.display = (isRunning && currentWorker.next_dispatch_in_seconds > 0) ? 'flex' : 'none';
-    if (isRunning) document.getElementById('countdown-display').textContent = `${currentWorker.next_dispatch_in_seconds}s`;
+    const { global_sent_today, daily_max, campaigns_status, logs } = await H().api('/api/dispatch/status');
+    document.getElementById('header-quota').innerHTML = `Quota du jour : <strong>${global_sent_today} / ${daily_max}</strong>`;
+    const w = campaigns_status[state.selectedCampaignId];
+    const running = Boolean(w?.isRunning);
+    document.getElementById('btn-launch-dispatch').style.display = running ? 'none' : 'inline-flex';
+    document.getElementById('btn-stop-dispatch').style.display = running ? 'inline-flex' : 'none';
+    document.getElementById('countdown-row').style.display = running && w.next_dispatch_in_seconds > 0 ? 'flex' : 'none';
+    if (running) document.getElementById('countdown-display').textContent = `${w.next_dispatch_in_seconds}s`;
     const badge = document.getElementById('tab-status-badge');
-    badge.textContent = isRunning ? `${currentWorker.mode} (${currentWorker.remaining_contacts})` : '28/j max';
-    badge.className = isRunning ? 'tab-pill tab-pill-green' : 'tab-pill tab-pill-amber';
-    if (Array.isArray(logs) && logs.length > 0) {
-      document.getElementById('dispatch-log').innerHTML = logs.slice(0, 15).map(l => `[${l.timestamp}] ${l.message}`).join('<br>');
-    }
+    badge.textContent = running ? `${w.mode === 'DRY_RUN' ? 'Simulation' : 'Envoi'} (${w.remaining_contacts})` : `${global_sent_today}/${daily_max}`;
+    badge.className = running ? 'tab-pill tab-pill-green' : 'tab-pill tab-pill-amber';
+    const own = logs.filter(l => l.campaign_id === state.selectedCampaignId).slice(0, 15);
+    if (own.length) document.getElementById('dispatch-log').textContent = own.map(l => `[${l.timestamp}] ${l.message}`).join('\n');
   } catch {}
+}
+
+async function verifyContacts(btn) {
+  if (state.isVerifying) return;
+  if (state.contacts.length === 0) return toast("Importez d'abord une liste.", 'error');
+  state.isVerifying = true;
+  btn.disabled = true;
+  const label = document.getElementById('btn-verify-text');
+  label.textContent = `Vérification (${state.contacts.length})…`;
+  const snapshot = state.contacts;
+  state.contacts = snapshot.map(c => (c.status === 'SENT' ? c : { ...c, status: 'LOADING' }));
+  window.SniperUIContacts.renderContactsTable(state.contacts);
+  try {
+    const useHunter = document.getElementById('toggle-use-hunter')?.checked === true;
+    const data = await H().api('/api/campaign/verify', { campaign_id: state.selectedCampaignId, use_hunter: useHunter });
+    state.contacts = data.contacts || snapshot;
+    const n = (s) => state.contacts.filter(c => c.status === s).length;
+    toast(`${n('VERIFIED')} vérifiée(s), ${n('UNVERIFIED') + n('CATCH_ALL')} non prouvée(s), ${state.contacts.length - n('VERIFIED') - n('UNVERIFIED') - n('CATCH_ALL') - n('SENT')} à écarter.`, 'success');
+  } catch { state.contacts = snapshot; toast('❌ Erreur pendant la vérification.', 'error'); }
+  state.isVerifying = false;
+  btn.disabled = false;
+  label.textContent = 'Relancer la vérification';
+  refreshContactViews();
+  window.SniperUIScoreChecker?.runFullAudit();
 }
 
 function setupEvents() {
@@ -139,107 +146,60 @@ function setupEvents() {
   ['dragleave', 'drop'].forEach(e => dropzone.addEventListener(e, (ev) => { ev.preventDefault(); dropzone.classList.remove('dragover'); }));
 
   const onFiles = (files) => window.SniperUIContacts.parseCSVFiles(files, async (parsed) => {
-    state.contacts = parsed;
-    window.SniperUIContacts.renderContactsTable(parsed);
-    window.SniperUICampaigns.renderDynamicVariableChips(parsed);
-    window.SniperUICampaigns.renderContactPicker(parsed, (idx) => { state.previewContactIndex = idx; refreshPreview(); });
+    const sent = state.contacts.filter(c => c.status === 'SENT');
+    if (sent.length && !confirm(`${sent.length} contact(s) déjà envoyé(s) seront conservés pour éviter tout doublon. Continuer ?`)) return;
+    const sentEmails = new Set(sent.map(c => c.email));
+    state.contacts = [...sent, ...parsed.filter(c => !sentEmails.has(c.email))];
+    refreshContactViews();
+    await H().api('/api/campaign/contacts', { campaign_id: state.selectedCampaignId, contacts: state.contacts });
+    window.SniperUIScoreChecker?.runFullAudit();
+  });
+  dropzone.addEventListener('drop', (e) => onFiles(e.dataTransfer.files));
+  fileInput.addEventListener('change', (e) => { onFiles(e.target.files); e.target.value = ''; });
+  document.getElementById('btn-clear-contacts').onclick = () => window.SniperUIContacts.clearCurrentContacts();
+  const btnVerify = document.getElementById('btn-verify');
+  btnVerify.onclick = () => verifyContacts(btnVerify);
+
+  window.SniperUICampaigns.setupMessageEditorEvents(async (fields) => {
+    const data = await H().api('/api/campaigns', { ...fields, id: state.selectedCampaignId });
+    if (!data.success) return toast('❌ Enregistrement impossible.', 'error');
+    const idx = state.campaigns.findIndex(c => c.id === state.selectedCampaignId);
+    if (idx >= 0) state.campaigns[idx] = data.campaign;
+    toast('💾 Message enregistré.', 'success');
     refreshPreview();
     window.SniperUIScoreChecker?.runFullAudit();
-    await fetch('/api/campaign/contacts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ campaign_id: state.selectedCampaignId, contacts: parsed }) });
-  });
-
-  dropzone.addEventListener('drop', (e) => onFiles(e.dataTransfer.files));
-  fileInput.addEventListener('change', (e) => onFiles(e.target.files));
-  document.getElementById('btn-clear-contacts').onclick = () => window.SniperUIContacts.clearCurrentContacts();
-
-  const btnVerify = document.getElementById('btn-verify');
-  const btnVerifyText = document.getElementById('btn-verify-text');
-  btnVerify.onclick = async () => {
-    if (state.isVerifying || state.contacts.length === 0) {
-      if (state.contacts.length === 0) window.SniperUIContacts.showToast("Importez d'abord une liste.", "error");
-      return;
-    }
-    state.isVerifying = true;
-    btnVerify.disabled = true;
-    if (btnVerifyText) btnVerifyText.textContent = `Vérification (${state.contacts.length})...`;
-    window.SniperUIContacts.showToast(`⚡ Analyse de délivrabilité en cours...`, 'info');
-    state.contacts.forEach(c => { c.status = 'LOADING'; });
-    window.SniperUIContacts.renderContactsTable(state.contacts);
-
-    try {
-      const res = await fetch('/api/campaign/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ campaign_id: state.selectedCampaignId }) });
-      const data = await res.json();
-      state.contacts = data.contacts || [];
-      const validCount = state.contacts.filter(c => c.status === 'VERIFIED').length;
-      window.SniperUIContacts.showToast(`✅ ${validCount}/${state.contacts.length} délivrables certifiés !`, 'success');
-      window.SniperUIScoreChecker?.runFullAudit();
-    } catch { window.SniperUIContacts.showToast(`❌ Erreur vérification.`, 'error'); }
-
-    state.isVerifying = false;
-    btnVerify.disabled = false;
-    if (btnVerifyText) btnVerifyText.textContent = `Relancer le check`;
-    window.SniperUIContacts.renderContactsTable(state.contacts);
-  };
-
-  // Édition de Message & Sauvegarde
-  window.SniperUICampaigns.setupMessageEditorEvents(async (updatedFields) => {
-    const camp = state.campaigns.find(c => c.id === state.selectedCampaignId) || {};
-    const updated = { ...camp, ...updatedFields, id: state.selectedCampaignId };
-    const res = await fetch('/api/campaigns', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated) });
-    const data = await res.json();
-    if (data.success) {
-      const idx = state.campaigns.findIndex(c => c.id === state.selectedCampaignId);
-      if (idx >= 0) state.campaigns[idx] = data.campaign;
-      window.SniperUIContacts.showToast("💾 Message enregistré avec succès !", "success");
-      refreshPreview();
-      window.SniperUIScoreChecker?.runFullAudit();
-    }
   }, refreshPreview);
 
-  document.getElementById('btn-test-smtp').onclick = async () => {
-    const status = document.getElementById('smtp-status');
-    status.textContent = 'Diagnostic SMTP...';
-    const email = document.getElementById('smtp-email').value.trim(), pass = document.getElementById('smtp-pass').value.trim();
-    const res = await (await fetch('/api/smtp/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) })).json();
-    status.textContent = res.message || (res.success ? 'Connexion SMTP réussie.' : 'Échec SMTP.');
-    status.style.color = res.success ? 'var(--accent-success)' : 'var(--accent-error)';
-  };
-
-  const btnSendLive = document.getElementById('btn-send-live-test');
-  if (btnSendLive) btnSendLive.onclick = async () => {
-    const status = document.getElementById('smtp-status'), email = document.getElementById('smtp-email').value.trim(), pass = document.getElementById('smtp-pass').value.trim();
-    const to = document.getElementById('smtp-target-test').value.trim() || email;
-    if (!to) return alert("Veuillez saisir votre adresse email pour recevoir le test réel.");
-    status.textContent = `Envoi vers ${to}...`;
-    const res = await (await fetch('/api/send-test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass, to, campaign_id: state.selectedCampaignId, sender_id: state.selectedSenderId }) })).json();
-    status.textContent = res.success ? `✅ Email expédié à ${to} !` : `❌ Échec : ${res.error || 'Erreur'}`;
-    status.style.color = res.success ? 'var(--accent-success)' : 'var(--accent-error)';
-  };
-
   const btnSendPreview = document.getElementById('btn-send-preview-test');
-  if (btnSendPreview) btnSendPreview.onclick = async () => {
-    btnSendPreview.disabled = true; btnSendPreview.textContent = 'Envoi...';
+  btnSendPreview.onclick = async () => {
+    btnSendPreview.disabled = true;
     try {
-      const d = await (await fetch('/api/send-test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ campaign_id: state.selectedCampaignId, sender_id: state.selectedSenderId }) })).json();
-      window.SniperUIContacts.showToast(d.success ? `✅ Test envoyé à ${d.to || 'votre boîte'} !` : `❌ Échec : ${d.error || 'Erreur'}`, d.success ? 'success' : 'error');
-    } catch { window.SniperUIContacts.showToast("❌ Erreur réseau lors du test.", 'error'); }
-    finally { btnSendPreview.disabled = false; btnSendPreview.innerHTML = '📨 M\'envoyer un email de test'; }
+      const d = await H().api('/api/send-test', { campaign_id: state.selectedCampaignId, contact_index: state.previewContactIndex, campaign: window.SniperUIScoreChecker.editorCampaign() });
+      toast(d.success ? `✅ Test envoyé à ${d.to}.` : `❌ ${d.error || 'Échec'}`, d.success ? 'success' : 'error');
+    } catch { toast('❌ Erreur réseau lors du test.', 'error'); }
+    btnSendPreview.disabled = false;
   };
 
-  document.getElementById('btn-launch-dispatch').onclick = () => fetch('/api/dispatch/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ campaign_id: state.selectedCampaignId, sender_id: state.selectedSenderId, dry_run: document.getElementById('toggle-dry-run').checked }) });
-  document.getElementById('btn-stop-dispatch').onclick = () => fetch('/api/dispatch/stop', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ campaign_id: state.selectedCampaignId }) });
+  document.getElementById('toggle-include-unverified').onchange = refreshPreview;
+  document.getElementById('btn-launch-dispatch').onclick = async () => {
+    const dryRun = document.getElementById('toggle-dry-run').checked;
+    if (!dryRun && !confirm('Lancer un envoi RÉEL depuis votre compte Google ?')) return;
+    const r = await H().api('/api/dispatch/start', { campaign_id: state.selectedCampaignId, dry_run: dryRun, include_unverified: document.getElementById('toggle-include-unverified').checked });
+    if (!r.success) toast(r.error || 'Lancement refusé.', 'error');
+  };
+  document.getElementById('btn-stop-dispatch').onclick = () => H().api('/api/dispatch/stop', { campaign_id: state.selectedCampaignId });
   document.getElementById('btn-save-vm-url').onclick = async () => {
     const url = document.getElementById('vm-tracking-url').value.trim();
-    await fetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tracking: { vm_tracking_url: url } }) });
-    document.getElementById('vm-sync-status').textContent = `URL enregistrée : ${url}`;
+    await H().api('/api/config', { tracking: { vm_tracking_url: url } });
+    document.getElementById('vm-sync-status').textContent = `URL enregistrée : ${url || '(aucune)'}`;
+    await loadSenderAndConfig();
+    window.SniperUIPerformance?.pingVmGateway();
   };
-  document.getElementById('btn-refresh-stats').onclick = loadStats;
 
   [['btn-export-clean', () => window.SniperUIContacts.exportCleanCSV(state.selectedCampaignId, state.contacts)],
-   ['btn-apply-clean', async () => { await window.SniperUIContacts.applyCleanListInPlace(); refreshPreview(); window.SniperUIScoreChecker?.runFullAudit(); }],
+   ['btn-apply-clean', async () => { await window.SniperUIContacts.applyCleanListInPlace(); refreshContactViews(); window.SniperUIScoreChecker?.runFullAudit(); }],
    ['btn-export-all', () => window.SniperUIContacts.downloadCSV(`${state.selectedCampaignId}_tous.csv`, state.contacts)],
-   ['btn-export-opened', () => { const ids = new Set((state.stats.events || []).filter(e => e.type === 'OPEN' && e.campaign_id === state.selectedCampaignId).map(e => e.contact_id)); window.SniperUIContacts.downloadCSV(`${state.selectedCampaignId}_ouvreurs.csv`, state.contacts.filter(c => ids.has(c.id))); }],
-   ['btn-export-clicked', () => { const ids = new Set((state.stats.events || []).filter(e => e.type === 'CLICK' && e.campaign_id === state.selectedCampaignId).map(e => e.contact_id)); window.SniperUIContacts.downloadCSV(`${state.selectedCampaignId}_hot_leads.csv`, state.contacts.filter(c => ids.has(c.id))); }]
+   ['btn-export-clicked', () => window.SniperUIPerformance?.exportClickers()]
   ].forEach(([id, fn]) => { const el = document.getElementById(id); if (el) el.onclick = fn; });
   window.SniperUIPerformance?.init();
 }

@@ -1,23 +1,49 @@
 {
   "spam_words_fr": [
-    "gratuit", "100% gratuit", "gagner de l'argent", "revenu garanti", "sans engagement",
-    "offre exceptionnelle", "urgent", "promotion", "promo", "remise speciale",
-    "cliquez ici", "cliquer ici", "devenez riche", "credit facile", "sans frais",
-    "meilleur prix", "felicitations", "vous avez gagne", "offre limitee", "opportunite unique",
-    "argent facile", "solution magique", "devenez libre", "cash", "prix casse", "satisfait ou rembourse"
+    "gratuit",
+    "100% gratuit",
+    "gagner de l'argent",
+    "revenu garanti",
+    "sans engagement",
+    "offre exceptionnelle",
+    "urgent",
+    "promotion",
+    "promo",
+    "remise speciale",
+    "cliquez ici",
+    "cliquer ici",
+    "devenez riche",
+    "credit facile",
+    "sans frais",
+    "meilleur prix",
+    "felicitations",
+    "vous avez gagne",
+    "offre limitee",
+    "opportunite unique",
+    "argent facile",
+    "solution magique",
+    "devenez libre",
+    "cash",
+    "prix casse",
+    "satisfait ou rembourse"
   ],
   "opt_out_patterns": [
-    "ne souhaitez plus", "desabonner", "desinscription", "repondez stop", "repondre stop",
-    "retirer de votre liste", "ne plus recevoir", "pas interesse", "opt-out"
+    "ne souhaitez plus",
+    "desabonner",
+    "desinscription",
+    "repondez stop",
+    "repondre stop",
+    "retirer de votre liste",
+    "ne plus recevoir",
+    "pas interesse",
+    "opt-out"
   ],
   "penalties": {
     "missing_opt_out": 25,
     "spam_word": 10,
     "excessive_links": 15,
     "all_caps_subject": 20,
-    "excessive_punctuation": 10,
-    "too_short": 10,
-    "too_long": 10
+    "excessive_punctuation": 10
   },
   "spintax_presets": [
     {
@@ -40,5 +66,17 @@
       "category": "Formule de Clôture",
       "syntax": "{Bien à vous,|Bien cordialement,|Excellente journée à vous,|Très bonne semaine,}"
     }
+  ],
+  "shortener_domains": [
+    "bit.ly",
+    "tinyurl.com",
+    "t.co",
+    "ow.ly",
+    "is.gd",
+    "buff.ly",
+    "rebrand.ly",
+    "cutt.ly",
+    "shorturl.at",
+    "rb.gy"
   ]
 }

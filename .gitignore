@@ -38,6 +38,7 @@ credentials*
 **/outbound_sniper/data/dispatch_state.json
 **/outbound_sniper/data/tracking_events.json
 **/outbound_sniper/data/campaign_contacts/**
+**/outbound_sniper/gateway/gateway_events.json
 !**/outbound_sniper/data/config.example.json
 *.pem
 *.key

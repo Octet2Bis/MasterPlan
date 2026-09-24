@@ -1,20 +1,20 @@
 /**
- * LINK HEALTH & POSTMARK SPAMASSASSIN CHECKER ENGINE (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine (< 160 lignes)
+ * LINK HEALTH & POSTMARK SPAMASSASSIN CHECKER ENGINE (Node.js 20+)
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine
+ * SpamAssassin via l'API publique Postmark : en cas d'indisponibilité, isPassing = null (jamais « conforme » par défaut).
  */
 const https = require('node:https');
 const http = require('node:http');
 
-const SHORTENER_DOMAINS = new Set([
-  'bit.ly', 'tinyurl.com', 't.co', 'ow.ly', 'is.gd',
-  'buff.ly', 'rebrand.ly', 'cutt.ly', 'shorturl.at', 'rb.gy'
-]);
+const { loadRef } = require('./store');
+
+const SHORTENER_DOMAINS = new Set(loadRef('spam_rules.json', {}).shortener_domains || []);
 
 function extractHostname(urlString) {
   try { return new URL(urlString).hostname.toLowerCase(); } catch { return ''; }
 }
 
-async function checkSingleUrl(urlString, timeoutMs = 3500) {
+async function checkSingleUrl(urlString, timeoutMs = 3500, method = 'HEAD') {
   const host = extractHostname(urlString);
   if (!host) return { url: urlString, ok: false, isShortener: false, error: 'URL malformée' };
   const isShortener = SHORTENER_DOMAINS.has(host) || Array.from(SHORTENER_DOMAINS).some(s => host.endsWith('.' + s));
@@ -29,9 +29,12 @@ async function checkSingleUrl(urlString, timeoutMs = 3500) {
 
     try {
       const client = urlString.startsWith('https:') ? https : http;
-      const req = client.request(urlString, { method: 'HEAD', headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) OutboundSniper/1.0' } }, (res) => {
+      const req = client.request(urlString, { method, headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) OutboundSniper/1.0' } }, (res) => {
         clearTimeout(timer);
         const code = res.statusCode;
+        res.resume();
+        // Certains serveurs refusent HEAD : on retente en GET avant de conclure.
+        if (method === 'HEAD' && (code === 405 || code === 403 || code === 501)) return checkSingleUrl(urlString, timeoutMs, 'GET').then(finish);
         const ok = code >= 200 && code < 400;
         finish({ url: urlString, ok, isShortener: false, status: code, error: ok ? null : `Code HTTP ${code}` });
       });
@@ -74,11 +77,12 @@ async function runPostmarkSpamcheck({ subject = '', body = '', from = 'contact@d
   const rawMime = [
     `From: ${from}`,
     `To: ${to}`,
-    `Subject: ${subject}`,
+    `Subject: =?UTF-8?B?${Buffer.from(subject, 'utf-8').toString('base64')}?=`,
     `Date: ${new Date().toUTCString()}`,
     `Message-ID: <${Date.now()}.${Math.random().toString(36).slice(2, 9)}@${fromDomain}>`,
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=utf-8',
+    'Content-Transfer-Encoding: 8bit',
     '',
     body
   ].join('\r\n');
@@ -98,7 +102,10 @@ async function runPostmarkSpamcheck({ subject = '', body = '', from = 'contact@d
       res.on('end', () => {
         try {
           const parsed = JSON.parse(data);
-          const score = parseFloat(parsed.score || 0);
+          const score = parseFloat(parsed.score);
+          if (parsed.success === false || Number.isNaN(score)) {
+            return resolve({ success: false, score: null, error: parsed.message || 'Score SpamAssassin absent', isPassing: null });
+          }
           resolve({
             success: true,
             score,
@@ -108,16 +115,16 @@ async function runPostmarkSpamcheck({ subject = '', body = '', from = 'contact@d
             isPassing: score <= 2.5
           });
         } catch {
-          resolve({ success: false, score: null, error: 'Réponse SpamAssassin non analysable', isPassing: true });
+          resolve({ success: false, score: null, error: 'Réponse SpamAssassin non analysable', isPassing: null });
         }
       });
     });
 
-    req.setTimeout(5000, () => {
+    req.setTimeout(8000, () => {
       req.destroy();
-      resolve({ success: false, score: null, error: 'Délai d\'attente Postmark dépassé (5s)', isPassing: true });
+      resolve({ success: false, score: null, error: 'Délai d\'attente Postmark dépassé (8s)', isPassing: null });
     });
-    req.on('error', (err) => resolve({ success: false, score: null, error: err.message, isPassing: true }));
+    req.on('error', (err) => resolve({ success: false, score: null, error: err.message, isPassing: null }));
     req.write(postData);
     req.end();
   });

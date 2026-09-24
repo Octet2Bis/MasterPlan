@@ -1,7 +1,8 @@
 /**
- * EMAIL PATTERN RESOLVER — RÉSOLUTEUR D'ADRESSES PAR PATTERN D'ENTREPRISE (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine (< 150 lignes)
- * Déduit et permute automatiquement les conventions de messagerie B2B.
+ * EMAIL PATTERN RESOLVER — DÉDUCTION DE L'ADRESSE À PARTIR DU NOM ET DU DOMAINE (Node.js 20+)
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine
+ * Une permutation n'est retenue que si le vérificateur la prouve (`VERIFIED`).
+ * Sans preuve (port 25 bloqué, catch-all), le contact est renvoyé inchangé avec les candidats.
  */
 
 class EmailPatternResolver {
@@ -10,110 +11,51 @@ class EmailPatternResolver {
   }
 
   cleanString(str) {
-    if (!str) return '';
-    return str
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '');
+    return String(str || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
   }
 
   cleanDomain(domain) {
-    if (!domain) return '';
-    return domain.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].trim();
+    return String(domain || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].trim();
   }
 
   generateCandidates(prenom, nom, domain) {
     const f = this.cleanString(prenom);
     const l = this.cleanString(nom);
     const d = this.cleanDomain(domain);
-
     if (!d || (!f && !l)) return [];
-    const fi = f ? f[0] : '';
-    const li = l ? l[0] : '';
-
-    const candidates = [];
-    if (f && l) {
-      candidates.push({ email: `${f}.${l}@${d}`, pattern: '{first}.{last}', label: 'Prénom.Nom' });
-      candidates.push({ email: `${fi}${l}@${d}`, pattern: '{f}{last}', label: 'PNom' });
-      candidates.push({ email: `${fi}.${l}@${d}`, pattern: '{f}.{last}', label: 'P.Nom' });
-      candidates.push({ email: `${f}${l}@${d}`, pattern: '{first}{last}', label: 'PrénomNom' });
-      candidates.push({ email: `${l}.${f}@${d}`, pattern: '{last}.{first}', label: 'Nom.Prénom' });
-      candidates.push({ email: `${f}@${d}`, pattern: '{first}', label: 'Prénom seul' });
-    } else if (f) {
-      candidates.push({ email: `${f}@${d}`, pattern: '{first}', label: 'Prénom seul' });
-    } else if (l) {
-      candidates.push({ email: `${l}@${d}`, pattern: '{last}', label: 'Nom seul' });
-    }
-    return candidates;
-  }
-
-  getKnownPattern(domain) {
-    const d = this.cleanDomain(domain);
-    return this.domainPatterns.get(d) || null;
-  }
-
-  predictEmail(prenom, nom, domain) {
-    const d = this.cleanDomain(domain);
-    const known = this.getKnownPattern(d);
-    if (!known) return null;
-
-    const f = this.cleanString(prenom);
-    const l = this.cleanString(nom);
-    const fi = f ? f[0] : '';
-
-    if (known === '{first}.{last}' && f && l) return `${f}.${l}@${d}`;
-    if (known === '{f}{last}' && f && l) return `${fi}${l}@${d}`;
-    if (known === '{f}.{last}' && f && l) return `${fi}.${l}@${d}`;
-    if (known === '{first}' && f) return `${f}@${d}`;
-    if (known === '{last}.{first}' && f && l) return `${l}.${f}@${d}`;
-    return null;
+    if (!l) return [{ email: `${f}@${d}`, pattern: '{first}', label: 'Prénom seul' }];
+    if (!f) return [{ email: `${l}@${d}`, pattern: '{last}', label: 'Nom seul' }];
+    return [
+      { email: `${f}.${l}@${d}`, pattern: '{first}.{last}', label: 'Prénom.Nom' },
+      { email: `${f[0]}${l}@${d}`, pattern: '{f}{last}', label: 'PNom' },
+      { email: `${f[0]}.${l}@${d}`, pattern: '{f}.{last}', label: 'P.Nom' },
+      { email: `${f}${l}@${d}`, pattern: '{first}{last}', label: 'PrénomNom' },
+      { email: `${l}.${f}@${d}`, pattern: '{last}.{first}', label: 'Nom.Prénom' },
+      { email: `${f}@${d}`, pattern: '{first}', label: 'Prénom seul' }
+    ];
   }
 
   async resolveBestEmail(contact, verifier) {
     const domain = contact.domain || (contact.email?.includes('@') ? contact.email.split('@')[1] : null);
-    if (!domain) return contact;
-
     const candidates = this.generateCandidates(contact.prenom, contact.nom, domain);
-    if (candidates.length === 0) return contact;
+    if (candidates.length === 0) return { ...contact, reason: 'Prénom/nom ou domaine manquant' };
 
-    const d = this.cleanDomain(domain);
-    const known = this.getKnownPattern(d);
-    if (known) {
-      const predicted = this.predictEmail(contact.prenom, contact.nom, d);
-      if (predicted) {
-        return {
-          ...contact,
-          email: predicted,
-          pattern_used: known,
-          pattern_source: 'DOMAIN_CACHE'
-        };
-      }
-    }
+    // Pattern déjà prouvé sur ce domaine : on le teste en premier.
+    const known = this.domainPatterns.get(this.cleanDomain(domain));
+    const ordered = known ? [...candidates.filter(c => c.pattern === known), ...candidates.filter(c => c.pattern !== known)] : candidates;
 
-    if (!verifier) return { ...contact, email: candidates[0].email, pattern_candidates: candidates };
-
-    for (const cand of candidates) {
+    for (const cand of ordered) {
       const res = await verifier.verify({ ...contact, email: cand.email });
-      if (res.status === 'VERIFIED' && res.score >= 90) {
-        this.domainPatterns.set(d, cand.pattern);
-        return {
-          ...res,
-          email: cand.email,
-          pattern_used: cand.pattern,
-          pattern_label: cand.label,
-          pattern_confirmed: true
-        };
+      if (res.status === 'VERIFIED') {
+        this.domainPatterns.set(this.cleanDomain(domain), cand.pattern);
+        return { ...res, pattern_used: cand.pattern, pattern_label: cand.label, pattern_resolved: true };
+      }
+      // Catch-all ou port 25 bloqué : aucune permutation ne pourra être prouvée, inutile de continuer.
+      if (res.status === 'CATCH_ALL' || res.status === 'UNVERIFIED' || res.status === 'NO_MX') {
+        return { ...contact, pattern_candidates: candidates, reason: `Pattern non déterminable : ${res.reason}` };
       }
     }
-
-    // Fallback sur le pattern le plus classique ({first}.{last})
-    return {
-      ...contact,
-      email: candidates[0].email,
-      pattern_used: candidates[0].pattern,
-      pattern_candidates: candidates
-    };
+    return { ...contact, pattern_candidates: candidates, reason: 'Aucune permutation acceptée par le serveur' };
   }
 }
 

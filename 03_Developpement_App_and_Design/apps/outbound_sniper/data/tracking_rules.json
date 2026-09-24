@@ -1,0 +1,21 @@
+{
+  "bot_user_agents": [
+    "googleimageproxy",
+    "bingpreview",
+    "yahoo.*proxy",
+    "proofpoint",
+    "barracuda",
+    "mimecast",
+    "symantec",
+    "virustotal",
+    "safelinks",
+    "spider",
+    "crawler",
+    "bot",
+    "scanner",
+    "headless",
+    "python-requests",
+    "curl/",
+    "wget/"
+  ]
+}

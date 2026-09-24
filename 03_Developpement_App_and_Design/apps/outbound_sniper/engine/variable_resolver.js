@@ -1,6 +1,6 @@
 /**
- * VARIABLE RESOLVER & POKA-YOKE ENGINE (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine (< 180 lignes)
+ * VARIABLE RESOLVER & POKA-YOKE ENGINE (Node.js 20+)
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine
  * Gère les snippets dynamiques, la syntaxe de fallback {{var|valeur}} et le garde-fou anti-fuite.
  */
 
@@ -100,51 +100,6 @@ class VariableResolver {
       text,
       isValid: unresolved.length === 0,
       unresolvedVars: unresolved
-    };
-  }
-
-  /**
-   * Audit complet d'une campagne : vérifie tous les contacts contre l'objet et le corps
-   */
-  static auditCampaign(campaign, contacts) {
-    const list = contacts || [];
-    const templateSubject = campaign?.subject || '';
-    const templateBody = campaign?.body || '';
-
-    const requiredVars = Array.from(new Set([
-      ...this.extractVariables(templateSubject),
-      ...this.extractVariables(templateBody)
-    ]));
-
-    let readyCount = 0;
-    const problematicContacts = [];
-
-    list.forEach((contact, idx) => {
-      const resSubj = this.resolveTemplate(templateSubject, contact);
-      const resBody = this.resolveTemplate(templateBody, contact);
-      const allUnresolved = Array.from(new Set([...resSubj.unresolvedVars, ...resBody.unresolvedVars]));
-
-      if (allUnresolved.length === 0) {
-        readyCount++;
-      } else {
-        problematicContacts.push({
-          index: idx,
-          id: contact.id,
-          email: contact.email,
-          prenom: contact.prenom || '',
-          entreprise: contact.entreprise || '',
-          missingVars: allUnresolved
-        });
-      }
-    });
-
-    return {
-      total: list.length,
-      readyCount,
-      incompleteCount: problematicContacts.length,
-      isFullyReady: problematicContacts.length === 0 && list.length > 0,
-      requiredVars,
-      problematicContacts: problematicContacts.slice(0, 50)
     };
   }
 }

@@ -95,3 +95,36 @@ Cible proposée (12 → 6) :
 1. **Lot 1 : nettoyage pur** (§4 + §5). Aucun changement de comportement ; gates relancés.
 2. **Lot 2 : correctifs P0**, chacun avec son test de non-régression dans `test_outbound_hunter_sent.js`.
 3. **Lot 3 : périmètre**, selon les arbitrages du §6, puis correctifs P1 sur ce qui reste.
+
+---
+
+## 8. Résolution (2026-09-24)
+
+Arbitrages : envoi via Google OAuth uniquement, Hunter.io conservé, suivi des clics conservé.
+Règle appliquée : **ce qui prétend fonctionner est rendu fonctionnel, remplacé, ou retiré.**
+Chaque correctif P0 est couvert par un test (`tests/`, 21 tests, exécutés en CI).
+
+| # | Traitement |
+|---|---|
+| P0-1 | SMTP supprimé. `sendGmailMessage` renvoie un échec fatal sans compte connecté. Le serveur refuse un envoi réel sans compte |
+| P0-2 | La simulation ne touche plus au quota ; quota vérifié aussi au lancement |
+| P0-3 | Vraie sonde SMTP sur le MX (RCPT TO boîte + adresse aléatoire). `VERIFIED` seulement sur preuve, sinon `UNVERIFIED`/`CATCH_ALL`. Sonde Microsoft non officielle retirée. Hunter en complément sur demande |
+| P0-4 | Plus aucune valeur par défaut à l'import. Contrôle avant envoi bloquant, rejoué par le serveur au lancement |
+| P0-5 | Aucun secret renvoyé au navigateur, CORS supprimé, écoute sur 127.0.0.1 |
+| P0-6 | Écritures : Host local, Origin identique et JSON obligatoires |
+| P0-7 | Échappement systématique dans l'UI et dans les emails |
+| P1-1 | Le contrôle avant envoi lit `body`, respecte `{{var|défaut}}`, bloque sans opt-out |
+| P1-2 | Défauts uniquement dans `config.example.json` (`engine/store.js`) ; port 3500 partout |
+| P1-3 | `.xlsx` retiré (CSV UTF-8) ; parseur CSV RFC 4180 |
+| P1-4 | Pixel d'ouverture supprimé ; liens signés HMAC ; passerelle autonome `gateway/tracking_gateway.js` ; filtre anti-robots partagé |
+| P1-5 | Fallback `contacts.json` supprimé |
+| P1-6 | MIME Gmail : texte + HTML en base64 replié à 76 caractères, nom d'expéditeur encodé, `List-Unsubscribe` |
+| P1-7 | Postmark en panne = « indisponible », jamais « conforme » |
+| P1-8 | Résolveur DNS dédié, sans effet de bord global |
+| P1-9 | Quota lu dans la configuration partout |
+| P1-10 | Export CSV via Blob |
+| §4 | Code mort supprimé (`dispatch_queue.js`, routes et méthodes inutilisées, `package-lock.json`, `package_standalone.js`) ; `sender_manager.js` retiré (un seul expéditeur : le compte Google) |
+| §5 | Documentation 12 → 8 : `README`, `DECISIONS` (+ non-objectifs), `STATE` (+ feuille de route), `AGENTS` allégé, `BRIEF`/`PRD` corrigés, `DESIGN_CONTRACT`, cet audit |
+| §6 | « Télémétrie Google Leak » et placement prédit retirés ; DKIM (sélecteur google) ajouté au diagnostic ; spintax conservé (fonctionnel) |
+
+Reste ouvert (voir `STATE.md`) : détection des rebonds et réponses, qui exige le scope `gmail.readonly`.

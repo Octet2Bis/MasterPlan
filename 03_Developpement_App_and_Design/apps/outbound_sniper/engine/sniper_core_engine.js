@@ -1,240 +1,176 @@
 /**
- * SNIPER CORE ENGINE — MOTEUR D'EXÉCUTION UNIFIÉ (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine (< 170 lignes)
+ * SNIPER CORE ENGINE — FAÇADE MÉTIER (Node.js 20+)
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine
+ * Campagnes, contacts, vérification, résolution de patterns, Hunter.io, tracking des clics.
  */
-
-const fs = require('node:fs');
-const path = require('node:path');
 const http = require('node:http');
 const https = require('node:https');
-const { SmtpClient } = require('./smtp_client');
+const store = require('./store');
+const googleOAuth = require('./google_oauth');
 const { DispatchManager } = require('./dispatch_manager');
-const { SenderManager } = require('./sender_manager');
 const { DeepEmailVerifier } = require('./deep_email_verifier');
 const { EmailPatternResolver } = require('./email_pattern_resolver');
-const { VariableResolver } = require('./variable_resolver');
-
 const { HunterClient } = require('./hunter_client');
 
-const DATA_DIR = path.join(__dirname, '../data');
-const CONTACTS_DIR = path.join(DATA_DIR, 'campaign_contacts');
+const TRACKING_FILE = 'tracking_events.json';
+const contactsFile = (cid) => `campaign_contacts/${String(cid).replace(/[^a-zA-Z0-9_-]/g, '_')}.json`;
+
+function httpGetJson(url, headers = {}, timeout = 5000) {
+  return new Promise((resolve) => {
+    try {
+      const u = new URL(url);
+      const req = (u.protocol === 'https:' ? https : http).get(u, { headers, timeout }, (res) => {
+        let data = '';
+        res.on('data', c => { data += c; });
+        res.on('end', () => {
+          if (res.statusCode === 401) return resolve({ success: false, error: 'Secret de tracking refusé par la passerelle (401).' });
+          try { resolve({ success: true, json: JSON.parse(data) }); } catch { resolve({ success: false, error: 'Réponse JSON invalide de la passerelle.' }); }
+        });
+      });
+      req.on('error', e => resolve({ success: false, error: e.message }));
+      req.on('timeout', () => { req.destroy(); resolve({ success: false, error: `Délai dépassé (${timeout / 1000}s)` }); });
+    } catch (e) { resolve({ success: false, error: e.message }); }
+  });
+}
 
 class SniperCoreEngine {
   constructor() {
-    this.config = this.loadJSON('config.json') || {};
-    this.campaigns = this.loadJSON('campaigns.json') || [];
-    this.senderManager = new SenderManager();
-    this.emailVerifier = new DeepEmailVerifier();
+    this.config = store.loadConfig();
+    this.campaigns = store.load('campaigns.json', []);
     this.patternResolver = new EmailPatternResolver();
     this.hunterClient = new HunterClient(this.config.hunter?.api_key || '');
-    this.smtpClient = new SmtpClient({
-      user: this.config.sender?.email || '',
-      pass: this.config.sender?.app_password || ''
-    });
-    this.dispatchManager = new DispatchManager({
-      dailyLimit: this.config.daily_send_limit || 30,
-      safetyPauseThreshold: this.config.safety_pause_threshold || 28,
-      minDelay: this.config.min_delay_seconds || 180,
-      maxDelay: this.config.max_delay_seconds || 300
-    });
+    this.dispatchManager = new DispatchManager(this.config);
   }
 
-  loadJSON(filename) {
-    try {
-      const p = path.join(DATA_DIR, filename);
-      if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf-8'));
-    } catch {}
-    return null;
+  /** Patch utilisateur limité aux champs éditables depuis l'UI. */
+  updateConfig(patch = {}) {
+    const safe = {};
+    if (patch.sender) safe.sender = { name: String(patch.sender.name || ''), signature: String(patch.sender.signature || '') };
+    if (patch.tracking && typeof patch.tracking.vm_tracking_url === 'string') safe.tracking = { vm_tracking_url: patch.tracking.vm_tracking_url.trim() };
+    if (patch.hunter && typeof patch.hunter.api_key === 'string') safe.hunter = { api_key: patch.hunter.api_key.trim() };
+    store.saveConfigPatch(safe);
+    this.config = store.loadConfig();
+    this.hunterClient = new HunterClient(this.config.hunter?.api_key || '');
+    this.dispatchManager.applyConfig(this.config);
   }
 
-  saveJSON(filename, data) {
-    try {
-      const p = path.join(DATA_DIR, filename);
-      fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8');
-    } catch {}
+  /** Configuration renvoyée au navigateur : aucune clé ni secret. */
+  publicConfig() {
+    const { hunter, tracking, ...rest } = this.config;
+    return { ...rest, tracking: { vm_tracking_url: tracking?.vm_tracking_url || '' }, hunter: { configured: this.hunterClient.isConfigured() } };
   }
 
-  getCampaignContacts(campaignId) {
-    try {
-      const p = path.join(CONTACTS_DIR, `${campaignId}.json`);
-      if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf-8'));
-    } catch {}
-    const general = this.loadJSON('contacts.json') || [];
-    return general.slice(0, 15);
+  getCampaign(cid) { return this.campaigns.find(c => c.id === cid) || null; }
+
+  saveCampaign(body) {
+    const id = body.id || `camp_${Date.now()}`;
+    const fields = ['name', 'subject', 'body', 'cta_label', 'target_url', 'track_clicks'];
+    const clean = Object.fromEntries(fields.filter(k => body[k] !== undefined).map(k => [k, body[k]]));
+    const idx = this.campaigns.findIndex(c => c.id === id);
+    const campaign = idx >= 0 ? { ...this.campaigns[idx], ...clean } : { ...clean, id };
+    if (idx >= 0) this.campaigns[idx] = campaign; else this.campaigns.push(campaign);
+    store.save('campaigns.json', this.campaigns);
+    return campaign;
   }
 
-  saveCampaignContacts(campaignId, contacts) {
-    try {
-      if (!fs.existsSync(CONTACTS_DIR)) fs.mkdirSync(CONTACTS_DIR, { recursive: true });
-      const p = path.join(CONTACTS_DIR, `${campaignId}.json`);
-      fs.writeFileSync(p, JSON.stringify(contacts, null, 2), 'utf-8');
-      return true;
-    } catch {
-      return false;
+  /** Les statuts produits par l'ancien vérificateur (sans `verified_at`) ne sont pas fiables : à revérifier. */
+  getCampaignContacts(cid) {
+    const PROOF_STATUSES = ['VERIFIED', 'CATCH_ALL', 'ROLE_ACCOUNT', 'RISKY', 'UNVERIFIED', 'INVALID_MAILBOX'];
+    return (cid ? store.load(contactsFile(cid), []) : []).map(c => (PROOF_STATUSES.includes(c.status) && !c.verified_at && !c.hunter_verified
+      ? { ...c, status: 'PENDING', reason: 'Vérification antérieure à la v2 : à refaire' } : c));
+  }
+  saveCampaignContacts(cid, contacts) { store.save(contactsFile(cid), Array.isArray(contacts) ? contacts : []); return true; }
+
+  newVerifier() {
+    const sender = googleOAuth.connectedEmail();
+    return new DeepEmailVerifier({ heloDomain: sender ? sender.split('@')[1] : undefined });
+  }
+
+  /** Vérifie les contacts non envoyés. Hunter (payant) n'est appelé que sur demande, pour les cas non concluants. */
+  async verifyCampaignContacts(cid, { useHunter = false } = {}) {
+    const verifier = this.newVerifier();
+    const list = this.getCampaignContacts(cid);
+    const pending = list.filter(c => c.status !== 'SENT');
+    const verified = await verifier.verifyBatch(pending);
+    if (useHunter && this.hunterClient.isConfigured()) {
+      for (let i = 0; i < verified.length; i++) {
+        if (!['UNVERIFIED', 'CATCH_ALL'].includes(verified[i].status)) continue;
+        const h = await this.hunterClient.verifyEmail(verified[i].email);
+        if (h.success) verified[i] = { ...verified[i], status: h.status, reason: h.reason, hunter_score: h.hunter_score, hunter_verified: true };
+      }
     }
-  }
-
-  async verifyContact(contact) {
-    return this.emailVerifier.verify(contact);
-  }
-
-  async verifyCampaignContacts(campaignId) {
-    const list = this.getCampaignContacts(campaignId);
-    const updated = await this.emailVerifier.verifyBatch(list);
-    this.saveCampaignContacts(campaignId, updated);
+    const byId = new Map(verified.map(c => [c.id, c]));
+    const updated = list.map(c => byId.get(c.id) || c);
+    this.saveCampaignContacts(cid, updated);
     return updated;
   }
 
   async resolveContactPattern(contact) {
-    const res = await this.patternResolver.resolveBestEmail(contact, this.emailVerifier);
-    if ((res.status !== 'VERIFIED' || res.score < 80) && this.hunterClient.isConfigured()) {
-      const domain = contact.domain || (contact.email?.includes('@') ? contact.email.split('@')[1] : null);
-      if (domain && contact.prenom) {
-        const hRes = await this.hunterClient.findEmail(domain, contact.prenom, contact.nom);
-        if (hRes.success && hRes.email) {
-          return {
-            ...contact,
-            email: hRes.email,
-            status: 'VERIFIED',
-            score: hRes.score || 85,
-            reason: `Hunter.io Email Finder (${hRes.score || 85}%)`,
-            pattern_label: 'Hunter.io API',
-            pattern_resolved: true,
-            hunter_verified: true
-          };
-        }
-      }
-    }
-    return res;
-  }
-
-  generatePatternCandidates(prenom, nom, domain) {
-    return this.patternResolver.generateCandidates(prenom, nom, domain);
-  }
-
-  setHunterApiKey(key) {
-    this.config.hunter = { ...(this.config.hunter || {}), api_key: key };
-    this.hunterClient = new HunterClient(key);
-    this.saveJSON('config.json', this.config);
-    return { success: true };
-  }
-  async verifyHunterEmail(email) { return this.hunterClient.verifyEmail(email); }
-  async findHunterEmail(domain, first, last) { return this.hunterClient.findEmail(domain, first, last); }
-  async getHunterAccount() { return this.hunterClient.getAccountInfo(); }
-
-  auditCampaignVariables(campaignId) {
-    const camp = this.campaigns.find(c => c.id === campaignId) || this.campaigns[0];
-    const contacts = this.getCampaignContacts(campaignId);
-    return VariableResolver.auditCampaign(camp, contacts);
-  }
-
-  generateEmailPreview(contact, campaignId, senderId) {
-    const camp = this.campaigns.find(c => c.id === campaignId) || this.campaigns[0];
-    const sender = this.senderManager.getSender(senderId || camp.sender_id);
-    const baseUrl = this.config.tracking?.vm_tracking_url || 'http://localhost:3000';
-    const uid = contact?.id || 'usr_demo';
-    const cid = camp?.id || 'camp_1';
-
-    const subRes = VariableResolver.resolveTemplate(camp?.subject || '', contact);
-    const bodyRes = VariableResolver.resolveTemplate(camp?.body || '', contact);
-    const ctaRes = VariableResolver.resolveTemplate(camp?.cta_label || 'Découvrir', contact);
-
-    const subject = subRes.text;
-    const bodyText = bodyRes.text;
-    const isStealth = camp?.stealth_mode !== false;
-    const targetUrl = camp?.target_url || 'https://aevum.app';
-    const openUrl = isStealth ? null : `${baseUrl}/t/open?cid=${cid}&uid=${uid}`;
-    const clickUrl = isStealth ? targetUrl : `${baseUrl}/t/click?cid=${cid}&uid=${uid}&target=${encodeURIComponent(targetUrl)}`;
-    const ctaHtml = ctaRes.text?.trim() ? `<p><a href="${clickUrl}" style="color: #10B981; font-weight: 600; text-decoration: underline;">👉 ${ctaRes.text}</a></p>` : '';
-    const pixelHtml = isStealth ? '' : `<img src="${openUrl}" width="1" height="1" style="display:none;" alt="" />`;
-
-    const htmlBody = `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.6; color: #1F2937;">
-        ${bodyText.replace(/\n\n/g, '<br><br>')}<br><br>${ctaHtml}
-        <br><p style="font-size: 11px; color: #9CA3AF;">${sender?.display_name || 'Antoine Lecerf'} — ${sender?.signature || 'Aevum'}<br>Répondez 'STOP' pour ne plus recevoir d'emails.</p>${pixelHtml}
-      </div>
-    `;
-
+    const res = await this.patternResolver.resolveBestEmail(contact, this.newVerifier());
+    if (res.status === 'VERIFIED' || !this.hunterClient.isConfigured()) return res;
+    const domain = contact.domain || (contact.email?.includes('@') ? contact.email.split('@')[1] : null);
+    if (!domain || !contact.prenom) return res;
+    const h = await this.hunterClient.findEmail(domain, contact.prenom, contact.nom);
+    if (!h.success || !h.email) return res;
+    const proven = h.verification_status === 'valid';
     return {
-      subject, bodyText, htmlBody, openUrl, clickUrl, sender, isStealth,
-      campaignName: camp?.name, isValid: subRes.isValid && bodyRes.isValid,
-      unresolvedVars: Array.from(new Set([...subRes.unresolvedVars, ...bodyRes.unresolvedVars]))
+      ...contact, email: h.email, hunter_score: h.hunter_score, hunter_verified: true, pattern_label: 'Hunter.io Email Finder',
+      status: proven ? 'VERIFIED' : 'UNVERIFIED',
+      reason: proven ? 'Hunter.io : adresse trouvée et vérifiée' : `Hunter.io : adresse trouvée, non vérifiée (confiance ${h.hunter_score ?? '?'}%)`
     };
   }
 
-  recordTrackingEvent(type, cid, uid, extra = {}) {
-    let tracking = this.loadJSON('tracking_events.json');
-    if (!tracking || Array.isArray(tracking) || !tracking.events) {
-      tracking = { total_opens: 0, total_clicks: 0, events: Array.isArray(tracking) ? tracking : [] };
+  async getHunterAccount() { return this.hunterClient.getAccountInfo(); }
+
+  loadTracking() {
+    const t = store.load(TRACKING_FILE, null);
+    return { events: Array.isArray(t?.events) ? t.events : [] };
+  }
+
+  recordClick(event) {
+    const t = this.loadTracking();
+    t.events.push(event);
+    store.save(TRACKING_FILE, t);
+  }
+
+  trackingHeaders() { return { Authorization: `Bearer ${this.config.tracking?.secret || ''}` }; }
+
+  async syncVmTrackingEvents(url) {
+    const base = (url || this.config.tracking?.vm_tracking_url || '').replace(/\/+$/, '');
+    if (!base) return { success: false, error: 'URL publique de tracking non configurée.' };
+    const r = await httpGetJson(`${base}/api/tracking/events`, this.trackingHeaders());
+    if (!r.success) return r;
+    const local = this.loadTracking();
+    const key = (e) => `${e.type}_${e.campaign_id}_${e.contact_id}_${e.timestamp}`;
+    const seen = new Set(local.events.map(key));
+    let added = 0;
+    for (const ev of (r.json.events || [])) {
+      if (ev.type === 'CLICK' && !seen.has(key(ev))) { seen.add(key(ev)); local.events.push(ev); added++; }
     }
-    if (type === 'OPEN' && !extra.is_bot) tracking.total_opens = (tracking.total_opens || 0) + 1;
-    if (type === 'CLICK' && !extra.is_bot) tracking.total_clicks = (tracking.total_clicks || 0) + 1;
-
-    tracking.events.push({
-      type,
-      campaign_id: cid,
-      contact_id: uid,
-      timestamp: new Date().toISOString(),
-      ...extra
-    });
-
-    this.saveJSON('tracking_events.json', tracking);
-    return tracking;
+    store.save(TRACKING_FILE, local);
+    return { success: true, addedCount: added, totalEvents: local.events.length };
   }
 
-  async syncVmTrackingEvents(targetUrl) {
-    const baseUrl = targetUrl || this.config.tracking?.vm_tracking_url || 'http://88.96.57.168:3000';
-    return new Promise((resolve) => {
-      try {
-        const u = new URL(`${baseUrl}/api/tracking/events`);
-        const mod = u.protocol === 'https:' ? https : http;
-        const req = mod.get(u.toString(), { timeout: 5000 }, (res) => {
-          let data = '';
-          res.on('data', c => { data += c; });
-          res.on('end', () => {
-            try {
-              const remote = JSON.parse(data);
-              let local = this.loadJSON('tracking_events.json');
-              if (!local || Array.isArray(local) || !local.events) {
-                local = { total_opens: 0, total_clicks: 0, events: [] };
-              }
-              const existing = new Set((local.events || []).map(e => `${e.type}_${e.contact_id}_${e.timestamp}`));
-              let added = 0;
-              for (const ev of (remote.events || [])) {
-                const k = `${ev.type}_${ev.contact_id}_${ev.timestamp}`;
-                if (!existing.has(k)) { existing.add(k); local.events.push(ev); added++; }
-              }
-              local.total_opens = local.events.filter(e => e.type === 'OPEN' && !e.is_bot).length;
-              local.total_clicks = local.events.filter(e => e.type === 'CLICK' && !e.is_bot).length;
-              this.saveJSON('tracking_events.json', local);
-              resolve({ success: true, addedCount: added, totalEvents: local.events.length, store: local });
-            } catch { resolve({ success: false, error: 'Réponse JSON invalide de la VM' }); }
-          });
-        });
-        req.on('error', (e) => resolve({ success: false, error: e.message }));
-        req.on('timeout', () => { req.destroy(); resolve({ success: false, error: 'Timeout (5s)' }); });
-      } catch (e) { resolve({ success: false, error: e.message }); }
-    });
+  async pingVm(url) {
+    const base = (url || this.config.tracking?.vm_tracking_url || '').replace(/\/+$/, '');
+    if (!base) return { success: false, error: 'URL publique de tracking non configurée.' };
+    const r = await httpGetJson(`${base}/api/tracking/ping`, {}, 3500);
+    return r.success ? { success: Boolean(r.json.success), service: r.json.service || null } : r;
   }
 
-  async pingVm(targetUrl) {
-    const baseUrl = targetUrl || this.config.tracking?.vm_tracking_url || 'http://88.96.57.168:3000';
-    return new Promise((resolve) => {
-      try {
-        const u = new URL(`${baseUrl}/api/tracking/ping`);
-        const mod = u.protocol === 'https:' ? https : http;
-        const req = mod.get(u.toString(), { timeout: 3500 }, (res) => {
-          let data = '';
-          res.on('data', c => { data += c; });
-          res.on('end', () => {
-            try { resolve(JSON.parse(data)); } catch { resolve({ success: false, error: 'Réponse invalide' }); }
-          });
-        });
-        req.on('error', (e) => resolve({ success: false, error: e.message }));
-        req.on('timeout', () => { req.destroy(); resolve({ success: false, error: 'Timeout' }); });
-      } catch (e) { resolve({ success: false, error: e.message }); }
-    });
+  /** Statistiques de clics d'une campagne. Les ouvertures ne sont pas mesurées (voir engine/tracking.js). */
+  getStats(cid) {
+    const clicks = this.loadTracking().events.filter(e => e.type === 'CLICK' && (!cid || e.campaign_id === cid));
+    const human = clicks.filter(e => !e.is_bot);
+    const sent = cid ? this.getCampaignContacts(cid).filter(c => c.status === 'SENT').length : 0;
+    const clickerIds = [...new Set(human.map(e => e.contact_id))];
+    const unique = clickerIds.length;
+    return {
+      sent, human_clicks: human.length, bot_clicks: clicks.length - human.length, unique_clickers: unique, clicker_ids: clickerIds,
+      click_rate: sent > 0 ? Math.round((unique / sent) * 1000) / 10 : 0,
+      events: clicks.slice(-50).reverse()
+    };
   }
 }
 
-module.exports = { SniperCoreEngine };
+module.exports = { SniperCoreEngine, httpGetJson };

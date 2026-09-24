@@ -585,7 +585,7 @@ textarea.input-text { resize: none; min-height: 80px; }
   padding: 14px; clip-path: var(--clip-chamfer-btn);
   font-family: var(--font-mono); font-size: var(--text-xs);
   color: #7DA68D; min-height: 80px; max-height: 140px;
-  overflow-y: auto; line-height: 1.5;
+  overflow-y: auto; line-height: 1.5; white-space: pre-line;
 }
 
 /* Stats & Exports */
