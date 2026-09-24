@@ -39,3 +39,8 @@ jobs:
         run: |
           python 01_GTM_Growth/toolbox/tests/test_quality_gates.py
           python 01_GTM_Growth/toolbox/tests/test_analytics_suite.py
+
+      - name: Run ACI Precommit Linter (Syntax JS/TS/Swift/Python/JSON & Secrets)
+        run: |
+          python 03_Developpement_App_and_Design/toolbox/test_aci_precommit_linter.py
+          python 03_Developpement_App_and_Design/toolbox/aci_precommit_linter.py

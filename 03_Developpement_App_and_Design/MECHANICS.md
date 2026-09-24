@@ -70,7 +70,7 @@ Filet déterministe local bloquant tout livrable non conforme.
 | Paramètre | Spécification Opérationnelle |
 | :--- | :--- |
 | **Entrée** | Code source modifié (`.js`, `.ts`, `.swift`, `.py`, `.css`, `.json`) |
-| **Outils** | Exécuter dans l'ordre strict :<br>1. `python 03_Developpement_App_and_Design/toolbox/aci_precommit_linter.py` (formatage, docstrings, limites)<br>2. `node 03_Developpement_App_and_Design/toolbox/skylos_scanner.js` (audit failles OWASP, fuites de secrets)<br>3. `node 03_Developpement_App_and_Design/toolbox/gatekeeper.js --check` (conformité des 4 Portes)<br>4. `node 03_Developpement_App_and_Design/toolbox/dag_validator.js` (intégrité des flux de données et topologies)<br>5. `node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js` (plafond < 250 lignes, 0 inlining, parité SHA-256) |
+| **Outils** | Exécuter dans l'ordre strict :<br>1. `python 03_Developpement_App_and_Design/toolbox/aci_precommit_linter.py` (syntaxe : `node --check` JS, équilibre ()[]{} TS/Swift, Python, JSON/JSONC ; fuites de secrets)<br>2. `node 03_Developpement_App_and_Design/toolbox/skylos_scanner.js` (audit failles OWASP, fuites de secrets)<br>3. `node 03_Developpement_App_and_Design/toolbox/gatekeeper.js --check` (conformité des 4 Portes)<br>4. `node 03_Developpement_App_and_Design/toolbox/dag_validator.js` (intégrité des flux de données et topologies)<br>5. `node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js` (plafond < 250 lignes, 0 inlining, parité SHA-256) |
 | **Sortie** | 100% PASS sur tous les linters (0 avertissement, 0 erreur) |
 | **Qui décide du Done** | **Precommit** (l'agent a interdiction formelle de commiter si un script renvoie une erreur) |
 
