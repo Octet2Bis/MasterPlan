@@ -1,29 +1,37 @@
 # 📍 STATE — OUTBOUND SNIPER STUDIO
 
-Dernière mise à jour : 2026-09-01T10:30:00+02:00
-Statut Global : 🟢 SUITE DE VÉRIFICATION & PATTERN RESOLVER OPÉRATIONNELS
+Dernière mise à jour : 2026-09-24
+Statut : 🟡 Base assainie (v2.0.0). Aucun envoi réel n'a encore été validé de bout en bout avec un compte Google.
 
 ---
 
-## 🏁 Jalons Déjà Validés & Immuables
-- [x] **Infrastructure Cloud VM Oracle** : Instance Always Free active sur **`88.96.57.168`** (Ports 22 SSH et 3000 Web validés et joignables depuis Internet).
-- [x] **Brique 1 : Auto-Correction Typo & Export Clean CSV** : Correction 1-clic des domaines (`gmial` -> `gmail`) et export d'une liste épurée Zero-Bounce.
-- [x] **Brique 2 : Double Sonde Cloud HTTPS** : Certification instantanée des organisations `☁️ Google Workspace` et `☁️ Microsoft 365`.
-- [x] **Brique 3 : Détection Passerelles Anti-Spam** : Identification de `🛡️ Proofpoint`, `🛡️ Mimecast`, `🛡️ Barracuda` et conseils de délivrabilité en infobulle.
-- [x] **Brique 4 : Résolveur de Patterns d'Entreprise** : Moteur [`email_pattern_resolver.js`](file:///c:/Users/HP/Desktop/Master%20Plan/03_Developpement_App_and_Design/apps/outbound_sniper/engine/email_pattern_resolver.js) générant et testant les permutations (`prenom.nom`, `pnom`, `p.nom`) avec mémorisation par domaine.
-- [x] **Quality Gate Poka-Yoke** : 114/114 tests validés (`test_code_integrity.js`).
+## 🏁 Fonctionnel et testé (`npm test`, 23 tests)
+- [x] Import CSV robuste (guillemets, `;` `,` tabulation, BOM), sans valeur inventée.
+- [x] Vérification en cascade : syntaxe, typo, jetable, MX, sonde SMTP réelle avec détection catch-all. `VERIFIED` seulement sur preuve ; un refus lié à l'IP n'est pas lu comme « boîte inexistante ».
+- [x] Hunter.io en option : vérification des adresses non prouvées, recherche d'adresse (Email Finder).
+- [x] Recherche de format d'adresse (prenom.nom…), retenu seulement s'il est prouvé.
+- [x] Envoi via l'API Gmail (OAuth2), MIME texte + HTML, en-tête `List-Unsubscribe`.
+- [x] Contrôle avant envoi bloquant, quota journalier (simulation hors quota), cadence, horaires, coupe-circuit sur erreur Gmail fatale.
+- [x] Suivi des clics signés (HMAC), passerelle VM autonome, synchronisation protégée par secret.
+- [x] Diagnostic DNS réel (MX, SPF, DKIM Google, DMARC ; panne DNS = « indéterminé », jamais « absent »), liens, SpamAssassin (Postmark, sans conformité par défaut en cas de panne).
+- [x] API locale protégée (Host / Origin / Content-Type), aucun secret exposé, échappement HTML partout.
 
----
+## 🎯 Prochaine étape
+0. [ ] Relancer la vérification des listes existantes : les statuts attribués par l'ancien vérificateur sont remis à « À vérifier ».
+1. [ ] Connecter le compte Google (voir README) et envoyer un email de test vers Mail-Tester.
+2. [ ] Déployer `gateway/tracking_gateway.js` sur la VM, derrière HTTPS sur un sous-domaine, avec `TRACKING_SECRET`.
+3. [ ] Simulation puis premier envoi réel sur une petite liste vérifiée.
 
-## 🎯 Tâche Active en Cours
-- **Objectif** : Test de validation de listes réelles et premier envoi réel via SMTP.
-- **Rôle actif** : Utilisateur & QA Engineer (Volet 4 & 5).
+## 🗺️ Feuille de route (non commencée)
+| # | Chantier | Priorité | Note |
+|---|---|---|---|
+| 1 | Détection des rebonds et réponses (scope `gmail.readonly`) | Haute | Seul moyen réel de couper une campagne sur rebond 550 et d'arrêter les relances après réponse |
+| 2 | Retrait de l'ancien `tracking_router.js` d'`aevum_ios/web_preview` | Moyenne | Une fois la nouvelle passerelle déployée |
+| 3 | Fiche contact : historique (envoyé, cliqué) | Basse | — |
+| 4 | Plusieurs expéditeurs (alias Gmail « Envoyer en tant que ») | Basse | Nécessite `gmail.settings.basic` pour lister les alias réels |
 
----
-
-## 📋 Prochaines Actions Utilisateur
-1. [ ] Ouvrir l'application locale ([`http://localhost:3000`](http://localhost:3000)).
-2. [ ] Ouvrir une campagne et importer une liste de contacts.
-3. [ ] Cliquer sur **"Valider la délivrabilité"** pour observer la cascade complète.
-4. [ ] Utiliser **"🔍 Trouver le bon pattern"** si une boîte est inexistante (550).
-5. [ ] Exporter la liste nettoyée via **"Exporter Clean CSV"** ou lancer l'envoi.
+## ⚠️ Limites connues
+- Port 25 sortant souvent bloqué : sans Hunter.io, la plupart des adresses restent `UNVERIFIED`.
+- Rebonds non détectés automatiquement (voir chantier 1).
+- La file d'envoi vit en mémoire : après un redémarrage, relancer la campagne (les contacts `SENT` sont exclus).
+- Le filtre anti-robots des clics est indicatif (basé sur le user-agent).

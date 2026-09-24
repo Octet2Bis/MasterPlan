@@ -1,35 +1,37 @@
 /**
- * DEEP EMAIL VERIFIER — MOTEUR D'ARMURE EN CASCADE (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine (< 240 lignes)
- * Cascade : Typo -> Jetables/Rôles -> HTTPS Microsoft Direct -> Passerelles -> MX -> Fast Probe
+ * DEEP EMAIL VERIFIER — VÉRIFICATION EN CASCADE, SANS FAUX POSITIF (Node.js 20+)
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine
+ * Cascade : syntaxe → typo → jetable → MX → sonde SMTP réelle (RCPT TO + adresse aléatoire pour le catch-all).
+ * Règle : `VERIFIED` uniquement sur preuve (250 sur la boîte ET refus de l'adresse aléatoire).
+ * Si le port 25 sortant est bloqué (cas fréquent chez les FAI et clouds), le statut est `UNVERIFIED`.
  */
 const dns = require('node:dns').promises;
 const net = require('node:net');
-const https = require('node:https');
-const fs = require('node:fs');
-const path = require('node:path');
+const os = require('node:os');
+const crypto = require('node:crypto');
+const { loadRef } = require('./store');
 
-const DATA_DIR = path.join(__dirname, '../data');
+const CONNECT_TIMEOUT_MS = 5000;
+const SESSION_TIMEOUT_MS = 12000;
+const BLOCK_CACHE_MS = 10 * 60 * 1000;
 
 class DeepEmailVerifier {
-  constructor() {
-    this.disposableDomains = new Set(this.loadJSON('disposable_domains.json', []));
-    const hygiene = this.loadJSON('email_hygiene_rules.json', {});
+  constructor({ heloDomain, smtpPort = 25 } = {}) {
+    this.disposableDomains = new Set(loadRef('disposable_domains.json', []));
+    const hygiene = loadRef('email_hygiene_rules.json', {});
     this.roleAccounts = new Set(hygiene.role_accounts || []);
     this.freeMailProviders = new Set(hygiene.free_mail_providers || []);
     this.legacyFaiDomains = new Set(hygiene.legacy_fai_domains || []);
     this.typoMappings = hygiene.typo_mappings || {};
     this.securityGateways = hygiene.security_gateways || {};
-    this.domainCache = new Map();
-    this.port25Status = undefined;
-  }
-
-  loadJSON(file, fallback) {
-    try {
-      const p = path.join(DATA_DIR, file);
-      if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf-8'));
-    } catch {}
-    return fallback;
+    const replyRules = hygiene.smtp_reply_patterns || {};
+    this.mailboxUnknownRx = (replyRules.mailbox_unknown || []).map(p => new RegExp(p, 'i'));
+    this.policyBlockRx = (replyRules.policy_block || []).map(p => new RegExp(p, 'i'));
+    this.heloDomain = heloDomain || os.hostname() || 'localhost';
+    this.smtpPort = smtpPort;
+    this.mxCache = new Map();
+    this.connectFailures = 0;
+    this.port25BlockedUntil = 0;
   }
 
   validateSyntax(email) {
@@ -38,180 +40,141 @@ class DeepEmailVerifier {
   }
 
   detectSecurityGateway(mxHost) {
-    if (!mxHost) return null;
-    const lower = mxHost.toLowerCase();
+    const lower = String(mxHost || '').toLowerCase();
     for (const [name, gw] of Object.entries(this.securityGateways)) {
       if (gw.signatures?.some(sig => lower.includes(sig))) return { name, tip: gw.tip };
     }
     return null;
   }
 
-  async checkCloudTenant(email, mxHost) {
-    if (mxHost && /google\.com|googlemail\.com|aspmx/i.test(mxHost)) {
-      return { isCloud: true, provider: 'GOOGLE_WORKSPACE', label: 'Google Workspace' };
-    }
-    return new Promise((resolve) => {
-      const url = `https://login.microsoftonline.com/getuserrealm.srf?login=${encodeURIComponent(email)}&json=1`;
-      https.get(url, { timeout: 2000 }, (res) => {
-        let data = '';
-        res.on('data', chunk => { data += chunk; });
-        res.on('end', () => {
-          try {
-            const ns = JSON.parse(data).NameSpaceType;
-            if (ns === 'Managed' || ns === 'Federated') return resolve({ isCloud: true, provider: 'MICROSOFT_365', label: 'Microsoft 365' });
-          } catch {}
-          resolve({ isCloud: false, provider: null, label: null });
-        });
-      }).on('error', () => resolve({ isCloud: false, provider: null, label: null }));
-    });
-  }
-
-  async checkMSAccount(email) {
-    return new Promise((resolve) => {
-      const data = JSON.stringify({ username: email, isOtherIdpSupported: true });
-      const req = https.request({
-        hostname: 'login.microsoftonline.com', path: '/common/GetCredentialType', method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Content-Length': data.length }
-      }, (res) => {
-        let b = '';
-        res.on('data', chunk => { b += chunk; });
-        res.on('end', () => {
-          try {
-            const j = JSON.parse(b);
-            if (j.IfExistsResult === 1) return resolve({ exists: false, isMS: true });
-            if (j.IfExistsResult === 0 || j.IfExistsResult === 5) return resolve({ exists: true, isMS: true });
-          } catch {}
-          resolve({ exists: null, isMS: false });
-        });
-      });
-      req.on('error', () => resolve({ exists: null, isMS: false }));
-      req.setTimeout(2500, () => { req.destroy(); resolve({ exists: null, isMS: false }); });
-      req.write(data);
-      req.end();
-    });
+  providerFromMx(mxHost) {
+    const h = String(mxHost || '').toLowerCase();
+    if (/google\.com|googlemail\.com/.test(h)) return 'Google Workspace';
+    if (/outlook\.com|protection\.outlook/.test(h)) return 'Microsoft 365';
+    return null;
   }
 
   async resolvePrimaryMx(domain) {
+    if (this.mxCache.has(domain)) return this.mxCache.get(domain);
+    let mx = null;
     try {
       const records = await dns.resolveMx(domain);
-      if (Array.isArray(records) && records.length > 0) {
-        records.sort((a, b) => a.priority - b.priority);
-        return records[0].exchange;
-      }
-    } catch {}
-    try {
-      const res = await dns.lookup(domain);
-      return res?.address ? domain : null;
-    } catch { return null; }
+      if (records.length > 0) mx = records.sort((a, b) => a.priority - b.priority)[0].exchange || null;
+    } catch (e) {
+      // Seules les réponses DNS définitives prouvent l'absence de MX ; une panne réseau n'invalide pas l'adresse.
+      if (!['ENOTFOUND', 'ENODATA'].includes(e.code)) throw e;
+    }
+    this.mxCache.set(domain, mx);
+    return mx;
   }
 
-  async isPort25Usable() {
-    if (this.port25Status !== undefined) return this.port25Status;
-    return new Promise((resolve) => {
-      const s = net.createConnection(25, '127.0.0.1');
-      const t = setTimeout(() => { s.destroy(); this.port25Status = false; resolve(false); }, 150);
-      s.on('error', () => { clearTimeout(t); s.destroy(); this.port25Status = false; resolve(false); });
-    });
-  }
+  isPort25Blocked() { return Date.now() < this.port25BlockedUntil; }
 
-  async probeSmtpRecipient(mxHost, senderDomain, recipientEmail, timeout = 1500) {
-    if (!(await this.isPort25Usable())) return { deliverable: false, code: 'PORT25_BLOCKED' };
+  /**
+   * Ouvre UNE session SMTP sur le MX et teste chaque destinataire (RCPT TO), sans jamais envoyer de DATA.
+   * @returns {Promise<{reachable: boolean, replies: {code: number, line: string}[]}>} reachable=false si connexion impossible (port 25 bloqué).
+   */
+  smtpSession(mxHost, recipients) {
     return new Promise((resolve) => {
-      let socket, buffer = '', step = 'INIT', resolved = false;
-      const finish = (result) => {
-        if (resolved) return;
-        resolved = true;
-        try { if (socket && !socket.destroyed) { socket.write('QUIT\r\n'); socket.end(); socket.destroy(); } } catch {}
-        resolve(result);
+      const replies = [];
+      let connected = false, buffer = '', step = 'BANNER', done = false, socket;
+      const finish = (reachable) => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        try { socket.write('QUIT\r\n'); socket.destroy(); } catch {}
+        resolve({ reachable, replies });
       };
-      const timer = setTimeout(() => finish({ deliverable: false, code: 'TIMEOUT' }), timeout);
-      try {
-        socket = net.createConnection(25, mxHost);
-        socket.setEncoding('utf-8');
-        socket.on('data', (data) => {
-          buffer += data;
-          const lines = buffer.split('\r\n');
-          buffer = lines.pop();
-          for (const line of lines) {
-            if (!line.trim()) continue;
-            const code = parseInt(line.substring(0, 3), 10);
-            if (step === 'INIT' && (code === 220 || line.startsWith('220 '))) {
-              step = 'HELO';
-              socket.write(`HELO ${senderDomain || 'aevum.app'}\r\n`);
-            } else if (step === 'HELO' && (code === 250 || line.startsWith('250 '))) {
-              step = 'MAIL_FROM';
-              socket.write(`MAIL FROM:<probe@${senderDomain || 'aevum.app'}>\r\n`);
-            } else if (step === 'MAIL_FROM' && (code === 250 || line.startsWith('250 '))) {
-              step = 'RCPT_TO';
-              socket.write(`RCPT TO:<${recipientEmail}>\r\n`);
-            } else if (step === 'RCPT_TO') {
-              clearTimeout(timer);
-              if (code === 250) return finish({ deliverable: true, code: 250 });
-              if (code >= 550 && code <= 554) return finish({ deliverable: false, code });
-              return finish({ deliverable: false, code });
-            }
+      const timer = setTimeout(() => finish(connected), SESSION_TIMEOUT_MS);
+      socket = net.createConnection({ host: mxHost, port: this.smtpPort });
+      socket.setTimeout(CONNECT_TIMEOUT_MS, () => finish(connected));
+      socket.on('connect', () => { connected = true; socket.setTimeout(0); });
+      socket.on('error', () => finish(connected));
+      socket.setEncoding('utf-8');
+      socket.on('data', (chunk) => {
+        buffer += chunk;
+        const lines = buffer.split('\r\n');
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (!/^\d{3} /.test(line)) continue; // ignore les lignes intermédiaires "250-..."
+          const code = parseInt(line.slice(0, 3), 10);
+          if (step === 'BANNER') {
+            if (code !== 220) return finish(true);
+            step = 'HELO'; socket.write(`EHLO ${this.heloDomain}\r\n`);
+          } else if (step === 'HELO') {
+            if (code !== 250) return finish(true);
+            step = 'MAIL'; socket.write('MAIL FROM:<>\r\n');
+          } else if (step === 'MAIL') {
+            if (code !== 250) return finish(true);
+            step = 'RCPT'; socket.write(`RCPT TO:<${recipients[0]}>\r\n`);
+          } else if (step === 'RCPT') {
+            replies.push({ code, line });
+            if (replies.length >= recipients.length) return finish(true);
+            socket.write(`RCPT TO:<${recipients[replies.length]}>\r\n`);
           }
-        });
-        socket.on('error', () => { clearTimeout(timer); finish({ deliverable: false, code: 'ERR_PORT25' }); });
-      } catch { clearTimeout(timer); finish({ deliverable: false, code: 'EXCEPTION' }); }
+        }
+      });
     });
   }
 
-  async checkDomainCatchAll(domain, mxHost) {
-    if (this.domainCache.has(domain)) return this.domainCache.get(domain);
-    const fakeProbe = `probe_${Date.now().toString(36)}@${domain}`;
-    const probe = await this.probeSmtpRecipient(mxHost, 'aevum.app', fakeProbe, 1200);
-    const info = { isCatchAll: Boolean(probe.deliverable && probe.code === 250), mxHost };
-    this.domainCache.set(domain, info);
-    return info;
+  async probeMailbox(mxHost, email, domain) {
+    if (this.isPort25Blocked()) return { reachable: false };
+    const randomAddr = `sniper-${crypto.randomBytes(6).toString('hex')}@${domain}`;
+    const res = await this.smtpSession(mxHost, [email, randomAddr]);
+    if (!res.reachable) {
+      if (++this.connectFailures >= 2) this.port25BlockedUntil = Date.now() + BLOCK_CACHE_MS;
+      return { reachable: false };
+    }
+    this.connectFailures = 0;
+    return { reachable: true, code: res.replies[0]?.code, line: res.replies[0]?.line || '', randomCode: res.replies[1]?.code };
+  }
+
+  /**
+   * Un refus 5xx ne prouve l'inexistence de la boîte que si le serveur le dit (code 5.1.x ou texte explicite).
+   * Un refus de politique (IP en liste noire, 5.7.x) ne dit rien de la boîte : non concluant.
+   */
+  classifyRejection(line) {
+    if (this.policyBlockRx.some(rx => rx.test(line)) && !/\b5\.1\.\d+\b/.test(line)) return 'POLICY';
+    if (this.mailboxUnknownRx.some(rx => rx.test(line))) return 'MAILBOX_UNKNOWN';
+    return 'UNKNOWN';
   }
 
   async verify(contact) {
     const rawEmail = String(contact.email || '').trim().toLowerCase();
-    if (!this.validateSyntax(rawEmail)) return { ...contact, status: 'INVALID', score: 0, reason: 'Syntaxe invalide' };
+    if (!this.validateSyntax(rawEmail)) return { ...contact, status: 'INVALID', reason: 'Syntaxe invalide' };
 
-    const [userPrefix, domain] = rawEmail.split('@');
+    const [local, domain] = rawEmail.split('@');
     const cleanDomain = this.typoMappings[domain] || domain;
-    const cleanEmail = `${userPrefix}@${cleanDomain}`;
+    const email = `${local}@${cleanDomain}`;
+    const typo_suggestion = cleanDomain !== domain ? email : null;
+    if (this.disposableDomains.has(cleanDomain)) return { ...contact, email, typo_suggestion, status: 'DISPOSABLE', reason: 'Domaine jetable' };
 
-    if (this.disposableDomains.has(cleanDomain)) return { ...contact, email: cleanEmail, status: 'DISPOSABLE', score: 0, reason: 'Domaine jetable' };
-
-    const isRole = this.roleAccounts.has(userPrefix);
-    const isFreeMail = this.freeMailProviders.has(cleanDomain);
-    const isLegacyFai = this.legacyFaiDomains.has(cleanDomain);
-    const mxHost = await this.resolvePrimaryMx(cleanDomain);
-    if (!mxHost) return { ...contact, email: cleanEmail, status: 'NO_MX', score: 0, reason: 'Aucun serveur MX' };
-
-    const gateway = this.detectSecurityGateway(mxHost);
-    const cloud = await this.checkCloudTenant(cleanEmail, mxHost);
-    const baseMeta = { email: cleanEmail, is_role: isRole, is_freemail: isFreeMail, cloud_provider: cloud.provider, cloud_label: cloud.label, security_gateway: gateway?.name, security_tip: gateway?.tip, typo_suggestion: cleanDomain !== domain ? cleanEmail : null };
-
-    if (isLegacyFai) return { ...contact, ...baseMeta, status: 'RISKY', score: 35, reason: 'Ancien domaine FAI obsolète' };
-
-    // Sonde Directe HTTPS Microsoft (Hotmail, Outlook, M365)
-    if (/hotmail|outlook|live|msn/i.test(cleanDomain) || cloud.provider === 'MICROSOFT_365') {
-      const ms = await this.checkMSAccount(cleanEmail);
-      if (ms.exists === false) return { ...contact, ...baseMeta, status: 'INVALID_MAILBOX', score: 0, reason: 'Boîte inexistante (Microsoft 550)' };
-      if (ms.exists === true) return { ...contact, ...baseMeta, status: isRole ? 'ROLE_ACCOUNT' : 'VERIFIED', score: isRole ? 70 : 100, cloud_provider: 'MICROSOFT_365', cloud_label: 'Microsoft 365 Certifié', reason: isRole ? 'Rôle Microsoft' : 'Compte Microsoft certifié actif' };
+    let mxHost;
+    try { mxHost = await this.resolvePrimaryMx(cleanDomain); } catch (e) {
+      return { ...contact, email, typo_suggestion, status: 'UNVERIFIED', reason: `Résolution DNS impossible (${e.code || e.message}) : réessayez` };
     }
+    if (!mxHost) return { ...contact, email, typo_suggestion, status: 'NO_MX', reason: 'Aucun serveur MX : le domaine ne reçoit pas d\'email' };
 
-    const domainInfo = await this.checkDomainCatchAll(cleanDomain, mxHost);
-    if (domainInfo.isCatchAll) return { ...contact, ...baseMeta, status: 'CATCH_ALL', score: isRole ? 35 : (cloud.isCloud ? 68 : 45), reason: isRole ? 'Rôle sur Catch-All' : 'Domaine Catch-All' };
+    const isRole = this.roleAccounts.has(local);
+    const gateway = this.detectSecurityGateway(mxHost);
+    const meta = { email, typo_suggestion, is_role: isRole, is_freemail: this.freeMailProviders.has(cleanDomain), cloud_label: this.providerFromMx(mxHost), security_gateway: gateway?.name || null, security_tip: gateway?.tip || null, verified_at: new Date().toISOString() };
+    if (this.legacyFaiDomains.has(cleanDomain)) return { ...contact, ...meta, status: 'RISKY', reason: 'Ancien domaine FAI (rebond probable)' };
 
-    const probe = await this.probeSmtpRecipient(mxHost, 'aevum.app', cleanEmail, 1500);
-    if (probe.deliverable) return { ...contact, ...baseMeta, status: isRole ? 'ROLE_ACCOUNT' : 'VERIFIED', score: isRole ? 70 : 98, reason: isRole ? 'Email de rôle' : 'Boîte active (250 OK)' };
-    if (probe.code >= 550 && probe.code <= 554) return { ...contact, ...baseMeta, status: 'INVALID_MAILBOX', score: 0, reason: 'Boîte inexistante (550 User Unknown)' };
-
-    const isRiskyWebmail = isFreeMail && /orange|wanadoo|sfr|laposte|free/i.test(cleanDomain);
-    return {
-      ...contact, ...baseMeta,
-      status: isRole ? 'ROLE_ACCOUNT' : (isRiskyWebmail ? 'RISKY' : 'VERIFIED'),
-      score: isRole ? 50 : (cloud.isCloud ? 95 : (isRiskyWebmail ? 65 : 85)),
-      reason: isRiskyWebmail ? 'Webmail FAI (Rebond potentiel)' : (cloud.isCloud ? `Organisation ${cloud.label} (Domaine certifié)` : 'Serveur MX actif (Non vérifiable en direct)')
-    };
+    const probe = await this.probeMailbox(mxHost, email, cleanDomain);
+    if (!probe.reachable) return { ...contact, ...meta, status: 'UNVERIFIED', reason: 'MX valide, boîte non vérifiable (port 25 sortant bloqué)' };
+    if (probe.code >= 500 && probe.code < 600) {
+      const kind = this.classifyRejection(probe.line);
+      if (kind === 'MAILBOX_UNKNOWN') return { ...contact, ...meta, status: 'INVALID_MAILBOX', reason: `Boîte inexistante selon le serveur (${probe.code})` };
+      if (kind === 'POLICY') return { ...contact, ...meta, status: 'UNVERIFIED', reason: `Serveur qui refuse la sonde (IP ou politique, ${probe.code}) : boîte non vérifiable` };
+      return { ...contact, ...meta, status: 'UNVERIFIED', reason: `Refus SMTP sans motif explicite (${probe.code})` };
+    }
+    if (probe.code === 250 && probe.randomCode === 250) return { ...contact, ...meta, status: 'CATCH_ALL', reason: 'Domaine catch-all : accepte toute adresse, boîte non prouvée' };
+    if (probe.code === 250 && probe.randomCode >= 550) return { ...contact, ...meta, status: isRole ? 'ROLE_ACCOUNT' : 'VERIFIED', reason: isRole ? 'Adresse générique (rôle) acceptée' : 'Boîte acceptée, adresse aléatoire refusée' };
+    if (probe.code === 250) return { ...contact, ...meta, status: 'UNVERIFIED', reason: 'Boîte acceptée mais catch-all non déterminé' };
+    return { ...contact, ...meta, status: 'UNVERIFIED', reason: `Réponse SMTP non concluante (${probe.code || 'aucune'})` };
   }
 
-  async verifyBatch(contacts, concurrency = 15) {
+  async verifyBatch(contacts, concurrency = 5) {
     const results = new Array(contacts.length);
     let index = 0;
     const worker = async () => {
@@ -220,7 +183,7 @@ class DeepEmailVerifier {
         results[i] = await this.verify(contacts[i]);
       }
     };
-    await Promise.all(Array.from({ length: Math.min(concurrency, contacts.length) }, () => worker()));
+    await Promise.all(Array.from({ length: Math.min(concurrency, contacts.length) }, worker));
     return results;
   }
 }

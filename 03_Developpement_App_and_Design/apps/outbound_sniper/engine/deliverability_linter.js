@@ -1,11 +1,10 @@
 /**
- * DELIVERABILITY & ANTI-SPAM LINTER ENGINE (Node.js 24)
- * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine (< 140 lignes)
+ * DELIVERABILITY & ANTI-SPAM LINTER ENGINE (Node.js 20+)
+ * Pilier : 03_Developpement_App_and_Design / Apps / Outbound Sniper / Engine
+ * Règles lexicales déterministes (data/spam_rules.json). Aucun placement en boîte n'est « prédit » :
+ * seul un test réel (Mail-Tester, SpamAssassin) mesure le placement.
  */
-const fs = require('fs');
-const path = require('path');
-
-const RULES_FILE = path.join(__dirname, '../data/spam_rules.json');
+const { loadRef } = require('./store');
 
 function normalizeStr(str) {
   return String(str || '')
@@ -14,14 +13,7 @@ function normalizeStr(str) {
 }
 
 function loadSpamRules() {
-  try {
-    if (fs.existsSync(RULES_FILE)) return JSON.parse(fs.readFileSync(RULES_FILE, 'utf-8'));
-  } catch {}
-  return {
-    spam_words_fr: ['gratuit', '100% gratuit', 'urgent', 'promotion', 'cliquez ici', 'gagner de l argent'],
-    opt_out_patterns: ['ne souhaitez plus', 'desabonner', 'repondez stop', 'ne plus recevoir'],
-    penalties: { missing_opt_out: 25, spam_word: 10, excessive_links: 15, all_caps_subject: 20, excessive_punctuation: 10 }
-  };
+  return loadRef('spam_rules.json', { spam_words_fr: [], opt_out_patterns: [], penalties: {}, spintax_presets: [], shortener_domains: [] });
 }
 
 function auditMessage({ subject = '', body = '', cta_label = '', target_url = '' }) {
@@ -100,36 +92,15 @@ function auditMessage({ subject = '', body = '', cta_label = '', target_url = ''
     });
   }
 
-  // 5. 🔍 Télémétrie Google Inbox (Inspirée du Google Leak)
-  const words = cleanBody.split(/\s+/).filter(w => w.length > 0);
-  const wordCount = words.length;
-  const isOptimalDwellTime = wordCount >= 60 && wordCount <= 150;
+  // 5. Longueur & question finale : conseils rédactionnels (sans impact sur le score).
+  const wordCount = cleanBody.split(/\s+/).filter(w => w.length > 0).length;
   if (wordCount > 200) {
-    score -= 10;
-    issues.push({
-      type: 'LONG_BODY_PENALTY',
-      severity: 'LOW',
-      message: `Longueur élevée (${wordCount} mots). Google pénalise le faible dwell-time / abandon.`,
-      tip: 'Raccourcissez entre 75 et 130 mots pour maximiser le taux de lecture complète.'
-    });
+    issues.push({ type: 'LONG_BODY', severity: 'LOW', message: `Message long (${wordCount} mots).`, tip: 'Un email de prospection court (50 à 125 mots) est plus lu et plus répondu.' });
   }
-
-  // Détection du Human Reply-Trigger (signal n°1 d'autorité de domaine dans le leak)
-  const lastChunk = cleanBody.slice(-200);
-  const hasReplyTrigger = lastChunk.includes('?');
-  const replyTriggerScore = hasReplyTrigger ? 95 : 40;
+  const hasReplyTrigger = cleanBody.slice(-200).includes('?');
   if (!hasReplyTrigger) {
-    issues.push({
-      type: 'NO_REPLY_TRIGGER',
-      severity: 'MEDIUM',
-      message: 'Aucune question ouverte finale détectée.',
-      tip: 'Terminez par une question courte (ex: « Auriez-vous 5 min mardi ? ») pour déclencher une réponse humaine.'
-    });
+    issues.push({ type: 'NO_REPLY_TRIGGER', severity: 'LOW', message: 'Pas de question en fin de message.', tip: 'Terminez par une question courte pour inviter à répondre.' });
   }
-
-  // Empreinte HTML brute (Google pénalise les structures marketing)
-  const tagCount = (body.match(/<[^>]+>/g) || []).length;
-  const isCleanHtml = tagCount <= 12 && !/style\s*=/i.test(body);
 
   // Normalisation du score
   score = Math.max(0, Math.min(100, score));
@@ -137,17 +108,6 @@ function auditMessage({ subject = '', body = '', cta_label = '', target_url = ''
   let badgeColor = 'green';
   if (score < 60) { grade = 'CRITICAL'; badgeColor = 'red'; }
   else if (score < 80) { grade = 'WARNING'; badgeColor = 'amber'; }
-
-  // Placement prédictif Google Inbox
-  let predictedPlacement = 'PRIMARY_INBOX';
-  let placementLabel = 'Boîte Principale';
-  if (score < 65 || detectedSpamWords.length >= 2) {
-    predictedPlacement = 'SPAM_FOLDER';
-    placementLabel = 'Dossier Spam';
-  } else if (!isCleanHtml || totalLinks > 2 || !hasOptOut || score < 82) {
-    predictedPlacement = 'PROMOTIONS_TAB';
-    placementLabel = 'Onglet Promotions';
-  }
 
   return {
     score,
@@ -158,12 +118,8 @@ function auditMessage({ subject = '', body = '', cta_label = '', target_url = ''
     totalLinks,
     wordCount,
     hasReplyTrigger,
-    replyTriggerScore,
-    isCleanHtml,
-    predictedPlacement,
-    placementLabel,
     issues,
-    isHealthy: score >= 80 && hasOptOut && predictedPlacement === 'PRIMARY_INBOX'
+    isHealthy: score >= 80 && hasOptOut
   };
 }
 

@@ -1,39 +1,58 @@
-# 📜 DECISIONS — REGISTRE DES ARBITRAGES TECHNIQUES
+# 📜 DECISIONS — ARBITRAGES TECHNIQUES & NON-OBJECTIFS
 
-Ce document consigne les décisions d'architecture immuables pour éviter toute remise en question ou refactorisation superflue.
-
----
-
-## ADR-001 : Stack Légère & Déterministe (Node.js Native + Vanilla JS)
-- **Décision** : Utiliser les modules natifs Node.js (`node:http`, `node:fs`, `node:tls`) pour le backend et du JavaScript Vanilla avec ES Modules pour le frontend.
-- **Raison** : Éliminer la fragilité des dépendances, garantir une exécution instantanée (< 200ms) et simplifier le partage de l'application via un simple script `.bat` / `.sh`.
-- **Statut** : 🟢 Validé et Immuable.
+Règle transverse (2026-09-24) : **ce qui prétend fonctionner doit fonctionner, être remplacé, ou être retiré.**
 
 ---
 
-## ADR-002 : Stockage Pures Données Asynchrones (`data/*.json`)
-- **Décision** : Aucun SGBD lourd (PostgreSQL, MySQL). Stockage atomique dans des fichiers `data/*.json`.
-- **Raison** : Respect strict du Commandement 2 du Master Plan, portabilité totale, inspection humaine directe et zéro coût d'infrastructure.
+## ADR-001 : Stack légère (Node.js natif + Vanilla JS)
+- **Décision** : modules natifs Node.js 20+ côté serveur, JavaScript Vanilla côté interface, zéro dépendance npm.
+- **Raison** : démarrage immédiat, aucune dépendance fragile.
+- **Statut** : 🟢 Validé.
+
+## ADR-002 : Stockage en fichiers `data/*.json`
+- **Décision** : pas de SGBD. Référentiels versionnés dans `data/` ; état local (`config.json`, contacts, jetons, clics, quota) ignoré par git. Accès centralisé dans `engine/store.js`.
+- **Statut** : 🟢 Validé.
+
+## ADR-003 : La VM n'héberge que la passerelle de clics
+- **Décision** : l'application tourne en local. Seule `gateway/tracking_gateway.js` est déployée sur une VM publique (Oracle Always Free), derrière un reverse proxy HTTPS sur un sous-domaine.
+- **Raison** : un clic doit être capté même quand l'ordinateur local est éteint.
+- **Statut** : 🟢 Validé (révisé le 2026-09-24).
+
+## ADR-004 : Envoi uniquement via Google OAuth2 + API Gmail
+- **Décision** : le client SMTP avec mot de passe d'application est supprimé. Un envoi sans compte connecté échoue, sans jamais simuler un succès.
+- **Raison** : un seul canal à maintenir, aucun mot de passe stocké. L'ancien client renvoyait « succès » sans identifiants.
+- **Statut** : 🟢 Validé (remplace l'ancien ADR-004 SMTP).
+
+## ADR-005 : `VERIFIED` uniquement sur preuve
+- **Décision** : une adresse est `VERIFIED` seulement si le MX accepte la boîte et refuse une adresse aléatoire, ou si Hunter.io la valide. Sinon : `UNVERIFIED` ou `CATCH_ALL`, exclues de l'envoi par défaut.
+- **Raison** : l'ancienne sonde ne s'exécutait jamais et marquait « délivrable » toute adresse dont le domaine avait un MX.
+- **Statut** : 🟢 Validé et testé (`tests/engine.test.js`).
+
+## ADR-006 : Pas de mesure des ouvertures
+- **Décision** : pixel d'ouverture supprimé ; seuls les clics sont suivis.
+- **Raison** : les proxys d'images (Apple MPP, Gmail) faussent les ouvertures, et le pixel dégrade la délivrabilité.
+- **Statut** : 🟢 Validé.
+
+## ADR-007 : Liens de clic signés (HMAC)
+- **Décision** : `cid|uid|target` signés avec `tracking.secret`. La passerelle refuse une cible non signée, et son journal exige le secret.
+- **Raison** : supprimer la redirection ouverte et l'exposition publique du journal.
+- **Statut** : 🟢 Validé.
+
+## ADR-008 : API locale fermée au reste du web
+- **Décision** : écoute sur `127.0.0.1`, pas d'en-tête CORS, `Host` local obligatoire. Pour les écritures : `Origin` identique et `Content-Type: application/json`. Aucun secret ni jeton renvoyé au navigateur.
+- **Raison** : n'importe quel site ouvert pouvait lire le mot de passe Gmail et modifier la configuration.
+- **Statut** : 🟢 Validé et testé (`tests/server.test.js`).
+
+## ADR-009 : Pas de prédiction de placement
+- **Décision** : l'indice de délivrabilité agrège des contrôles réels (DNS, contenu, liens, SpamAssassin). Le placement se mesure avec un envoi réel vers Mail-Tester.
 - **Statut** : 🟢 Validé.
 
 ---
 
-## ADR-003 : Runtime Hybride & VM Oracle Cloud (Ampere ARM64)
-- **Décision** : Hébergement du service de tracking public (pixels et redirections de clics) et des daemons 24/7 sur une VM Oracle Always Free (Ubuntu 24.04 aarch64). L'application d'envoi peut tourner en local ou sur la VM.
-- **Raison** : Fournir une IP publique fixe sans frais mensuels, assurant que les événements de tracking soient captés même quand l'ordinateur local est éteint.
-- **Statut** : 🟢 Validé.
-
----
-
-## ADR-004 : Sécurité SMTP & Délivrabilité Maximale
-- **Décision** : Envoi direct via SMTP TLS (Port 465) avec mot de passe d'application Google (16 caractères). Quota plafonné à 28 emails/jour avec intervalle aléatoire de 45 à 120s entre les envois.
-- **Raison** : Protection absolue du domaine expéditeur contre le blacklistage et respect des normes anti-spam 2026.
-- **Statut** : 🟢 Validé.
-
----
-
-## ADR-005 : Validation Profonde & Détection Catch-All Active (Zéro Hard Bounce)
-- **Décision** : Interdire la validation par simple résolution DNS MX. Obligation d'effectuer un probe SMTP (RCPT TO) et une détection Catch-All (test d'adresse aléatoire inexistante sur le domaine) avant de qualifier une adresse comme `DELIVERABLE`.
-- **Raison** : Éliminer les faux positifs sur les domaines "accept-all" et prévenir les Hard Bounces 550 qui détruisent la réputation de l'expéditeur Google.
-- **Statut** : 🟢 Validé et Implémenté.
-
+## 🚫 Non-objectifs
+1. Pas de framework JS lourd ni de bundler.
+2. Pas de base de données.
+3. Pas de mass mailing : le quota journalier (`daily_send_limit`) ne se contourne pas.
+4. Aucun mot de passe Google stocké (OAuth2 uniquement).
+5. Pas de fichier de code au-delà de 250 lignes.
+6. Pas d'import `.xlsx` sans dépendance fiable : exporter en CSV UTF-8 depuis Excel.

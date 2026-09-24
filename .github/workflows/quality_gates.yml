@@ -25,6 +25,7 @@ jobs:
           node 03_Developpement_App_and_Design/toolbox/test_code_integrity.js
           node 03_Developpement_App_and_Design/toolbox/dag_validator.js
           node 03_Developpement_App_and_Design/toolbox/gatekeeper.js --check
+          node 03_Developpement_App_and_Design/toolbox/test_outbound_hunter_sent.js
           node 02_Assistant_Personnel/toolbox/test_meeting_ingestor.js
           node 01_GTM_Growth/toolbox/core/aeo_graph_auditor.js
 
